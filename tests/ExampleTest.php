@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Tonysm\RichTextLaravel\Tests;
 
 class ExampleTest extends TestCase
 {

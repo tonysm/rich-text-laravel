@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Tonysm\RichTextLaravel\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class RichTextLaravelCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'rich-text-laravel';
 
     public $description = 'My command';
 

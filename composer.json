@@ -1,17 +1,17 @@
 {
-    "name": "vendor_slug/package_slug",
-    "description": ":package_description",
+    "name": "tonysm/rich-text-laravel",
+    "description": "Integrates Trix content with Laravel",
     "keywords": [
-        ":vendor_name",
+        "tonysm",
         "laravel",
-        "package_slug"
+        "rich-text-laravel"
     ],
-    "homepage": "https://github.com/vendor_slug/package_slug",
+    "homepage": "https://github.com/tonysm/rich-text-laravel",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Tony Messias",
+            "email": "tonysm@hey.com",
             "role": "Developer"
         }
     ],
@@ -30,13 +30,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Tonysm\\RichTextLaravel\\": "src",
+            "Tonysm\\RichTextLaravel\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Tonysm\\RichTextLaravel\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -50,10 +50,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Tonysm\\RichTextLaravel\\RichTextLaravelServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\SkeletonFacade"
+                "RichTextLaravel": "Tonysm\\RichTextLaravel\\RichTextLaravelFacade"
             }
         }
     },
