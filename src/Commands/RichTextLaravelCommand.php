@@ -4,11 +4,11 @@ namespace Tonysm\RichTextLaravel\Commands;
 
 use Illuminate\Console\Command;
 
-class RichTextLaravelCommand extends Command
+class RichTextLaravelInstallCommand extends Command
 {
-    public $signature = 'rich-text-laravel';
+    public $signature = 'richtext:install';
 
-    public $description = 'My command';
+    public $description = 'Installs the package.';
 
     public function handle()
     {

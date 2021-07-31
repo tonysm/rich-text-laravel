@@ -51,10 +51,7 @@
         "laravel": {
             "providers": [
                 "Tonysm\\RichTextLaravel\\RichTextLaravelServiceProvider"
-            ],
-            "aliases": {
-                "RichTextLaravel": "Tonysm\\RichTextLaravel\\RichTextLaravelFacade"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

@@ -4,7 +4,7 @@ namespace Tonysm\RichTextLaravel;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Tonysm\RichTextLaravel\Commands\RichTextLaravelCommand;
+use Tonysm\RichTextLaravel\Commands\RichTextLaravelInstallCommand;
 
 class RichTextLaravelServiceProvider extends PackageServiceProvider
 {
@@ -19,7 +19,7 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->name('rich-text-laravel')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_rich-text-laravel_table')
-            ->hasCommand(RichTextLaravelCommand::class);
+            // ->hasMigration('create_rich-text-laravel_table')
+            ->hasCommand(RichTextLaravelInstallCommand::class);
     }
 }
