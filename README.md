@@ -46,7 +46,7 @@ use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
 class Post extends Model
 {
     protected $casts = [
-        'body' => AsRichTextContent::class,
+        'content' => AsRichTextContent::class,
     ];
 }
 ```
@@ -55,12 +55,16 @@ Then this will convert this:
 
 ```php
 $post->update([
-    'body' => <<<HTML
+    'content' => <<<HTML
     <div>
         <h1>Hello World</h1>
-        <figure data-trix-attachment="\{
-            \"url\":
-        \}">
+        <figure data-trix-attachment='{
+            "url": "http://example.com/image.jpg",
+            "width": 300,
+            "height": 150,
+            "contentType": "image/jpeg",
+            "caption": "Something cool"
+        }'>
             <img src="http://example.com/image.jpg" width="300" height="150" />
             <caption>
                 Something cool
@@ -70,6 +74,50 @@ $post->update([
     HTML,
 ])
 ```
+
+to this:
+
+```html
+<div>
+    <h1>Hello World</h1>
+    <rich-text-attachable sgid="ALSklmasdklmKNAFKNAsdknknkn1@Kasd...=="></rich-text-attachable>
+</div>
+```
+
+And when it renders it again, it will re-render the remote image again inside the `rich-text-attachable` tag.
+
+### Attaching Models
+
+You can have any model on your application as attachable inside a Trix rich text field. To do that, you need to implement the `AttachableContract` and use the `Attachable` trait in a model. Besides that, you also have to implement a `richTextRender(): string` where you can tell the package how to render that model inside Trix:
+
+```php
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+use Tonysm\RichTextLaravel\Attachables\Attachable;
+
+class User extends Model implements AttachableContract
+{
+    use Attachable;
+
+    public function richTextRender(): string
+    {
+        return view('users._mention', [
+            'user' => $this,
+        ])->render();
+    }
+}
+```
+
+Then inside that `users._mention` Blade template you have full control over the HTML for this attachable field.
+
+### Getting Attachables
+
+You can retrieve all the attachables of a rich content field using the `attachables()` method from the content instance:
+
+```php
+$post->content->attachables()
+```
+
+This will return a collection of all the attachables (anything that is attachable, really, so images and users, in this case).
 
 ## Testing
 
