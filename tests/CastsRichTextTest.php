@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Tests;
 
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Tests\Stubs\Post;
+use Tonysm\RichTextLaravel\Tests\Stubs\User;
 
 class CastsRichTextTest extends TestCase
 {
@@ -23,6 +24,40 @@ class CastsRichTextTest extends TestCase
             'body' => <<<HTML
             <div>
                 <figure data-trix-attachment="{$serialized}">
+                This should be removed...
+                </figure>
+            </div>
+            HTML,
+        ]);
+
+        $rawParsedContent = $post->getRawOriginal('body');
+
+        $this->assertStringNotContainsString('<figure', $rawParsedContent);
+        $this->assertStringNotContainsString('This should be removed', $rawParsedContent);
+        $this->assertStringContainsString('<rich-text-attachable sgid=', $rawParsedContent);
+
+        $this->assertInstanceOf(Content::class, $post->refresh()->body);
+
+        $this->assertStringContainsString("<figure", (string) $post->body);
+    }
+
+    /** @test */
+    public function can_handle_attachments_with_sgid()
+    {
+        /** @var User $user */
+        $user = User::create([
+            'name' => 'User',
+        ]);
+
+        $serialized = urlencode(json_encode([
+            'sgid' => $user->toRichTextSgid(),
+        ]));
+
+        /** @var \Tonysm\RichTextLaravel\Tests\Stubs\Post $post */
+        $post = Post::create([
+            'body' => <<<HTML
+            <div>
+                <figure data-trix-attachment="{$serialized}">
                     This should be removed...
                 </figure>
             </div>
@@ -32,10 +67,11 @@ class CastsRichTextTest extends TestCase
         $rawParsedContent = $post->getRawOriginal('body');
 
         $this->assertStringNotContainsString('<figure', $rawParsedContent);
+        $this->assertStringNotContainsString($user->name, $rawParsedContent);
         $this->assertStringContainsString('<rich-text-attachable sgid=', $rawParsedContent);
 
         $this->assertInstanceOf(Content::class, $post->refresh()->body);
 
-        $this->assertStringContainsString("<figure", (string) $post->body);
+        $this->assertStringContainsString($user->name, (string) $post->body);
     }
 }

@@ -14,7 +14,7 @@ class ContentTest extends TestCase
             'url' => 'https://lorempixel.com/image.jpg',
             'contentType' => 'image/jpeg',
             'width' => 300,
-        ]))->toSgid();
+        ]))->toRichTextSgid();
 
         $content = Content::fromStorage(<<<HTML
         <div>

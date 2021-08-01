@@ -32,12 +32,7 @@ class RemoteImage implements AttachableContract
         $this->caption = $data['caption'] ?? '';
     }
 
-    public function toSgid(): string
-    {
-        return base64_encode(encrypt(serialize($this)));
-    }
-
-    public function render(): string
+    public function richTextRender(): string
     {
         return view('rich-text-laravel::attachables._remote_image', [
             'remoteImage' => $this,

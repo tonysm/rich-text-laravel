@@ -28,7 +28,7 @@ class AttachableFactory
     public static function fromAttachable(DOMElement $attachable): AttachableContract
     {
         try {
-            return unserialize(decrypt(base64_decode($attachable->getAttribute('sgid'))));
+            return static::unserializeRichTextSgid($attachable->getAttribute('sgid'));
         } catch (ModelNotFoundException) {
             return new MissingAttachable;
         }
@@ -41,6 +41,20 @@ class AttachableFactory
 
     protected static function attachableFromSgid(array $data, DOMElement $attachment): ?AttachableContract
     {
+        if ($data['sgid'] ?? false) {
+            return static::unserializeRichTextSgid($data['sgid']);
+        }
+
         return null;
+    }
+
+    public static function unserializeRichTextSgid(string $sgid): AttachableContract
+    {
+        return unserialize(decrypt(base64_decode($sgid)))->record;
+    }
+
+    public static function serializeToSgid($record): string
+    {
+        return base64_encode(encrypt(serialize(new GlobalId($record))));
     }
 }

@@ -13,12 +13,7 @@ class MissingAttachable implements AttachableContract
         return new static();
     }
 
-    public function toSgid(): string
-    {
-        return base64_encode(encrypt(serialize($this)));
-    }
-
-    public function render(): string
+    public function richTextRender(): string
     {
         return "☒";
     }
