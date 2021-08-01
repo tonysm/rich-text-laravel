@@ -20,17 +20,25 @@ trait Attachable
     public function toDOMElement(DOMDocument $document, DOMElement $attachable, bool $withContent = false): DOMElement
     {
         libxml_use_internal_errors(true);
-        $attachable->setAttribute('sgid', $this->toRichTextSgid());
+        $attachable->setAttribute('sgid', $sgid = $this->toRichTextSgid());
+
+        $trixAttachment = [
+            'sgid' => $sgid,
+        ];
 
         if ($withContent) {
             libxml_use_internal_errors(true);
             $contentDoc = new DOMDocument();
-            $contentDoc->loadHTML($this->richTextRender(), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $contentDoc->loadHTML($content = $this->richTextRender(), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
             if ($importedNode = $document->importNode($contentDoc->documentElement, true)) {
                 $attachable->appendChild($importedNode);
             }
+
+            $trixAttachment['content'] = $content;
         }
+
+        $attachable->setAttribute('data-trix-attachment', json_encode($trixAttachment));
 
         return $attachable;
     }

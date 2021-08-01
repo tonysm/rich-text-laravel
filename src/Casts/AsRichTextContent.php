@@ -18,7 +18,7 @@ class AsRichTextContent implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
-        return Content::fromStorage($value);
+        return Content::fromStorage($value ?: '');
     }
 
     /**

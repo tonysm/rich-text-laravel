@@ -10,6 +10,10 @@ class ExtractAttachables
 {
     public function __invoke(string $content, callable $each)
     {
+        if (empty($content)) {
+            return "";
+        }
+
         libxml_use_internal_errors(true);
         $doc = new DOMDocument();
         $doc->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
