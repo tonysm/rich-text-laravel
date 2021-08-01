@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Tests\Stubs\Post;
 use Tonysm\RichTextLaravel\Tests\Stubs\User;
@@ -74,6 +75,46 @@ class CastsRichTextTest extends TestCase
         $this->assertInstanceOf(Content::class, $post->refresh()->body);
 
         $this->assertStringContainsString($user->name, (string) $post->body);
+        $this->assertStringNotContainsString('sgid=', (string) $post->body);
+        $this->assertStringContainsString('data-trix-attachment=', (string) $post->body);
+    }
+
+    /** @test */
+    public function can_handle_missing_model()
+    {
+        /** @var User $user */
+        $user = User::create([
+            'name' => 'User',
+        ]);
+
+        $serialized = urlencode(json_encode([
+            'sgid' => $user->toRichTextSgid(),
+        ]));
+
+        $user->delete();
+
+        /** @var \Tonysm\RichTextLaravel\Tests\Stubs\Post $post */
+        $post = Post::create([
+            'body' => <<<HTML
+            <div>
+                <figure data-trix-attachment="{$serialized}">
+                    This should be removed...
+                </figure>
+            </div>
+            HTML,
+        ]);
+
+        $rawParsedContent = $post->getRawOriginal('body');
+
+        $this->assertStringNotContainsString('<figure', $rawParsedContent);
+        $this->assertStringNotContainsString($user->name, $rawParsedContent);
+        $this->assertStringContainsString('<rich-text-attachable sgid=', $rawParsedContent);
+        $this->assertStringNotContainsString('data-trix-attachment=', $rawParsedContent);
+
+        $this->assertInstanceOf(Content::class, $post->refresh()->body);
+
+        $this->assertStringNotContainsString($user->name, (string) $post->body);
+        $this->assertStringContainsString(trim((new MissingAttachable)->richTextRender()), (string) $post->body);
         $this->assertStringNotContainsString('sgid=', (string) $post->body);
         $this->assertStringContainsString('data-trix-attachment=', (string) $post->body);
     }

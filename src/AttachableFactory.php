@@ -41,8 +41,12 @@ class AttachableFactory
 
     protected static function attachableFromSgid(array $data, DOMElement $attachment): ?AttachableContract
     {
-        if ($data['sgid'] ?? false) {
-            return static::unserializeRichTextSgid($data['sgid']);
+        try {
+            if ($data['sgid'] ?? false) {
+                return static::unserializeRichTextSgid($data['sgid']);
+            }
+        } catch (ModelNotFoundException) {
+            // No need to do anything. We can rely on the Missing Attachable being returned.
         }
 
         return null;

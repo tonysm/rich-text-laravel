@@ -15,6 +15,6 @@ class MissingAttachable implements AttachableContract
 
     public function richTextRender(): string
     {
-        return "☒";
+        return view('rich-text-laravel::attachables._missing_attachable')->render();
     }
 }
