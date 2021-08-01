@@ -1,9 +1,19 @@
-# Rich Text Laravel
+<p align="center" style="margin-top: 2rem; margin-bottom: 2rem;"><img src="/art/rich-text-laravel-logo.svg" alt="Logo Rich Text Laravel" /></p>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/tonysm/rich-text-laravel.svg?style=flat-square)](https://packagist.org/packages/tonysm/rich-text-laravel)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/run-tests?label=tests)](https://github.com/tonysm/rich-text-laravel/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/Check%20&%20fix%20styling?label=code%20style)](https://github.com/tonysm/rich-text-laravel/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/tonysm/rich-text-laravel.svg?style=flat-square)](https://packagist.org/packages/tonysm/rich-text-laravel)
+<p align="center">
+    <a href="https://github.com/tonysm/rich-text-laravel/workflows/Tests/badge.svg">
+        <img src="https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/Tests?label=tests" />
+    </a>
+    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
+        <img src="https://img.shields.io/packagist/dt/tonysm/rich-text-laravel" alt="Total Downloads">
+    </a>
+    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
+        <img src="https://img.shields.io/packagist/v/tonysm/rich-text-laravel" alt="Latest Stable Version">
+    </a>
+    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
+        <img src="https://img.shields.io/packagist/l/tonysm/rich-text-laravel" alt="License">
+    </a>
+</p>
 
 Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails.
 

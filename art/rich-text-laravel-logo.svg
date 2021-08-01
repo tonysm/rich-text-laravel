@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="468.80637"
+   height="92.137825"
+   viewBox="0 0 124.03376 24.378803"
+   version="1.1"
+   id="svg19"
+   sodipodi:docname="turbo-laravel-logo.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata23">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1376"
+     id="namedview21"
+     showgrid="false"
+     inkscape:zoom="2.3639136"
+     inkscape:cx="203.12233"
+     inkscape:cy="47.841501"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg19" />
+  <defs
+     id="defs5">
+    <filter
+       id="a"
+       width="1"
+       height="1"
+       x="0"
+       y="0"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur2" />
+    </filter>
+  </defs>
+  <text
+     style="line-height:1.25"
+     x="26.015814"
+     y="16.936663"
+     stroke-width="0.31"
+     font-family="sans-serif"
+     font-size="12.46px"
+     font-weight="400"
+     id="text17"><tspan
+       x="26.015814"
+       y="16.936663"
+       style="-inkscape-font-specification:Ubuntu"
+       font-family="Ubuntu"
+       id="tspan15"><tspan
+   style="font-weight:bold"
+   id="tspan848">Rich Text</tspan> Laravel</tspan></text>
+  <g
+     style="fill:none;stroke:currentColor"
+     id="g861"
+     transform="matrix(1.2189401,0,0,1.2189401,-4.879118,-2.4378802)">
+    <path
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       stroke-width="2"
+       d="m 9,12 h 6 m -6,4 h 6 m 2,5 H 7 A 2,2 0 0 1 5,19 V 5 A 2,2 0 0 1 7,3 h 5.586 a 1,1 0 0 1 0.707,0.293 l 5.414,5.414 A 1,1 0 0 1 19,9.414 V 19 a 2,2 0 0 1 -2,2 z"
+       id="path850" />
+  </g>
+</svg>
