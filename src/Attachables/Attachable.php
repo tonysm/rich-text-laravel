@@ -19,13 +19,6 @@ trait Attachable
 
     public function toDOMElement(DOMDocument $document, DOMElement $attachable, bool $withContent = false): DOMElement
     {
-        libxml_use_internal_errors(true);
-        $attachable->setAttribute('sgid', $sgid = $this->toRichTextSgid());
-
-        $trixAttachment = [
-            'sgid' => $sgid,
-        ];
-
         if ($withContent) {
             libxml_use_internal_errors(true);
             $contentDoc = new DOMDocument();
@@ -35,10 +28,13 @@ trait Attachable
                 $attachable->appendChild($importedNode);
             }
 
-            $trixAttachment['content'] = $content;
+            $attachable->setAttribute('data-trix-attachment', json_encode([
+                'sgid' => $this->toRichTextSgid(),
+                'content' => $content,
+            ]));
+        } else {
+            $attachable->setAttribute('sgid', $this->toRichTextSgid());
         }
-
-        $attachable->setAttribute('data-trix-attachment', json_encode($trixAttachment));
 
         return $attachable;
     }

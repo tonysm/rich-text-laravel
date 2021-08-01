@@ -69,10 +69,13 @@ class CastsRichTextTest extends TestCase
         $this->assertStringNotContainsString('<figure', $rawParsedContent);
         $this->assertStringNotContainsString($user->name, $rawParsedContent);
         $this->assertStringContainsString('<rich-text-attachable sgid=', $rawParsedContent);
+        $this->assertStringNotContainsString('data-trix-attachment=', $rawParsedContent);
 
         $this->assertInstanceOf(Content::class, $post->refresh()->body);
 
         $this->assertStringContainsString($user->name, (string) $post->body);
+        $this->assertStringNotContainsString('sgid=', (string) $post->body);
+        $this->assertStringContainsString('data-trix-attachment=', (string) $post->body);
     }
 
     /** @test */
