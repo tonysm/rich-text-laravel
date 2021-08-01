@@ -3,11 +3,16 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class TestCase extends Orchestra
 {
+    use RefreshDatabase;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -28,9 +33,15 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-        include_once __DIR__.'/../database/migrations/create_rich-text-laravel_table.php.stub';
-        (new \CreatePackageTable())->up();
-        */
+        $this->setupDatabase();
+    }
+
+    protected function setupDatabase()
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->longText('body');
+            $table->timestamps();
+        });
     }
 }
