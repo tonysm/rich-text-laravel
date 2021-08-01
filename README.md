@@ -1,17 +1,14 @@
 <p align="center" style="margin-top: 2rem; margin-bottom: 2rem;"><img src="/art/rich-text-laravel-logo.svg" alt="Logo Rich Text Laravel" /></p>
 
 <p align="center">
-    <a href="https://github.com/tonysm/rich-text-laravel/workflows/Tests/badge.svg">
-        <img src="https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/Tests?label=tests" />
+    <a href="https://github.com/tonysm/rich-text-laravel/workflows/run-tests/badge.svg">
+        <img src="https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/run-tests?label=tests" />
     </a>
     <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
         <img src="https://img.shields.io/packagist/dt/tonysm/rich-text-laravel" alt="Total Downloads">
     </a>
     <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
-        <img src="https://img.shields.io/packagist/v/tonysm/rich-text-laravel" alt="Latest Stable Version">
-    </a>
-    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
-        <img src="https://img.shields.io/packagist/l/tonysm/rich-text-laravel" alt="License">
+        <img src="https://img.shields.io/github/license/tonysm/rich-text-laravel" alt="License">
     </a>
 </p>
 
