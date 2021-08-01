@@ -15,25 +15,6 @@ You can install the package via composer:
 composer require tonysm/rich-text-laravel
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --provider="Tonysm\RichTextLaravel\RichTextLaravelServiceProvider" --tag="rich-text-laravel-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-```bash
-php artisan vendor:publish --provider="Tonysm\RichTextLaravel\RichTextLaravelServiceProvider" --tag="rich-text-laravel-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 ## Usage
 
 We're going to extract attachments before saving the rich text field (which uses Trix) in the database. We replace the attachment with `rich-text-attachable` tag with an `sgid`. When rendering that rich content again, we can render the attachables. This works for Remote URLs and for any Attachable record (more on that later).
