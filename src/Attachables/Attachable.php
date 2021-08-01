@@ -11,7 +11,7 @@ trait Attachable
     public static function fromNode(array $data, DOMElement $attachment): AttachableContract
     {
         if ($data['sgid'] ?? false) {
-            return static::unserializeRichTextSgid($data['sgid']);
+            return AttachableFactory::unserializeRichTextSgid($data['sgid']);
         }
 
         return null;
