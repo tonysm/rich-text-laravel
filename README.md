@@ -36,7 +36,40 @@ return [
 
 ## Usage
 
-TODO
+We're going to extract attachments before saving the rich text field (which uses Trix) in the database. We replace the attachment with `rich-text-attachable` tag with an `sgid`. When rendering that rich content again, we can render the attachables. This works for Remote URLs and for any Attachable record (more on that later).
+
+The way this works is that we're going to add cast to any Rich Text field on any model, like so:
+
+```php
+use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
+
+class Post extends Model
+{
+    protected $casts = [
+        'body' => AsRichTextContent::class,
+    ];
+}
+```
+
+Then this will convert this:
+
+```php
+$post->update([
+    'body' => <<<HTML
+    <div>
+        <h1>Hello World</h1>
+        <figure data-trix-attachment="\{
+            \"url\":
+        \}">
+            <img src="http://example.com/image.jpg" width="300" height="150" />
+            <caption>
+                Something cool
+            </caption>
+        </figure>
+    </div>
+    HTML,
+])
+```
 
 ## Testing
 

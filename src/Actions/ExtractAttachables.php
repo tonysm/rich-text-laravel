@@ -24,5 +24,7 @@ class ExtractAttachables
                 $each($attachable, $doc);
             }
         }
+
+        return $content;
     }
 }

@@ -74,4 +74,23 @@ class CastsRichTextTest extends TestCase
 
         $this->assertStringContainsString($user->name, (string) $post->body);
     }
+
+    /** @test */
+    public function can_handle_no_attachments()
+    {
+        /** @var \Tonysm\RichTextLaravel\Tests\Stubs\Post $post */
+        $post = Post::create([
+            'body' => <<<HTML
+            <div>this has no attachments</div>
+            HTML,
+        ]);
+
+        $rawParsedContent = $post->getRawOriginal('body');
+
+        $this->assertStringNotContainsString('<rich-text-attachable sgid=', $rawParsedContent);
+
+        $this->assertInstanceOf(Content::class, $post->refresh()->body);
+
+        $this->assertStringContainsString('<div>this has no attachments</div>', (string) $post->body);
+    }
 }

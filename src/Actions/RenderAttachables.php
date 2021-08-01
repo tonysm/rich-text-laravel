@@ -24,11 +24,11 @@ class RenderAttachables
                 $attachable,
             );
 
-            $doc ??= $document;
+            $doc = $doc ?: $document;
         });
 
         if ($doc === null) {
-            return '';
+            return $content;
         }
 
         $content = $doc->saveHTML();
