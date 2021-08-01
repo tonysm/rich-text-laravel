@@ -2,12 +2,9 @@
 
 namespace Tonysm\RichTextLaravel;
 
-use DOMDocument;
 use DOMElement;
-use DOMXPath;
 use Illuminate\Support\Collection;
 use Tonysm\RichTextLaravel\Actions\ExtractAttachables;
-use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 
 class Content
 {
@@ -18,7 +15,7 @@ class Content
 
     public static function toStorage(string $rawContent): string
     {
-        return (new ParseAttachables)($rawContent, withAttachablesContent: false);
+        return (new ParseAttachables())($rawContent, withAttachablesContent: false);
     }
 
     private function __construct(private string $content)
@@ -29,7 +26,7 @@ class Content
     {
         $result = collect();
 
-        (new ExtractAttachables)($this->content, function (DOMElement $attachable) use ($result) {
+        (new ExtractAttachables())($this->content, function (DOMElement $attachable) use ($result) {
             $result->add(AttachableFactory::fromAttachable($attachable));
         });
 
@@ -38,7 +35,7 @@ class Content
 
     public function renderAttachables(): string
     {
-        return (new ParseAttachables)($this->content, withAttachablesContent: true);
+        return (new ParseAttachables())($this->content, withAttachablesContent: true);
     }
 
     public function __toString()

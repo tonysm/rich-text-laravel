@@ -3,7 +3,6 @@
 namespace Tonysm\RichTextLaravel\Actions;
 
 use DOMDocument;
-use DOMElement;
 use DOMXPath;
 use Exception;
 use Tonysm\RichTextLaravel\AttachableFactory;

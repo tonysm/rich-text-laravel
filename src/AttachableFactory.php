@@ -22,7 +22,7 @@ class AttachableFactory
             return $attachable;
         }
 
-        return new MissingAttachable;
+        return new MissingAttachable();
     }
 
     public static function fromAttachable(DOMElement $attachable): AttachableContract
@@ -30,7 +30,7 @@ class AttachableFactory
         try {
             return static::unserializeRichTextSgid($attachable->getAttribute('sgid'));
         } catch (ModelNotFoundException) {
-            return new MissingAttachable;
+            return new MissingAttachable();
         }
     }
 
