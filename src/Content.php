@@ -26,7 +26,13 @@ class Content
     {
         $result = collect();
 
-        (new ExtractAttachables())($this->content, function (DOMElement $attachable) use ($result) {
+        if (! $this->content) {
+            return $result;
+        }
+
+        $document = Document::createFromContent($this->content);
+
+        (new ExtractAttachables($document))->each(function (DOMElement $attachable) use ($result) {
             $result->add(AttachableFactory::fromAttachable($attachable));
         });
 

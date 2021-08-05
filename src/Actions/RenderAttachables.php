@@ -2,10 +2,10 @@
 
 namespace Tonysm\RichTextLaravel\Actions;
 
-use DOMDocument;
 use DOMElement;
 use Exception;
 use Tonysm\RichTextLaravel\AttachableFactory;
+use Tonysm\RichTextLaravel\Document;
 
 class RenderAttachables
 {
@@ -16,22 +16,20 @@ class RenderAttachables
 
     public function render(string $content)
     {
-        $doc = null;
+        if (! $content) {
+            return $content;
+        }
 
-        (new ExtractAttachables())($content, function (DOMElement $attachable, DOMDocument $document) use (&$doc) {
+        $document = Document::createFromContent($content);
+
+        (new ExtractAttachables($document))->each(function (DOMElement $attachable) use (&$document) {
             $attachable->parentNode->replaceChild(
                 AttachableFactory::fromAttachable($attachable)->toDOMElement($document, $document->createElement('rich-text-attachable'), withContent: true),
                 $attachable,
             );
-
-            $doc = $doc ?: $document;
         });
 
-        if ($doc === null) {
-            return $content;
-        }
-
-        $content = $doc->saveHTML();
+        $content = $document->saveHTML();
 
         if ($content === false) {
             throw new Exception('Something went wrong.');

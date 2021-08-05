@@ -8,27 +8,20 @@ use Tonysm\RichTextLaravel\TrixContent;
 
 class ExtractAttachables
 {
-    public function __invoke(string $content, callable $each)
+    public function __construct(private DOMDocument $document)
     {
-        if (empty($content)) {
-            return "";
-        }
+    }
 
-        libxml_use_internal_errors(true);
-        $doc = new DOMDocument();
-        $doc->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-        $xpath = new DOMXPath($doc);
+    public function each(callable $each)
+    {
+        $xpath = new DOMXPath($this->document);
 
         $attachables = $xpath->query(TrixContent::ATTACHABLE_SELECTOR);
 
         if ($attachables !== false) {
-            /** @var \DOMElement $attachable */
             foreach ($attachables as $attachable) {
-                $each($attachable, $doc);
+                $each($attachable);
             }
         }
-
-        return $content;
     }
 }

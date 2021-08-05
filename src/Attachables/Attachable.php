@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMDocument;
 use DOMElement;
+use Tonysm\RichTextLaravel\Document;
 use Tonysm\RichTextLaravel\GlobalId;
 
 trait Attachable
@@ -20,9 +21,7 @@ trait Attachable
     public function toDOMElement(DOMDocument $document, DOMElement $attachable, bool $withContent = false): DOMElement
     {
         if ($withContent) {
-            libxml_use_internal_errors(true);
-            $contentDoc = new DOMDocument();
-            $contentDoc->loadHTML($content = $this->richTextRender(), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $contentDoc = Document::createFromContent($content = $this->richTextRender());
 
             if ($importedNode = $document->importNode($contentDoc->documentElement, true)) {
                 $attachable->appendChild($importedNode);

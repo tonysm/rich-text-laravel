@@ -2,10 +2,10 @@
 
 namespace Tonysm\RichTextLaravel\Actions;
 
-use DOMDocument;
 use DOMXPath;
 use Exception;
 use Tonysm\RichTextLaravel\AttachableFactory;
+use Tonysm\RichTextLaravel\Document;
 use Tonysm\RichTextLaravel\TrixContent;
 
 class ExtractAttachments
@@ -21,9 +21,7 @@ class ExtractAttachments
             return "";
         }
 
-        libxml_use_internal_errors(true);
-        $doc = new DOMDocument();
-        $doc->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $doc = Document::createFromContent($content);
 
         $xpath = new DOMXPath($doc);
 
