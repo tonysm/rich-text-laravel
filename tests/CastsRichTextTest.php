@@ -137,4 +137,41 @@ class CastsRichTextTest extends TestCase
 
         $this->assertStringContainsString('<div>this has no attachments</div>', (string) $post->body);
     }
+
+    /** @test */
+    public function handles_image_galleries()
+    {
+        $remoteImageAttachment = [
+            'contentType' => 'image/jpeg',
+            'url' => 'http://example.com/image.jpg',
+            'width' => 300,
+        ];
+
+        $serialized = urlencode(json_encode($remoteImageAttachment));
+
+        /** @var \Tonysm\RichTextLaravel\Tests\Stubs\Post $post */
+        $post = Post::create([
+            'body' => <<<HTML
+            <div class="attachment-gallery attachment-gallery--2">
+                <figure data-trix-attachment="{$serialized}">
+                This should be removed...
+                </figure>
+                <figure data-trix-attachment="{$serialized}">
+                This should be removed...
+                </figure>
+            </div>
+            HTML,
+        ]);
+
+        $rawParsedContent = $post->getRawOriginal('body');
+
+        $this->assertStringNotContainsString('<figure', $rawParsedContent);
+        $this->assertStringNotContainsString('This should be removed', $rawParsedContent);
+        $this->assertStringContainsString('<rich-text-attachable sgid=', $rawParsedContent);
+
+        $this->assertInstanceOf(Content::class, $post->refresh()->body);
+
+        $this->assertStringContainsString('<div class="attachment-gallery attachment-gallery--2"', (string) $post->body);
+        $this->assertStringContainsString('<figure', (string) $post->body);
+    }
 }
