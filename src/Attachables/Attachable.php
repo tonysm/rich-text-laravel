@@ -9,7 +9,7 @@ use Tonysm\RichTextLaravel\GlobalId;
 
 trait Attachable
 {
-    public static function fromNode(array $data, DOMElement $attachment): AttachableContract
+    public static function fromNode(array $data, array $trixAttributes, DOMElement $attachment): AttachableContract
     {
         if ($data['sgid'] ?? false) {
             return GlobalId::findRecord($data['sgid']);

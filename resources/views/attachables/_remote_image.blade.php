@@ -1,4 +1,4 @@
-<figure class="attachment attachment--preview">
+<figure class="attachment attachment--preview" @if ($gallery ?? false) data-trix-attributes='{"presentation":"gallery"}' @endif>
     <img src="{{ $remoteImage->url }}" width="{{ $remoteImage->width }}" height="{{ $remoteImage->height }}" />
     @if ($remoteImage->caption)
         <figcaption class="attachment__caption">

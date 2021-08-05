@@ -14,7 +14,7 @@ class ContentTest extends TestCase
             'url' => 'https://lorempixel.com/image.jpg',
             'contentType' => 'image/jpeg',
             'width' => 300,
-        ]))->toRichTextSgid();
+        ], ['caption' => 'hey there']))->toRichTextSgid();
 
         $content = Content::fromStorage(<<<HTML
         <div>
@@ -28,5 +28,6 @@ class ContentTest extends TestCase
         $this->assertEquals($remoteImage->url, $content->attachables()[0]->url);
         $this->assertEquals($remoteImage->contentType, $content->attachables()[0]->contentType);
         $this->assertEquals($remoteImage->width, $content->attachables()[0]->width);
+        $this->assertEquals($remoteImage->caption, $content->attachables()[0]->caption);
     }
 }

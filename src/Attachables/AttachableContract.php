@@ -7,7 +7,7 @@ use DOMElement;
 
 interface AttachableContract
 {
-    public static function fromNode(array $attachmentData, DOMElement $attachment): ?AttachableContract;
+    public static function fromNode(array $attachmentData, array $trixAttributes, DOMElement $attachment): ?AttachableContract;
 
     public function toDOMElement(DOMDocument $document, DOMElement $attachable, bool $withContent = false): DOMElement;
 

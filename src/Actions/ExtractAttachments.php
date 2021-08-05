@@ -53,7 +53,7 @@ class ExtractAttachments
                 }
 
                 $gallery->parentNode->replaceChild(
-                    ImageGallery::fromNode($data, $gallery)->toDOMElement($xpath->document, $xpath->document->createElement('rich-text-attachable')),
+                    ImageGallery::fromNode($data, [], $gallery)->toDOMElement($xpath->document, $xpath->document->createElement('rich-text-attachable')),
                     $gallery,
                 );
             }

@@ -8,7 +8,7 @@ class ImageGallery implements AttachableContract
 {
     use Attachable;
 
-    public static function fromNode(array $attachmentData, DOMElement $attachment): ?AttachableContract
+    public static function fromNode(array $attachmentData, array $trixAttributes, DOMElement $attachment): ?AttachableContract
     {
         return new ImageGallery($attachmentData);
     }

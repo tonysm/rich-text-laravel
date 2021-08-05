@@ -12,13 +12,13 @@ class AttachableFactory
 {
     public static function fromNode(DOMElement $attachment): AttachableContract
     {
-        $attachmentData = static::extractData($attachment);
+        [$attachmentData, $attributes] = static::extractData($attachment);
 
         if ($attachable = GlobalId::findRecord($attachmentData['sgid'] ?? '')) {
             return $attachable;
         }
 
-        if ($attachable = RemoteImage::fromNode($attachmentData, $attachment)) {
+        if ($attachable = RemoteImage::fromNode($attachmentData, $attributes ?: [], $attachment)) {
             return $attachable;
         }
 
@@ -36,6 +36,9 @@ class AttachableFactory
 
     protected static function extractData(DOMElement $attachment): array
     {
-        return json_decode(urldecode($attachment->getAttribute('data-trix-attachment')), true);
+        return [
+            json_decode(urldecode($attachment->getAttribute('data-trix-attachment')), true),
+            json_decode(urldecode($attachment->getAttribute('data-trix-attributes')), true),
+        ];
     }
 }
