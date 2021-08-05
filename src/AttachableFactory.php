@@ -14,7 +14,7 @@ class AttachableFactory
     {
         $attachmentData = static::extractData($attachment);
 
-        if ($attachable = static::attachableFromSgid($attachmentData, $attachment)) {
+        if ($attachable = GlobalId::findRecord($attachmentData['sgid'] ?? '')) {
             return $attachable;
         }
 
@@ -28,7 +28,7 @@ class AttachableFactory
     public static function fromAttachable(DOMElement $attachable): AttachableContract
     {
         try {
-            return static::unserializeRichTextSgid($attachable->getAttribute('sgid'));
+            return GlobalId::findRecord($attachable->getAttribute('sgid'));
         } catch (ModelNotFoundException) {
             return new MissingAttachable();
         }
@@ -37,28 +37,5 @@ class AttachableFactory
     protected static function extractData(DOMElement $attachment): array
     {
         return json_decode(urldecode($attachment->getAttribute('data-trix-attachment')), true);
-    }
-
-    protected static function attachableFromSgid(array $data, DOMElement $attachment): ?AttachableContract
-    {
-        try {
-            if ($data['sgid'] ?? false) {
-                return static::unserializeRichTextSgid($data['sgid']);
-            }
-        } catch (ModelNotFoundException) {
-            // No need to do anything. We can rely on the Missing Attachable being returned.
-        }
-
-        return null;
-    }
-
-    public static function unserializeRichTextSgid(string $sgid): AttachableContract
-    {
-        return unserialize(decrypt(base64_decode($sgid)))->record;
-    }
-
-    public static function serializeToSgid($record): string
-    {
-        return base64_encode(encrypt(serialize(new GlobalId($record))));
     }
 }

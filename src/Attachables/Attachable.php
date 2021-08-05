@@ -4,14 +4,14 @@ namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMDocument;
 use DOMElement;
-use Tonysm\RichTextLaravel\AttachableFactory;
+use Tonysm\RichTextLaravel\GlobalId;
 
 trait Attachable
 {
     public static function fromNode(array $data, DOMElement $attachment): AttachableContract
     {
         if ($data['sgid'] ?? false) {
-            return AttachableFactory::unserializeRichTextSgid($data['sgid']);
+            return GlobalId::findRecord($data['sgid']);
         }
 
         return null;
@@ -41,6 +41,6 @@ trait Attachable
 
     public function toRichTextSgid(): string
     {
-        return AttachableFactory::serializeToSgid($this);
+        return (new GlobalId($this))->toString();
     }
 }
