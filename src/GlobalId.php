@@ -14,11 +14,11 @@ class GlobalId
 
     public static function fromStorage(string $sgid)
     {
-        return unserialize(base64_decode($sgid))->record;
+        return unserialize(decrypt(base64_decode($sgid)));
     }
 
     public function toStorage(): string
     {
-        return base64_encode(serialize($this));
+        return base64_encode(encrypt(serialize($this)));
     }
 }

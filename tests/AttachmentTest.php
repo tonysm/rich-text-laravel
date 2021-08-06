@@ -3,7 +3,7 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Tonysm\RichTextLaravel\Attachment;
-use Tonysm\RichTextLaravel\Document;
+use Tonysm\RichTextLaravel\GlobalId;
 use Tonysm\RichTextLaravel\Tests\Stubs\User;
 
 class AttachmentTest extends TestCase
@@ -30,14 +30,14 @@ class AttachmentTest extends TestCase
     {
         $attachable = $this->attachable();
 
-        $attachment = Attachment::fromNode(Document::createElement(Attachment::TAG_NAME, [
+        $attachment = Attachment::fromNode(Attachment::nodeFromAttributes([
             'sgid' => $attachable->richTextSgid(),
             'caption' => 'Hey, there',
         ]));
 
         $trixAttachment = $attachment->toTrixAttachment();
 
-        $this->assertEquals($attachable->richTextSgid(), $trixAttachment->attributes()['sgid']);
+        $this->assertTrue($attachable->is(GlobalId::fromStorage($trixAttachment->attributes()['sgid'])->record));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals($attachable->richTextFilename(), $trixAttachment->attributes()['filename']);
         $this->assertEquals($attachable->richTextFilesize(), $trixAttachment->attributes()['filesize']);
@@ -52,14 +52,14 @@ class AttachmentTest extends TestCase
     {
         $attachable = $this->attachable();
 
-        $attachment = Attachment::fromNode(Document::createElement(Attachment::TAG_NAME, [
+        $attachment = Attachment::fromNode(Attachment::nodeFromAttributes([
             'sgid' => $attachable->richTextSgid(),
             'caption' => 'Hey, there',
         ]));
 
         $trixAttachment = $attachment->toTrixAttachment('trix content');
 
-        $this->assertEquals($attachable->richTextSgid(), $trixAttachment->attributes()['sgid']);
+        $this->assertTrue($attachable->is(GlobalId::fromStorage($trixAttachment->attributes()['sgid'])->record));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 

@@ -11,12 +11,20 @@ class Attachment
 {
     use ForwardsCalls;
 
-    const TAG_NAME = 'rich-text-attachment';
+    public static $TAG_NAME = 'rich-text-attachment';
+    public static $SELECTOR = '//rich-text-attachment';
+
     const ATTRIBUTES = ['sgid', 'content-type', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'presentation', 'caption'];
+
+    public static function useTagName(string $tagName): void
+    {
+        static::$SELECTOR = str_replace(static::$TAG_NAME, $tagName, static::$SELECTOR);
+        static::$TAG_NAME = $tagName;
+    }
 
     public static function fromAttachable(AttachableContract $attachable, array $attributes = []): ?static
     {
-        if ($node = static::fromAttributes($attachable->toRichTextAttributes($attributes))) {
+        if ($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) {
             return new static($node, $attachable);
         }
 
@@ -25,13 +33,13 @@ class Attachment
 
     public static function fromNode(DOMElement $node): static
     {
-        return new static($node, GlobalId::fromStorage($node->getAttribute('sgid')));
+        return new static($node, AttachableFactory::fromNode($node));
     }
 
-    private static function fromAttributes(array $attributes = [])
+    public static function nodeFromAttributes(array $attributes = []): ?DOMElement
     {
         if ($attributes = static::processAttributes($attributes)) {
-            return Document::createElement(static::TAG_NAME, $attributes);
+            return Document::createElement(static::$TAG_NAME, $attributes);
         }
     }
 
