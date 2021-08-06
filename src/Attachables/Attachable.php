@@ -2,44 +2,54 @@
 
 namespace Tonysm\RichTextLaravel\Attachables;
 
-use DOMDocument;
-use DOMElement;
-use Tonysm\RichTextLaravel\Document;
 use Tonysm\RichTextLaravel\GlobalId;
 
 trait Attachable
 {
-    public static function fromNode(array $data, array $trixAttributes, DOMElement $attachment): AttachableContract
+    public function richTextSgid(): string
     {
-        if ($data['sgid'] ?? false) {
-            return GlobalId::findRecord($data['sgid']);
+        return (new GlobalId($this))->toStorage();
+    }
+
+    public function richTextPreviewable(): bool
+    {
+        return false;
+    }
+
+    public function richTextFilename(): string
+    {
+        return '';
+    }
+
+    public function richTextContentType(): string
+    {
+        if (property_exists($this, 'richTextContentType')) {
+            return $this->richTextContentType;
         }
 
+        return "application/octet-stream";
+    }
+
+    public function richTextFilesize(): ?int
+    {
         return null;
     }
 
-    public function toDOMElement(DOMDocument $document, DOMElement $attachable, bool $withContent = false): DOMElement
+    public function richTextMetadata(string $key)
     {
-        if ($withContent) {
-            $contentDoc = Document::createFromContent($content = $this->richTextRender());
-
-            if ($importedNode = $document->importNode($contentDoc->documentElement, true)) {
-                $attachable->appendChild($importedNode);
-            }
-
-            $attachable->setAttribute('data-trix-attachment', json_encode([
-                'sgid' => $this->toRichTextSgid(),
-                'content' => $content,
-            ]));
-        } else {
-            $attachable->setAttribute('sgid', $this->toRichTextSgid());
-        }
-
-        return $attachable;
+        return null;
     }
 
-    public function toRichTextSgid(): string
+    public function toRichTextAttributes(array $attributes = []): array
     {
-        return (new GlobalId($this))->toString();
+        return array_replace($attributes, [
+            'sgid' => $this->richTextSgid(),
+            'content_type' => $this->richTextContentType(),
+            'previewable' => $this->richTextPreviewable(),
+            'filename' => $this->richTextFilename(),
+            'filesize' => $this->richTextFilesize(),
+            'width' => $this->richTextMetadata('width'),
+            'height' => $this->richTextMetadata('height'),
+        ]);
     }
 }

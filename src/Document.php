@@ -3,15 +3,23 @@
 namespace Tonysm\RichTextLaravel;
 
 use DOMDocument;
+use DOMElement;
 
 class Document
 {
-    public static function createFromContent(string $content): DOMDocument
+    public static function createElement(string $tagname, array $attributes = [], string $contents = ""): DOMElement
     {
-        libxml_use_internal_errors(true);
-        $document = new DOMDocument();
-        $document->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $element = static::document()->createElement($tagname, $contents);
 
-        return $document;
+        foreach ($attributes as $attr => $value) {
+            $element->setAttribute($attr, $value);
+        }
+
+        return $element;
+    }
+
+    private static function document(): DOMDocument
+    {
+        return new DOMDocument();
     }
 }

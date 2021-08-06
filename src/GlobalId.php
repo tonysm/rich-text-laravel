@@ -2,7 +2,6 @@
 
 namespace Tonysm\RichTextLaravel;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\SerializesModels;
 
 class GlobalId
@@ -13,21 +12,13 @@ class GlobalId
     {
     }
 
-    public static function findRecord(?string $sgid)
+    public static function fromStorage(string $sgid)
     {
-        try {
-            if ($sgid) {
-                return unserialize(decrypt(base64_decode($sgid)))->record;
-            }
-        } catch (ModelNotFoundException) {
-            // No need to do anything, just return null.
-        }
-
-        return null;
+        return unserialize(base64_decode($sgid))->record;
     }
 
-    public function toString()
+    public function toStorage(): string
     {
-        return base64_encode(encrypt(serialize($this)));
+        return base64_encode(serialize($this));
     }
 }
