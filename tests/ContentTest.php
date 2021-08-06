@@ -150,6 +150,31 @@ class ContentTest extends TestCase
         });
     }
 
+    /** @test */
+    public function ignores_trix_formatteed_attachments_with_bad_json()
+    {
+    }
+
+    /** @test */
+    public function minifies_attachment_markup()
+    {
+    }
+
+    /** @test */
+    public function canonicalizes_attachment_gallery_markup()
+    {
+    }
+
+    /** @test */
+    public function canonicalizes_attachment_gallery_markup_with_whitespaces()
+    {
+    }
+
+    /** @test */
+    public function canonicalizes_with_layout()
+    {
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {
