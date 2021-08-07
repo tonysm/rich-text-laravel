@@ -5,6 +5,7 @@ namespace Tonysm\RichTextLaravel;
 use DOMElement;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Tonysm\RichTextLaravel\Exceptions\MalformedJsonException;
 
 class TrixAttachment
 {
@@ -58,11 +59,21 @@ class TrixAttachment
 
     private function attachmentAttributes(): array
     {
-        return json_decode($this->node->getAttribute('data-trix-attachment') ?: '[]', true);
+        return $this->fromJson($this->node, 'data-trix-attachment');
     }
 
     private function composedAttributes(): array
     {
-        return json_decode($this->node->getAttribute('data-trix-attributes') ?: '[]', true);
+        return $this->fromJson($this->node, 'data-trix-attributes');
+    }
+
+    private function fromJson(DOMElement $node, string $key, string $default = "[]")
+    {
+        $result = json_decode($node->getAttribute($key) ?: $default, true);
+
+        return match (json_last_error()) {
+            JSON_ERROR_NONE => $result,
+            default => throw MalformedJsonException::failedToParseJson($node, $key),
+        };
     }
 }

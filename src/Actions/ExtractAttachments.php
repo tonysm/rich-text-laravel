@@ -5,6 +5,7 @@ namespace Tonysm\RichTextLaravel\Actions;
 use DOMXPath;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\Document;
+use Tonysm\RichTextLaravel\Exceptions\MalformedJsonException;
 use Tonysm\RichTextLaravel\TrixAttachment;
 
 class ExtractAttachments
@@ -38,9 +39,18 @@ class ExtractAttachments
 
         /** @var \DOMElement $node */
         foreach ($attachments as $node) {
-            $attachmentNode = Attachment::nodeFromAttributes((new TrixAttachment($node))->attributes());
-            $importedNode = $xpath->document->importNode($attachmentNode, true);
-            $node->replaceWith($importedNode);
+            try {
+                $importedNode = $xpath->document->importNode(
+                    Attachment::nodeFromAttributes((new TrixAttachment($node))->attributes()),
+                    deep: true,
+                );
+
+                $node->replaceWith($importedNode);
+            } catch (MalformedJsonException $e) {
+                report($e);
+
+                continue;
+            }
         }
     }
 }

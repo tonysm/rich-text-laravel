@@ -153,6 +153,13 @@ class ContentTest extends TestCase
     /** @test */
     public function ignores_trix_formatteed_attachments_with_bad_json()
     {
+        $html = <<<HTML
+        <div data-trix-attachment='{"sgid": "pure garbate...}'></div>
+        HTML;
+
+        $content = $this->fromHtml($html);
+
+        $this->assertCount(0, $content->attachments());
     }
 
     /** @test */
