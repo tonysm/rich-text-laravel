@@ -42,6 +42,13 @@ class InjectAttachmentContent
 
             if ($importedNode = $document->importNode($newFragment->documentElement, true)) {
                 $fragment->appendChild($importedNode);
+
+                foreach ($attachment->toTrixAttachment()->node->attributes as $attribute) {
+                    $fragment->setAttribute($attribute->nodeName, $attribute->value);
+                }
+
+                $fragment->removeAttribute('sgid');
+                $fragment->removeAttribute('content-type');
             }
         }
 

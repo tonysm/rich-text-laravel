@@ -37,6 +37,21 @@ class TrixAttachmentTest extends TestCase
     }
 
     /** @test */
+    public function filter_out_empty_attributes()
+    {
+        $attachment = $this->attachment([
+            'sgid' => '123',
+            'content_type' => 'text/plain',
+            'href' => 'http://example.com/',
+            'caption' => 'hello',
+        ]);
+
+        $this->assertArrayNotHasKey('filename', $attachment->attributes());
+        $this->assertArrayNotHasKey('filesize', $attachment->attributes());
+        $this->assertArrayNotHasKey('previewable', $attachment->attributes());
+    }
+
+    /** @test */
     public function previewable_is_typecast()
     {
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => '']), ["previewable" => false]);

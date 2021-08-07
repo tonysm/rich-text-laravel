@@ -98,6 +98,11 @@ class Content
         return empty(trim($this->content));
     }
 
+    public function raw(): string
+    {
+        return $this->content;
+    }
+
     public function __toString()
     {
         return $this->render();

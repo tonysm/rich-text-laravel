@@ -54,7 +54,7 @@ class TrixAttachment
 
     public function attributes(): array
     {
-        return $this->attachmentAttributes() + $this->composedAttributes();
+        return array_filter($this->attachmentAttributes() + $this->composedAttributes());
     }
 
     private function attachmentAttributes(): array

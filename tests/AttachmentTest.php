@@ -39,8 +39,6 @@ class AttachmentTest extends TestCase
 
         $this->assertTrue($attachable->is(GlobalId::fromStorage($trixAttachment->attributes()['sgid'])->record));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
-        $this->assertEquals($attachable->richTextFilename(), $trixAttachment->attributes()['filename']);
-        $this->assertEquals($attachable->richTextFilesize(), $trixAttachment->attributes()['filesize']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 
         $this->assertNotEmpty($attachable->richTextRender());
