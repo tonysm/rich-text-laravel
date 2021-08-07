@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Actions\Rendering;
 
 use DOMNode;
 use DOMNodeList;
+use DOMText;
 use DOMXPath;
 use Tonysm\RichTextLaravel\Document;
 
@@ -23,7 +24,7 @@ class ConvertToPlainText
         $document = Document::createDocument("<body>$content</body>");
         $xpath = new DOMXPath($document);
 
-        $fragments = $xpath->query('//body/*');
+        $fragments = $xpath->query('//body/*|//body/text()');
 
         if ($fragments === false) {
             return $content;
@@ -45,13 +46,20 @@ class ConvertToPlainText
 
     private function renderFragment(DOMNode $node): string
     {
+        if ($node instanceof DOMText) {
+            return $node->textContent;
+        }
+
         return match ($node->nodeName) {
-            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div' => sprintf("%s\n\n", $node->childNodes->length > 1 ? $this->renderNodeList($node->childNodes) : $node->textContent),
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p' => sprintf("%s\n\n", $node->childNodes->length > 1 ? $this->renderNodeList($node->childNodes) : $node->textContent),
+            'div' => sprintf("%s\n", $node->childNodes->length > 1 ? $this->renderNodeList($node->childNodes) : $node->textContent),
             'blockquote' => sprintf("“%s”\n\n", $node->textContent),
             'ol', 'ul' => sprintf("%s\n\n", $this->renderListItems($node->childNodes, ordered: $node->nodeName === 'ol')),
             'li' => sprintf("• %s\n", $node->textContent),
             'br' => "\n",
-            default => $node->textContent,
+            'strong', 'span', 'em', 'i' => $node->childNodes->length > 1 ? $this->renderNodeList($node->childNodes) : $node->textContent,
+            'figcaption' => sprintf("[%s]", $node->textContent),
+            'rich-text-attachment' => trim($this->renderNodeList($node->childNodes)),
         };
     }
 

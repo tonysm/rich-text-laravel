@@ -2,7 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Tests\Actions\Rendering;
 
-use Tonysm\RichTextLaravel\Actions\Rendering\ConvertToPlainText;
+use Tonysm\RichTextLaravel\Actions\RenderAttachments;
 use Tonysm\RichTextLaravel\Tests\TestCase;
 
 class ConvertToPlainTextTest extends TestCase
@@ -79,9 +79,69 @@ class ConvertToPlainTextTest extends TestCase
         );
     }
 
+    /** @test */
+    public function divs_are_separated_by_one_new_line()
+    {
+        $this->assertConvertedTo(
+            "Hello world!\nHow are you?",
+            "<div>Hello world!</div><div>How are you?</div>"
+        );
+    }
+
+    /** @test */
+    public function figcaptions_are_converted_to_plain_text()
+    {
+        $this->assertConvertedTo(
+            "Hello world! [A condor in the mountain]",
+            "Hello world! <figcaption>A condor in the mountain</figcaption>"
+        );
+    }
+
+    /** @test */
+    public function rich_text_attachments_are_converted_to_plain_text()
+    {
+        $this->assertConvertedTo(
+            "Hello world! [Cat]",
+            'Hello world! <rich-text-attachment url="http://example.com/cat.jpg" content-type="image" caption="Cat"></rich-text-attachment>',
+        );
+    }
+
+    /** @test */
+    public function preserves_non_linebreaks_white_spaces()
+    {
+        $this->assertConvertedTo(
+            "Hello world!",
+            "<div><strong>Hello </strong>world!</div>"
+        );
+    }
+
+    /** @test */
+    public function preserves_trailing_linebreaks()
+    {
+        $this->assertConvertedTo(
+            "Hello\nHow are you?",
+            "<strong>H<i><em>e</em></i>llo<br></strong>How are you?"
+        );
+    }
+
+    /** @test */
+    public function handles_deeply_nested()
+    {
+        $deeply = "<div>How are you?</div>";
+
+        foreach (range(1, 100) as $i) {
+            $deeply = "<div>{$deeply}</div>";
+        }
+
+        $this->assertConvertedTo(
+            "Hello world!\nHow are you?",
+            "<div>Hello world!</div>{$deeply}",
+        );
+    }
+
     private function assertConvertedTo($expected, $content): void
     {
-        $actual = (new ConvertToPlainText)($content, fn ($innerContent) => $innerContent);
+        $actual = (new RenderAttachments(plainText: true))($content);
 
         $this->assertEquals($expected, $actual);
     }
