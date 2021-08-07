@@ -165,21 +165,32 @@ class ContentTest extends TestCase
     /** @test */
     public function minifies_attachment_markup()
     {
+        $attachmentHtml = '<rich-text-attachment sgid="1"><div>HTML</div></rich-text-attachment>';
+        $this->assertStringContainsString('<div>HTML</div>', $this->fromHtml($attachmentHtml)->render());
     }
 
     /** @test */
     public function canonicalizes_attachment_gallery_markup()
     {
+        $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
+        $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
     }
 
     /** @test */
     public function canonicalizes_attachment_gallery_markup_with_whitespaces()
     {
+        $attachmentHtml = '<action-text-attachment sgid="1" presentation="gallery"></action-text-attachment><action-text-attachment sgid="2" presentation="gallery"></action-text-attachment>';
+        $html = sprintf('<blockquote><div class="attachment-gallery attachment-gallery--2">%s</div></blockquote>', $attachmentHtml);
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
     }
 
     /** @test */
     public function canonicalizes_with_layout()
     {
+        $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
+        $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
     }
 
     private function withAttachmentTagName(string $tagName, callable $callback)
