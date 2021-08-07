@@ -76,6 +76,11 @@ class Content
         return (new RenderAttachments(plainText: $plainText, withContents: true))($this->content);
     }
 
+    public function renderAttachmentsWithoutContent(bool $plainText = false)
+    {
+        return (new RenderAttachments(plainText: $plainText, withContents: false))($this->content);
+    }
+
     public function render(): string
     {
         return view('rich-text-laravel::content', [

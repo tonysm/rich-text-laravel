@@ -141,7 +141,7 @@ class ConvertToPlainTextTest extends TestCase
 
     private function assertConvertedTo($expected, $content): void
     {
-        $actual = (new RenderAttachments(plainText: true))($content);
+        $actual = (new RenderAttachments(plainText: true, withContents: true))($content);
 
         $this->assertEquals($expected, $actual);
     }

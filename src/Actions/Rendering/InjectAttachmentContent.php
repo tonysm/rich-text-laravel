@@ -45,6 +45,6 @@ class InjectAttachmentContent
             }
         }
 
-        return $document->saveHTML();
+        return preg_replace('#</?body>\n?#', '', $document->saveHTML());
     }
 }

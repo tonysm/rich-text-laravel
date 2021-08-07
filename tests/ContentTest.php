@@ -16,14 +16,14 @@ class ContentTest extends TestCase
         $html = "<div>test</div>";
         $content = $this->fromHtml($html);
 
-        $this->assertStringContainsString($html, $content->render());
+        $this->assertStringContainsString($html, $content->renderAttachmentsWithoutContent());
     }
 
     /** @test */
     public function serializes()
     {
         $content = $this->fromHtml("Hello!");
-        $this->assertEquals($content->render(), unserialize(serialize($content))->render());
+        $this->assertEquals($content->renderAttachmentsWithoutContent(), unserialize(serialize($content))->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -32,7 +32,7 @@ class ContentTest extends TestCase
         $html = "<div>a<br></div>";
         $content = $this->fromHtml($html);
 
-        $this->assertStringContainsString($html, $content->render());
+        $this->assertStringContainsString($html, $content->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -128,7 +128,7 @@ class ContentTest extends TestCase
 
         $this->assertCount(1, $content->attachments());
 
-        $this->assertStringContainsString('<rich-text-attachment sgid="123" content-type="text/plain" width="200" height="100" caption="Captioned"></rich-text-attachment>', $content->render());
+        $this->assertStringContainsString('<rich-text-attachment sgid="123" content-type="text/plain" width="200" height="100" caption="Captioned"></rich-text-attachment>', $content->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -146,7 +146,7 @@ class ContentTest extends TestCase
 
             $this->assertCount(1, $content->attachments());
 
-            $this->assertStringContainsString('<arbitrary-tag sgid="123" content-type="text/plain" width="200" height="100" caption="Captioned"></arbitrary-tag>', $content->render());
+            $this->assertStringContainsString('<arbitrary-tag sgid="123" content-type="text/plain" width="200" height="100" caption="Captioned"></arbitrary-tag>', $content->renderAttachmentsWithoutContent());
         });
     }
 
@@ -166,7 +166,7 @@ class ContentTest extends TestCase
     public function minifies_attachment_markup()
     {
         $attachmentHtml = '<rich-text-attachment sgid="1"><div>HTML</div></rich-text-attachment>';
-        $this->assertStringContainsString('<div>HTML</div>', $this->fromHtml($attachmentHtml)->render());
+        $this->assertStringContainsString('<div>HTML</div>', $this->fromHtml($attachmentHtml)->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -174,7 +174,7 @@ class ContentTest extends TestCase
     {
         $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
         $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
-        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -182,7 +182,7 @@ class ContentTest extends TestCase
     {
         $attachmentHtml = '<action-text-attachment sgid="1" presentation="gallery"></action-text-attachment><action-text-attachment sgid="2" presentation="gallery"></action-text-attachment>';
         $html = sprintf('<blockquote><div class="attachment-gallery attachment-gallery--2">%s</div></blockquote>', $attachmentHtml);
-        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->renderAttachmentsWithoutContent());
     }
 
     /** @test */
@@ -190,7 +190,7 @@ class ContentTest extends TestCase
     {
         $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
         $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
-        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->render());
+        $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->renderAttachmentsWithoutContent());
     }
 
     private function withAttachmentTagName(string $tagName, callable $callback)
@@ -206,6 +206,6 @@ class ContentTest extends TestCase
 
     private function fromHtml(string $html): Content
     {
-        return tap(new Content($html), fn ($content) => $this->assertNotEmpty($content->render()));
+        return tap(new Content($html), fn ($content) => $this->assertNotEmpty($content->renderAttachmentsWithoutContent()));
     }
 }
