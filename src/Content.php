@@ -17,6 +17,16 @@ class Content
         return (new ParseAttachments)($content);
     }
 
+    public static function toStorage(string $content): string
+    {
+        return static::canonicalizingContent($content);
+    }
+
+    public static function fromStorage(string $content): static
+    {
+        return new static($content, ['canonicalize' => false]);
+    }
+
     public function __construct(string $content, array $options = [])
     {
         $canonicalize = $options['canonicalize'] ?? true;
@@ -61,9 +71,9 @@ class Content
         return $nodes;
     }
 
-    public function renderWithAttachments()
+    public function renderWithAttachments(bool $plainText = false)
     {
-        return (new RenderAttachments())($this->content);
+        return (new RenderAttachments(plainText: $plainText, withContents: true))($this->content);
     }
 
     public function render(): string
@@ -71,6 +81,16 @@ class Content
         return view('rich-text-laravel::content', [
             'content' => $this,
         ])->render();
+    }
+
+    public function toPlainText(): string
+    {
+        return $this->renderWithAttachments(plainText: true);
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty(trim($this->content));
     }
 
     public function __toString()

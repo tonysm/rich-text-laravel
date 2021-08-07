@@ -43,7 +43,7 @@ class TestCase extends Orchestra
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->longText('body');
+            $table->longText('content')->nullable();
             $table->timestamps();
         });
 

@@ -11,6 +11,8 @@ class Document
     {
         libxml_use_internal_errors(true);
         $document = new DOMDocument();
+        $document->preserveWhiteSpace = true;
+        $document->formatOutput = false;
 
         if ($contents) {
             $document->loadHTML($contents, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);

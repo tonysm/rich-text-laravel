@@ -10,6 +10,6 @@ class Post extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'body' => AsRichTextContent::class,
+        'content' => AsRichTextContent::class,
     ];
 }

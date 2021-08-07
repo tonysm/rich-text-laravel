@@ -1,3 +1,2 @@
 <div class="trix-content">
-    {!! $content->renderWithAttachments() !!}
-</div>
+    {!! $content->renderWithAttachments() !!}</div>

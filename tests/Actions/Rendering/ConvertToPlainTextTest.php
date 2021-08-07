@@ -1,0 +1,88 @@
+<?php
+
+namespace Tonysm\RichTextLaravel\Tests\Actions\Rendering;
+
+use Tonysm\RichTextLaravel\Actions\Rendering\ConvertToPlainText;
+use Tonysm\RichTextLaravel\Tests\TestCase;
+
+class ConvertToPlainTextTest extends TestCase
+{
+    /** @test */
+    public function p_tags_are_separated_by_two_new_lines()
+    {
+        $this->assertConvertedTo(
+            "Hello World!\n\nHow are you?",
+            '<p>Hello World!</p><p>How are you?</p>',
+        );
+    }
+
+    /** @test */
+    public function blockquote_tags_are_separated_by_two_new_lines()
+    {
+        $this->assertConvertedTo(
+            "“Hello world!”\n\n“How are you?”",
+            "<blockquote>Hello world!</blockquote><blockquote>How are you?</blockquote>"
+        );
+    }
+
+    /** @test */
+    public function ol_tags_are_separated_by_two_new_lines()
+    {
+        $this->assertConvertedTo(
+            "Hello world!\n\n1. list1\n\n1. list2\n\nHow are you?",
+            "<p>Hello world!</p><ol><li>list1</li></ol><ol><li>list2</li></ol><p>How are you?</p>"
+        );
+    }
+
+    /** @test */
+    public function ul_tags_are_separated_by_two_new_lines()
+    {
+        $this->assertConvertedTo(
+            "Hello world!\n\n• list1\n\n• list2\n\nHow are you?",
+            "<p>Hello world!</p><ul><li>list1</li></ul><ul><li>list2</li></ul><p>How are you?</p>"
+        );
+    }
+
+    /** @test */
+    public function h1_tags_are_separated_by_two_new_lines()
+    {
+        $this->assertConvertedTo(
+            "Hello world!\n\nHow are you?",
+            "<h1>Hello world!</h1><div>How are you?</div>"
+        );
+    }
+
+    /** @test */
+    public function li_tags_are_separated_by_one_new_line()
+    {
+        $this->assertConvertedTo(
+            "• one\n• two\n• three",
+            "<ul><li>one</li><li>two</li><li>three</li></ul>"
+        );
+    }
+
+    /** @test */
+    public function li_tags_without_parent_list()
+    {
+        $this->assertConvertedTo(
+            "• one\n• two\n• three",
+            "<li>one</li><li>two</li><li>three</li>"
+        );
+    }
+
+    /** @test */
+    public function br_are_separated_by_one_new_line()
+    {
+        $this->assertConvertedTo(
+            "Hello world!\none\ntwo\nthree",
+            "<p>Hello world!<br>one<br>two<br>three</p>"
+        );
+    }
+
+    private function assertConvertedTo($expected, $content): void
+    {
+        $actual = (new ConvertToPlainText)($content, fn ($innerContent) => $innerContent);
+
+        $this->assertEquals($expected, $actual);
+    }
+}
