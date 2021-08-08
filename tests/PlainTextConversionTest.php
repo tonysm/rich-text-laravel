@@ -1,11 +1,10 @@
 <?php
 
-namespace Tonysm\RichTextLaravel\Tests\Actions\Rendering;
+namespace Tonysm\RichTextLaravel\Tests;
 
-use Tonysm\RichTextLaravel\Actions\RenderAttachments;
-use Tonysm\RichTextLaravel\Tests\TestCase;
+use Tonysm\RichTextLaravel\Content;
 
-class ConvertToPlainTextTest extends TestCase
+class PlainTextConversionTest extends TestCase
 {
     /** @test */
     public function p_tags_are_separated_by_two_new_lines()
@@ -127,6 +126,9 @@ class ConvertToPlainTextTest extends TestCase
     /** @test */
     public function handles_deeply_nested()
     {
+        // @TODO: refactor this for big documents. We should use while loops instead of recursively looping through the document.
+        ini_set('xdebug.max_nesting_level', 1000);
+
         $deeply = "<div>How are you?</div>";
 
         foreach (range(1, 100) as $i) {
@@ -141,7 +143,7 @@ class ConvertToPlainTextTest extends TestCase
 
     private function assertConvertedTo($expected, $content): void
     {
-        $actual = (new RenderAttachments(plainText: true, withContents: true))($content);
+        $actual = (new Content($content))->toPlainText();
 
         $this->assertEquals($expected, $actual);
     }

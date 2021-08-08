@@ -2,7 +2,7 @@
 
 namespace Tonysm\RichTextLaravel;
 
-use DOMDocumentFragment;
+use DOMDocument;
 use DOMNode;
 use DOMXPath;
 use Illuminate\Support\Collection;
@@ -18,7 +18,7 @@ class Fragment
             return $fragmentOrHtml;
         }
 
-        if ($fragmentOrHtml instanceof DOMDocumentFragment) {
+        if ($fragmentOrHtml instanceof DOMDocument) {
             return new static($fragmentOrHtml);
         }
 
@@ -30,13 +30,13 @@ class Fragment
         return HtmlConversion::fragmentForHtml($html);
     }
 
-    public function __construct(public DOMDocumentFragment $source)
+    public function __construct(public DOMDocument $source)
     {
     }
 
     public function findAll(string $selector): Collection
     {
-        $xpath = new DOMXPath($this->source->ownerDocument);
+        $xpath = new DOMXPath($this->source);
 
         $elements = $xpath->query($selector);
 
@@ -55,7 +55,7 @@ class Fragment
 
     public function update(): static
     {
-        return static::wrap($this->source->ownerDocument->saveHTML());
+        return static::wrap($this->source->saveHTML());
     }
 
     public function replace(string $selector, callable $callback): static
@@ -64,12 +64,18 @@ class Fragment
 
         $fragment->findAll($selector)
             ->each(function (DOMNode $node) use ($callback) {
-                /** @var \DOMDocumentFragment $newNode */
-                $newNode = $callback($node)->source;
+                $value = $callback($node);
 
-                if ($importedNode = $node->ownerDocument->importNode($newNode, deep: true)) {
-                    $importedNode->appendXML(trim($newNode->ownerDocument->saveHTML()));
-                    $node->ownerDocument->replaceChild($importedNode, $node);
+                if ($value instanceof Fragment) {
+                    $newNode = $value->source;
+
+                    if ($importedNode = $node->ownerDocument->importNode($newNode, deep: true)) {
+                        $importedNode->loadHTML(trim($newNode->ownerDocument->saveHTML()));
+                        $node->ownerDocument->replaceChild($importedNode, $node);
+                    }
+                } elseif (is_string($value)) {
+                    $newNode = $node->ownerDocument->createTextNode($value);
+                    $node->parentNode->replaceChild($newNode, $node);
                 }
             });
 
@@ -78,7 +84,7 @@ class Fragment
 
     public function toPlainText(): string
     {
-        return $this->cachedPlainText ??= PlainTextConversion::nodeToPlainText($this->source->parentNode);
+        return $this->cachedPlainText ??= PlainTextConversion::nodeToPlainText($this->source);
     }
 
     public function toHtml(): string

@@ -14,14 +14,9 @@ class HtmlConversion
 
     public static function fragmentForHtml(string $html): Fragment
     {
-        $document = static::document();
+        $document = static::document($html);
 
-        $fragment = $document->createDocumentFragment();
-        $fragment->appendXML($html);
-
-        $document->appendChild($fragment);
-
-        return new Fragment($fragment);
+        return new Fragment($document);
     }
 
     private static function document(?string $html = null): DOMDocument
@@ -30,7 +25,7 @@ class HtmlConversion
         $document = new DOMDocument();
 
         if ($html) {
-            $document->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $document->loadHTML("<body>{$html}</body>", LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
         }
 
         return $document;
