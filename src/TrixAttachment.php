@@ -65,7 +65,7 @@ class TrixAttachment
 
     public function toHtml(): string
     {
-        return HtmlConversion::nodeToHtml($this->node);
+        return $this->node->ownerDocument->saveHTML($this->node);
     }
 
     private function attachmentAttributes(): array
