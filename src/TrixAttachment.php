@@ -34,17 +34,18 @@ class TrixAttachment
     {
         return collect($attributes)
             ->mapWithKeys(function ($value, $key) {
-                $newKey = (string) Str::of($key)->studly()->snake('-');
+                $newKey = (string) Str::of($key)->camel();
 
                 return [$newKey => static::typeCast($newKey, $value)];
             })
+            ->only(static::ATTRIBUTES)
             ->all();
     }
 
     private static function typeCast(string $key, $value)
     {
         return match ($key) {
-            "previewable" => "{$value}" == "true",
+            "previewable" => $value === true || $value === "true",
             "filesize", "height", "width" => is_numeric($value) ? intval($value) : $value,
             default => "{$value}",
         };
