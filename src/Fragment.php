@@ -67,15 +67,25 @@ class Fragment
                 $value = $callback($node);
 
                 if ($value instanceof Fragment) {
+                    // Each fragment source is wrapped in a div, so we can ignore it when appending.
                     $newNode = $value->source;
 
-                    if ($importedNode = $node->ownerDocument->importNode($newNode, deep: true)) {
-                        $importedNode->loadHTML(trim($newNode->ownerDocument->saveHTML()));
-                        $node->ownerDocument->replaceChild($importedNode, $node);
+                    foreach ($newNode->firstChild->childNodes as $child) {
+                        if ($importedNode = $node->ownerDocument->importNode($child, deep: true)) {
+                            $node->parentNode->insertBefore($importedNode, $node);
+                        }
                     }
+
+                    $node->parentNode->removeChild($node);
                 } elseif (is_string($value)) {
                     $newNode = $node->ownerDocument->createTextNode($value);
                     $node->parentNode->replaceChild($newNode, $node);
+                } elseif ($value instanceof Attachment) {
+                    if ($importedNode = $node->ownerDocument->importNode($value->node, deep: true)) {
+                        $node->parentNode->insertBefore($importedNode, $node);
+                    }
+
+                    $node->parentNode->removeChild($node);
                 }
             });
 

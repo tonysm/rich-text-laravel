@@ -12,7 +12,7 @@ class User extends Model implements AttachableContract
 
     protected $guarded = [];
 
-    public function richTextRender(): string
+    public function richTextRender($content = null): string
     {
         return view('user_test', [
             'user' => $this,

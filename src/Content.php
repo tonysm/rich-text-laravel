@@ -2,8 +2,10 @@
 
 namespace Tonysm\RichTextLaravel;
 
+use DOMElement;
 use DOMNode;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Collection;
 
 class Content
 {
@@ -22,7 +24,7 @@ class Content
 
     public function __construct($content, array $options = [])
     {
-        if ($options['canonicalize'] ?? false) {
+        if ($options['canonicalize'] ?? true) {
             $this->fragment = static::fragmentByCanonicalizingContent($content);
         } else {
             $this->fragment = Fragment::wrap($content);
@@ -48,6 +50,26 @@ class Content
         ]);
     }
 
+    public function links(): array
+    {
+        return $this->fragment->findAll('//a[@href]')
+            ->map(fn (DOMElement $node) => $node->getAttribute('href'))
+            ->unique()
+            ->all();
+    }
+
+    public function attachments(): Collection
+    {
+        return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
+            $this->attachmentForNode($node)
+        ));
+    }
+
+    private function attachmentNodes(): Collection
+    {
+        return $this->cachedAttachmentNodes ??= $this->fragment->findAll(Attachment::$SELECTOR);
+    }
+
     private function attachmentForNode(DOMNode $node, array $options = []): Attachment
     {
         $attachment = Attachment::fromNode($node);
@@ -57,5 +79,12 @@ class Content
         }
 
         return $attachment;
+    }
+
+    public function toHtml()
+    {
+        return preg_replace("#</?rich-text-root>\n?#", "", $this
+            ->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
+            ->fragment->toHtml());
     }
 }

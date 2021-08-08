@@ -6,6 +6,7 @@ use DOMElement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
 class Attachment
 {
@@ -18,9 +19,45 @@ class Attachment
 
     private $cachedAttributes;
 
+    public static function useTagName(string $tagName): void
+    {
+        static::$SELECTOR = str_replace(static::$TAG_NAME, $tagName, static::$SELECTOR);
+        static::$TAG_NAME = $tagName;
+    }
+
     public static function fromNode(DOMElement $node, AttachableContract $attachable = null): static
     {
         return new static($node, $attachable ?: AttachableFactory::fromNode($node));
+    }
+
+    public static function fromAttributes(array $attributes = [], AttachableContract $attachable = null)
+    {
+        if ($node = static::nodeFromAttributes($attributes)) {
+            return static::fromNode($node, $attachable);
+        }
+    }
+
+    private static function nodeFromAttributes(array $attributes = []): ?DOMElement
+    {
+        $attributes = static::processAttributes($attributes);
+
+        if (empty($attributes)) {
+            return null;
+        }
+
+        return HtmlConversion::createElement(static::$TAG_NAME, $attributes);
+    }
+
+    private static function processAttributes(array $attributes): array
+    {
+        return collect($attributes)
+            ->mapWithKeys(function ($value, $key) {
+                $newKey = (string) Str::of($key)->camel()->snake('-');
+
+                return [$newKey => $value];
+            })
+            ->only(static::ATTRIBUTES)
+            ->all();
     }
 
     public function __construct(public DOMElement $node, public AttachableContract $attachable)
@@ -62,9 +99,9 @@ class Attachment
 
     private function sgidAttributes(): Collection
     {
-        return $this->cachedSgidAttributes ??= $this->nodeAttributes()
-            ->get('sgid', $this->attachableAttributes()->get('sgid'))
-            ->filter();
+        return $this->cachedSgidAttributes ??= collect([
+            'sgid' => $this->nodeAttributes()->get('sgid', $this->attachableAttributes()->get('sgid')),
+        ])->filter();
     }
 
     private function nodeAttributes(): Collection

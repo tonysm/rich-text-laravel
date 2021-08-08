@@ -9,10 +9,10 @@ use Illuminate\Support\Str;
 class TrixAttachment
 {
     public static $TAG_NAME = 'figure';
-    public static $SELECTOR = '[data-trix-attachment]';
+    public static $SELECTOR = '//*[@data-trix-attachment]';
 
     const COMPOSED_ATTRIBUTES = ['caption', 'presentation'];
-    const ATTRIBUTES = self::COMPOSED_ATTRIBUTES + [ 'sgid', 'contentType', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'content'];
+    const ATTRIBUTES = [...self::COMPOSED_ATTRIBUTES, 'sgid', 'contentType', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'content'];
 
     private $attributesCache;
 
@@ -79,13 +79,14 @@ class TrixAttachment
 
     private function readJsonAttribute(string $key): array
     {
-        if (! $this->node->hasAttribute($key) && $value = $this->node->getAttribute($key)) {
+        if (! $this->node->hasAttribute($key)) {
             return [];
         }
 
+        $value = $this->node->getAttribute($key);
         $data = json_decode($value ?: '[]', true);
 
-        if (json_last_error() === JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             logger(sprintf(
                 '[%s] Couldnt parse JSON %s from NODE %s',
                 static::class,

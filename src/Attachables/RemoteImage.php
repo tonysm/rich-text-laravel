@@ -3,9 +3,12 @@
 namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMElement;
+use Illuminate\Support\Str;
 
 class RemoteImage implements AttachableContract
 {
+    use Attachable;
+
     public $url;
     public $contentType;
     public $width;
@@ -48,5 +51,10 @@ class RemoteImage implements AttachableContract
     public function richTextAsPlainText($caption = null)
     {
         return sprintf("[%s]", $caption ?: 'Image');
+    }
+
+    public function extension(): string
+    {
+        return (string) Str::of($this->url ?: '.unkown')->afterLast('.');
     }
 }
