@@ -11,6 +11,16 @@ class Content
 {
     public Fragment $fragment;
 
+    public static function fromStorage(?string $value = null)
+    {
+        return new Content($value ?: '', ['canonicalize' => false]);
+    }
+
+    public static function toStorage(?string $value = null)
+    {
+        return static::fragmentByCanonicalizingContent($value ?: '')->toHtml();
+    }
+
     public static function fragmentByCanonicalizingContent($content)
     {
         return (new Pipeline(app()))
@@ -83,8 +93,45 @@ class Content
 
     public function toHtml()
     {
-        return preg_replace("#</?rich-text-root>\n?#", "", $this
-            ->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
-            ->fragment->toHtml());
+        return $this->withoutTrailingNewLinesAndRootTag(
+            $this->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
+                ->fragment->toHtml()
+        );
+    }
+
+    public function renderWithAttachments()
+    {
+        return $this->withoutTrailingNewLinesAndRootTag($this->renderAttachments([], fn (Attachment $attachment) => (
+            HtmlConversion::fragmentForHtml($this->renderAttachment($attachment, [
+                'in_gallery' => false,
+            ]))
+        ))->fragment->toHtml());
+    }
+
+    public function renderAttachment(Attachment $attachment, array $locals = [])
+    {
+        return $attachment->attachable->richTextRender(options: $locals);
+    }
+
+    public function withoutTrailingNewLinesAndRootTag($content)
+    {
+        return preg_replace("#</?rich-text-root>\n?#", "", $content);
+    }
+
+    public function render()
+    {
+        return view('rich-text-laravel::content', [
+            'content' => $this,
+        ])->render();
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->toHtml());
+    }
+
+    public function __toString(): string
+    {
+        return $this->render();
     }
 }

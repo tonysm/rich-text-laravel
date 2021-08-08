@@ -38,7 +38,7 @@ class ModelTest extends TestCase
 
         $this->assertEquals(<<<HTML
         <div class="trix-content">
-            </div>
+        </div>
 
         HTML, "{$post->content}");
 
@@ -52,9 +52,9 @@ class ModelTest extends TestCase
             'content' => '',
         ]);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
-            </div>
+        </div>
 
         HTML, "{$post->content}");
 

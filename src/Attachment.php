@@ -5,12 +5,14 @@ namespace Tonysm\RichTextLaravel;
 use DOMElement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\ForwardsCalls;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
 class Attachment
 {
     use TrixConvertion;
+    use ForwardsCalls;
 
     public static $TAG_NAME = 'rich-text-attachment';
     public static $SELECTOR = '//rich-text-attachment';
@@ -25,6 +27,15 @@ class Attachment
         static::$TAG_NAME = $tagName;
     }
 
+    public static function fromAttachable(AttachableContract $attachable, array $attributes = [])
+    {
+        if ($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) {
+            return new static($node, $attachable);
+        }
+
+        return null;
+    }
+
     public static function fromNode(DOMElement $node, AttachableContract $attachable = null): static
     {
         return new static($node, $attachable ?: AttachableFactory::fromNode($node));
@@ -37,7 +48,7 @@ class Attachment
         }
     }
 
-    private static function nodeFromAttributes(array $attributes = []): ?DOMElement
+    public static function nodeFromAttributes(array $attributes = []): ?DOMElement
     {
         $attributes = static::processAttributes($attributes);
 
@@ -93,7 +104,7 @@ class Attachment
     private function attachableAttributes(): Collection
     {
         return $this->cachedAttachableAttributes ??= method_exists($this->attachable, 'toRichTextAttributes')
-            ? $this->attachable->toRichTextAttributes()
+            ? collect($this->attachable->toRichTextAttributes())
             : collect([]);
     }
 
@@ -112,5 +123,10 @@ class Attachment
 
                 return [$newKey => $this->node->hasAttribute($newKey) ? $this->node->getAttribute($newKey) : null];
             });
+    }
+
+    public function __call($method, $arguments)
+    {
+        return $this->forwardCallTo($this->attachable, $method, $arguments);
     }
 }

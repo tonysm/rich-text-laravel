@@ -12,7 +12,7 @@ class HtmlConversion
         return $node->saveHTML();
     }
 
-    public static function fragmentForHtml(string $html): Fragment
+    public static function fragmentForHtml(?string $html = null): Fragment
     {
         $document = static::document($html);
 

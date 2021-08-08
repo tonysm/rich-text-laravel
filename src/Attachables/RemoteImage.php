@@ -41,11 +41,11 @@ class RemoteImage implements AttachableContract
         $this->height = $attributes['height'];
     }
 
-    public function richTextRender($content = null): string
+    public function richTextRender($content = null, array $options = []): string
     {
-        return view('rich-text-laravel::attachables._remote_image', [
+        return view('rich-text-laravel::attachables._remote_image', array_merge($options, [
             'remoteImage' => $this,
-        ])->render();
+        ]))->render();
     }
 
     public function richTextAsPlainText($caption = null)

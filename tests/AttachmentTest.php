@@ -37,7 +37,7 @@ class AttachmentTest extends TestCase
 
         $trixAttachment = $attachment->toTrixAttachment();
 
-        $this->assertTrue($attachable->is(GlobalId::fromStorage($trixAttachment->attributes()['sgid'])->record));
+        $this->assertTrue($attachable->is(GlobalId::findRecord($trixAttachment->attributes()['sgid'])));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 
@@ -57,7 +57,7 @@ class AttachmentTest extends TestCase
 
         $trixAttachment = $attachment->toTrixAttachment('trix content');
 
-        $this->assertTrue($attachable->is(GlobalId::fromStorage($trixAttachment->attributes()['sgid'])->record));
+        $this->assertTrue($attachable->is(GlobalId::findRecord($trixAttachment->attributes()['sgid'])));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 
@@ -86,7 +86,7 @@ class UseWithCustomPlainTextRender extends User
 {
     protected $table = 'users';
 
-    public function plainTextRender(): string
+    public function richTextAsPlainText(): string
     {
         return 'custom plain text render';
     }

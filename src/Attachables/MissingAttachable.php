@@ -11,8 +11,8 @@ class MissingAttachable implements AttachableContract
         return sprintf("[%s]", $caption ?: 'Missing Attachment');
     }
 
-    public function richTextRender($content = null): string
+    public function richTextRender($content = null, array $options = []): string
     {
-        return view('rich-text-laravel::attachables._missing_attachable')->render();
+        return view('rich-text-laravel::attachables._missing_attachable', $options)->render();
     }
 }

@@ -1,2 +1,3 @@
 <div class="trix-content">
-    {!! $content->renderWithAttachments() !!}</div>
+@if ($trixContent = $content->renderWithAttachments())    {!! $trixContent !!}{{"\n"}}@endif
+</div>

@@ -25,7 +25,7 @@ class Fragment
         return static::fromHtml($fragmentOrHtml);
     }
 
-    public static function fromHtml(string $html)
+    public static function fromHtml(?string $html = null)
     {
         return HtmlConversion::fragmentForHtml($html);
     }
