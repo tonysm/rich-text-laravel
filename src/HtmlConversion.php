@@ -9,7 +9,7 @@ class HtmlConversion
 {
     public static function nodeToHtml($node): string
     {
-        return preg_replace("#</?rich-text-root>\n?#", "", $node->saveHTML());
+        return preg_replace("#</?rich-text-root>\n*#", "", $node->saveHTML());
     }
 
     public static function fragmentForHtml(?string $html = null): Fragment

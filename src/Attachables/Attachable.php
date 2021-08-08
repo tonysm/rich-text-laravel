@@ -51,8 +51,12 @@ trait Attachable
                 'height' => $this->richTextMetadata('height'),
             ])
             ->filter()
-            ->unique()
             ->all();
+    }
+
+    public function toTrixContent(): ?string
+    {
+        return $this->richTextRender();
     }
 
     public function richTextSgid(): string

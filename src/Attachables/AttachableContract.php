@@ -18,5 +18,7 @@ interface AttachableContract
 
     public function toRichTextAttributes(array $attributes = []): array;
 
+    public function toTrixContent(): ?string;
+
     public function richTextRender($content = null, array $options = []): string;
 }

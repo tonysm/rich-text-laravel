@@ -186,6 +186,42 @@ class ContentTest extends TestCase
         $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->toHtml());
     }
 
+    /** @test */
+    public function renders_to_trix_hmtl_with_model_attachments()
+    {
+        $user = UserWithCustomRenderContent::create(['name' => 'Hey There']);
+        $sgid = $user->richTextSgid();
+        $attachmentHtml = <<<HTML
+        <div>Hey, <rich-text-attachment sgid="$sgid" content-type="application/octet-stream"></rich-text-attachment></div>
+        HTML;
+
+        $content = $this->fromHtml($attachmentHtml);
+
+        $this->assertEquals(
+            <<<HTML
+            <div>Hey, <figure data-trix-attachment='{"sgid":"$sgid","contentType":"application\/octet-stream","content":"&lt;span&gt;$user->name&lt;\/span&gt;"}'></figure></div>
+            HTML,
+            $content->toTrixHtml()
+        );
+    }
+
+    /** @test */
+    public function renders_to_trix_html_with_image_attachments()
+    {
+        $attachmentHtml = <<<HTML
+        <div>Hey, <rich-text-attachment content-type="image/png" url="http://localhost/blue.png" filename="blue.png" filesize="1168" width="300" height="300" previewable="true" presentation="gallery"></rich-text-attachment></div>
+        HTML;
+
+        $content = $this->fromHtml($attachmentHtml);
+
+        $this->assertEquals(
+            <<<HTML
+            <div>Hey, <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/localhost\/blue.png","filename":"blue.png","filesize":1168,"width":300,"height":300,"previewable":true}' data-trix-attributes='{"presentation":"gallery"}'></figure></div>
+            HTML,
+            $content->toTrixHtml()
+        );
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {
@@ -199,6 +235,16 @@ class ContentTest extends TestCase
 
     private function fromHtml(string $html): Content
     {
-        return tap(new Content($html), fn ($content) => $this->assertNotEmpty($content->toHtml()));
+        return tap(new Content($html), fn (Content $content) => $this->assertNotEmpty($content->toHtml()));
+    }
+}
+
+class UserWithCustomRenderContent extends User
+{
+    protected $table = 'users';
+
+    public function richTextRender($content = null, array $options = []): string
+    {
+        return "<span>{$this->name}</span>";
     }
 }

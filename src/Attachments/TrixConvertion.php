@@ -29,9 +29,8 @@ trait TrixConvertion
 
     public function toTrixAttachment($content = null)
     {
-        $content = $content ?: $this->attachable->richTextRender($content);
-
-        $attributes = $this->fullAttributes()->unique()->all();
+        $content = $content ?: $this->attachable->toTrixContent();
+        $attributes = $this->fullAttributes()->filter()->all();
 
         if ($content) {
             $attributes['content'] = $content;

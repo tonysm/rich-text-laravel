@@ -25,7 +25,11 @@ class TrixAttachment
 
         $node = HtmlConversion::createElement(static::$TAG_NAME);
         $node->setAttribute('data-trix-attachment', json_encode($trixAttachmentAttributes));
-        $node->setAttribute('data-trix-attributes', json_encode($trixAttributes ?: []));
+
+        if ($trixAttributes) {
+            $node->setAttribute('data-trix-attributes', json_encode($trixAttributes ?: []));
+        }
+
 
         return new static($node);
     }

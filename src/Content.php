@@ -41,23 +41,21 @@ class Content
         }
     }
 
-    public function toPlainText(): string
-    {
-        return $this->renderAttachments(
-            ['withFullAttributes' => false],
-            fn (Attachment $item) => $item->toPlainText()
-        )->fragment->toPlainText();
-    }
-
     public function renderAttachments(array $options, callable $callback): static
     {
         $content = $this->fragment->replace(Attachment::$SELECTOR, function (DOMNode $node) use ($options, $callback) {
             return $callback($this->attachmentForNode($node, $options));
         });
 
-        return new static($content, [
-            'canonicalize' => false,
-        ]);
+        return new static($content, ['canonicalize' => false]);
+    }
+
+    public function toPlainText(): string
+    {
+        return $this->renderAttachments(
+            ['withFullAttributes' => false],
+            fn (Attachment $item) => $item->toPlainText()
+        )->fragment->toPlainText();
     }
 
     public function links(): array
@@ -91,20 +89,16 @@ class Content
         return $attachment;
     }
 
+    public function toTrixHtml()
+    {
+        return $this->renderAttachments([], fn (Attachment $attachment) => (HtmlConversion::fragmentForHtml($attachment->toTrixAttachment()->toHtml())))
+            ->toHtml();
+    }
+
     public function toHtml()
     {
         return $this->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
             ->fragment->toHtml();
-    }
-
-    public function toTrixHtml()
-    {
-        return $this->renderAttachments(
-            [],
-            fn (Attachment $attachment) => (
-                HtmlConversion::fragmentForHtml($attachment->toTrixAttachment()->toHtml())
-            )
-        )->fragment->toHtml();
     }
 
     public function renderWithAttachments()
@@ -126,6 +120,11 @@ class Content
         return view('rich-text-laravel::content', [
             'content' => $this,
         ])->render();
+    }
+
+    public function raw(): string
+    {
+        return $this->fragment->toHtml();
     }
 
     public function isEmpty(): bool
