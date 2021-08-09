@@ -14,7 +14,7 @@
 
 Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails.
 
-**This is still in development. It's not production-ready yet.**
+**🚧 This is still in development. It's not production-ready yet.**
 
 ## Installation
 
@@ -87,6 +87,14 @@ And when it renders it again, it will re-render the remote image again inside th
 ```blade
 {!! clean($post->content) !!}
 ```
+
+When feeding the Trix editor again, you need to do it differently:
+
+```blade
+<x-trix-editor :value="$post->content->toTrixHtml()" />
+```
+
+Rendering for the editor is a bit different, so it has to be like that.
 
 ### Attaching Models
 
