@@ -28,10 +28,10 @@ images in galleries will be squished by the max-width: 33%; rule.
     margin: 0 auto; }
 
 /** These are TailwindCSS specific tweaks */
-.trix ul {
+.trix-content ul {
     list-style-type: disc;
     padding-left: 2.5rem; }
 
-.trix ol {
+.trix-content ol {
     list-style-type: decimal;
     padding-left: 2.5rem; }
