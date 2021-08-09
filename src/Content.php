@@ -14,7 +14,7 @@ class Content
     private $cachedAttachments;
     private $cachedAttachmentNodes;
 
-    public static function fromStorage(?string $value = null)
+    public static function fromStorage(?string $value = null): self
     {
         return new Content($value ?: '', ['canonicalize' => false]);
     }
@@ -24,7 +24,7 @@ class Content
         return static::fragmentByCanonicalizingContent($value ?: '')->toHtml();
     }
 
-    public static function fragmentByCanonicalizingContent($content)
+    public static function fragmentByCanonicalizingContent(string $content)
     {
         return (new Pipeline(app()))
             ->send($content)
@@ -98,13 +98,13 @@ class Content
             ->toHtml();
     }
 
-    public function toHtml()
+    public function toHtml(): string
     {
         return $this->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
             ->fragment->toHtml();
     }
 
-    public function renderWithAttachments()
+    public function renderWithAttachments(): string
     {
         return $this->renderAttachments([], fn (Attachment $attachment) => (
             HtmlConversion::fragmentForHtml($this->renderAttachment($attachment, [
@@ -113,7 +113,7 @@ class Content
         ))->fragment->toHtml();
     }
 
-    public function renderAttachment(Attachment $attachment, array $locals = [])
+    public function renderAttachment(Attachment $attachment, array $locals = []): string
     {
         return $attachment->attachable->richTextRender(options: $locals);
     }

@@ -12,7 +12,10 @@ class Fragment
     private $cachedPlainText;
     private $cachedHtml;
 
-    public static function wrap($fragmentOrHtml)
+    /**
+     * @param string|Fragment|DOMDocument $fragmentOrHtml
+     */
+    public static function wrap(string | Fragment | DOMDocument $fragmentOrHtml)
     {
         if ($fragmentOrHtml instanceof Fragment) {
             return $fragmentOrHtml;
@@ -25,7 +28,7 @@ class Fragment
         return static::fromHtml($fragmentOrHtml);
     }
 
-    public static function fromHtml(?string $html = null)
+    public static function fromHtml(?string $html = null): self
     {
         return HtmlConversion::fragmentForHtml($html);
     }

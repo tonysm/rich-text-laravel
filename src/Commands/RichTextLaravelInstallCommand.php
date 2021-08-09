@@ -10,7 +10,7 @@ class RichTextLaravelInstallCommand extends Command
 
     public $description = 'Installs the package.';
 
-    public function handle()
+    public function handle(): void
     {
         $this->comment('All done');
     }

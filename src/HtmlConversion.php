@@ -7,7 +7,7 @@ use DOMElement;
 
 class HtmlConversion
 {
-    public static function nodeToHtml($node): string
+    public static function nodeToHtml(DOMDocument $node): string
     {
         return preg_replace("#</?rich-text-root>\n*#", "", $node->saveHTML());
     }

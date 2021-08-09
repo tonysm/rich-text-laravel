@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class PlainTextConversion
 {
-    public static function nodeToPlainText(DOMDocument $node)
+    public static function nodeToPlainText(DOMDocument $node): string
     {
         return static::removeTrailingNewLines(static::plainTextForNode($node));
     }
@@ -47,7 +47,7 @@ class PlainTextConversion
         return implode('', $texts);
     }
 
-    public static function plainTextForBlock(DOMNode $node)
+    public static function plainTextForBlock(DOMNode $node): string
     {
         return sprintf("%s\n\n", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
@@ -72,34 +72,34 @@ class PlainTextConversion
         return static::plainTextForBlock($node);
     }
 
-    public static function plainTextForBrNode(DOMNode $node)
+    public static function plainTextForBrNode(DOMNode $node): string
     {
         return "\n";
     }
 
-    public static function plainTextForTextNode(DOMText $node)
+    public static function plainTextForTextNode(DOMText $node): string
     {
         return static::removeTrailingNewLines($node->ownerDocument->saveHTML($node));
     }
 
-    public static function plainTextForDivNode(DOMNode $node)
+    public static function plainTextForDivNode(DOMNode $node): string
     {
         return sprintf("%s\n", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
 
-    public static function plainTextForFigcaptionNode(DOMNode $node)
+    public static function plainTextForFigcaptionNode(DOMNode $node): string
     {
         return sprintf("[%s]", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
 
-    public static function plainTextForBlockquoteNode(DOMNode $node)
+    public static function plainTextForBlockquoteNode(DOMNode $node): ?string
     {
         $text = static::plainTextForBlock($node);
 
         return preg_replace('/\A(\s*)(.+?)(\s*)\Z/m', '\1“\2”\3', $text);
     }
 
-    public static function plainTextForLiNode(DOMNode $node, $index = 0)
+    public static function plainTextForLiNode(DOMNode $node, $index = 0): string
     {
         $bullet = static::bulletForLiNode($node, $index);
 
@@ -108,7 +108,7 @@ class PlainTextConversion
         return sprintf("%s %s\n", $bullet, $text);
     }
 
-    public static function bulletForLiNode(DOMNode $node, $index)
+    public static function bulletForLiNode(DOMNode $node, $index): string
     {
         if ($node->parentNode->nodeName === 'ol') {
             return sprintf("%s.", $index + 1);

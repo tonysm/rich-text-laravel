@@ -84,14 +84,14 @@ class RemoteImage implements AttachableContract
         return null;
     }
 
-    public function richTextRender($content = null, array $options = []): string
+    public function richTextRender(array $options = []): string
     {
         return view('rich-text-laravel::attachables._remote_image', [
             'remoteImage' => $this,
         ])->render();
     }
 
-    public function richTextAsPlainText($caption = null)
+    public function richTextAsPlainText($caption = null): string
     {
         return sprintf("[%s]", $caption ?: 'Image');
     }

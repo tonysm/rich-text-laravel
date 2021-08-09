@@ -16,7 +16,7 @@ class TrixAttachment
 
     private $attributesCache;
 
-    public static function fromAttributes(array $attributes)
+    public static function fromAttributes(array $attributes): static
     {
         $attributes = static::processAttributes($attributes);
 

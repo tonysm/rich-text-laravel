@@ -29,7 +29,7 @@ class Attachment
         static::$TAG_NAME = $tagName;
     }
 
-    public static function fromAttachable(AttachableContract $attachable, array $attributes = [])
+    public static function fromAttachable(AttachableContract $attachable, array $attributes = []): ?static
     {
         if ($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) {
             return new static($node, $attachable);
@@ -43,6 +43,9 @@ class Attachment
         return new static($node, $attachable ?: AttachableFactory::fromNode($node));
     }
 
+    /**
+     * @return null|static
+     */
     public static function fromAttributes(array $attributes = [], AttachableContract $attachable = null)
     {
         if ($node = static::nodeFromAttributes($attributes)) {

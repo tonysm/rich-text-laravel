@@ -27,7 +27,7 @@ class GlobalId
     {
     }
 
-    public function toString()
+    public function toString(): string
     {
         return base64_encode(encrypt(serialize($this)));
     }
