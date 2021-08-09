@@ -11,10 +11,6 @@ trait Attachable
 {
     public function richTextContentType(): string
     {
-        if (property_exists($this, 'richTextContentType')) {
-            return $this->richTextContentType;
-        }
-
         return 'application/octet-stream';
     }
 

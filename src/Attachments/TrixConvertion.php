@@ -29,7 +29,9 @@ trait TrixConvertion
 
     public function toTrixAttachment($content = null)
     {
+        /** @psalm-suppress UndefinedThisPropertyFetch */
         $content = $content ?: $this->attachable->toTrixContent();
+        /** @psalm-suppress UndefinedMethod */
         $attributes = $this->fullAttributes()->filter()->all();
 
         if ($content) {

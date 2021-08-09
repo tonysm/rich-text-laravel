@@ -20,6 +20,8 @@ class Attachment
     const ATTRIBUTES = ['sgid', 'content-type', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'presentation', 'caption'];
 
     private $cachedAttributes;
+    private $cachedSgidAttributes;
+    private $cachedAttachableAttributes;
 
     public static function useTagName(string $tagName): void
     {
@@ -103,9 +105,7 @@ class Attachment
 
     private function attachableAttributes(): Collection
     {
-        return $this->cachedAttachableAttributes ??= method_exists($this->attachable, 'toRichTextAttributes')
-            ? collect($this->attachable->toRichTextAttributes())
-            : collect([]);
+        return $this->cachedAttachableAttributes ??= collect($this->attachable->toRichTextAttributes());
     }
 
     private function sgidAttributes(): Collection

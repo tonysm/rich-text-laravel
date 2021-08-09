@@ -40,6 +40,7 @@ class PlainTextConversion
         $index = 0;
 
         foreach ($node->childNodes as $child) {
+            /** @psalm-suppress TooManyArguments */
             $texts[] = static::plainTextForNode($child, $index++);
         }
 

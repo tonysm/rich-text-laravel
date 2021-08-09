@@ -11,6 +11,9 @@ class Content
 {
     public Fragment $fragment;
 
+    private $cachedAttachments;
+    private $cachedAttachmentNodes;
+
     public static function fromStorage(?string $value = null)
     {
         return new Content($value ?: '', ['canonicalize' => false]);
