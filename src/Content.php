@@ -44,6 +44,21 @@ class Content
         }
     }
 
+    public function links(): array
+    {
+        return $this->fragment->findAll('//a[@href]')
+            ->map(fn (DOMElement $node) => $node->getAttribute('href'))
+            ->unique()
+            ->all();
+    }
+
+    public function attachments(): Collection
+    {
+        return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
+            $this->attachmentForNode($node)
+        ));
+    }
+
     public function renderAttachments(array $options, callable $callback): static
     {
         $content = $this->fragment->replace(Attachment::$SELECTOR, function (DOMNode $node) use ($options, $callback) {
@@ -61,41 +76,12 @@ class Content
         )->fragment->toPlainText();
     }
 
-    public function links(): array
-    {
-        return $this->fragment->findAll('//a[@href]')
-            ->map(fn (DOMElement $node) => $node->getAttribute('href'))
-            ->unique()
-            ->all();
-    }
-
-    public function attachments(): Collection
-    {
-        return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
-            $this->attachmentForNode($node)
-        ));
-    }
-
-    private function attachmentNodes(): Collection
-    {
-        return $this->cachedAttachmentNodes ??= $this->fragment->findAll(Attachment::$SELECTOR);
-    }
-
-    private function attachmentForNode(DOMNode $node, array $options = []): Attachment
-    {
-        $attachment = Attachment::fromNode($node);
-
-        if ($options['withFullAttributes'] ?? false) {
-            return $attachment->withFullAttributes();
-        }
-
-        return $attachment;
-    }
-
     public function toTrixHtml()
     {
-        return $this->renderAttachments([], fn (Attachment $attachment) => (HtmlConversion::fragmentForHtml($attachment->toTrixAttachment()->toHtml())))
-            ->toHtml();
+        return $this->renderAttachments(
+            [],
+            fn (Attachment $attachment) => (HtmlConversion::fragmentForHtml($attachment->toTrixAttachment()->toHtml()))
+        )->toHtml();
     }
 
     public function toHtml(): string
@@ -138,5 +124,21 @@ class Content
     public function __toString(): string
     {
         return $this->render();
+    }
+
+    private function attachmentNodes(): Collection
+    {
+        return $this->cachedAttachmentNodes ??= $this->fragment->findAll(Attachment::$SELECTOR);
+    }
+
+    private function attachmentForNode(DOMNode $node, array $options = []): Attachment
+    {
+        $attachment = Attachment::fromNode($node);
+
+        if ($options['withFullAttributes'] ?? false) {
+            return $attachment->withFullAttributes();
+        }
+
+        return $attachment;
     }
 }
