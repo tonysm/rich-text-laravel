@@ -70,4 +70,36 @@ class FragmentTest extends TestCase
         $this->assertStringNotContainsString('<h1>old title</h1>', $newFragment->toHtml());
         $this->assertStringContainsString('<div>something that wont change</div><h1>new title</h1>', $newFragment->toHtml());
     }
+
+    /** @test */
+    public function update_gives_us_a_new_instance()
+    {
+        $source = "<div>something that wont change</div><h1>old title</h1>";
+
+        $fragment = Fragment::wrap($source);
+
+        $newFragment = $fragment->update();
+
+        $this->assertNotSame($fragment, $newFragment);
+        $this->assertEquals($source, $newFragment->toHtml());
+    }
+
+    /** @test */
+    public function update_allows_passing_closure_to_tweak_the_source()
+    {
+        $source = "<div>something that wont change</div><h1>old title</h1>";
+
+        $fragment = Fragment::wrap($source);
+
+        $newFragment = $fragment->update(function ($passedSource) use ($fragment, $source) {
+            $this->assertNotSame($fragment->source, $passedSource);
+            $this->assertStringContainsString($source, $passedSource->saveHtml());
+
+            return HtmlConversion::fragmentForHtml('<div>source was updated</div>')->source;
+        });
+
+        $this->assertNotSame($fragment, $newFragment);
+        $this->assertNotEquals($source, $newFragment->toHtml());
+        $this->assertEquals('<div>source was updated</div>', $newFragment->toHtml());
+    }
 }

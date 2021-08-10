@@ -56,9 +56,11 @@ class Fragment
         return $result;
     }
 
-    public function update(): static
+    public function update(?callable $callback = null): static
     {
-        return static::wrap($this->source->saveHTML());
+        $callback = $callback ?: fn ($source) => $source;
+
+        return new static($callback($this->source->cloneNode(deep: true)));
     }
 
     public function replace(string $selector, callable $callback): static
