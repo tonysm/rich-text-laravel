@@ -329,6 +329,57 @@ class ContentTest extends TestCase
         $this->assertCount(5, $content->galleryAttachments());
     }
 
+    /** @test */
+    public function renders_galleries()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure
+                data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+            ></figure>
+
+            <div class="this will be removed">
+                <figure
+                    data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+                <figure
+                    data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/blue-1.png", "filename": "blue-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+            </div>
+        </div>
+        HTML);
+
+        // The markup indentation looks a bit off, but that's fine...
+
+        $this->assertEquals(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <rich-text-attachment content-type="image/png" width="200" height="100" url="http://example.com/red-1.png" filename="red-1.png" filesize="100" presentation="gallery" caption="Captioned"></rich-text-attachment>
+
+            <div class="attachment-gallery attachment-gallery--2">
+            <figure class="attachment attachment--preview attachment--png">
+            <img src="http://example.com/red-1.png" width="200" height="100">
+            <figcaption class="attachment__caption">
+                Captioned
+            </figcaption>
+        </figure>
+
+            <figure class="attachment attachment--preview attachment--png">
+            <img src="http://example.com/blue-1.png" width="200" height="100">
+            <figcaption class="attachment__caption">
+                Captioned
+            </figcaption>
+        </figure>
+
+        </div>
+        </div>
+        HTML, $content->renderWithAttachments());
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {

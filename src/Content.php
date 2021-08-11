@@ -108,11 +108,28 @@ class Content
 
     public function renderWithAttachments(): string
     {
-        return $this->renderAttachments([], fn (Attachment $attachment) => (
-            HtmlConversion::fragmentForHtml($this->renderAttachment($attachment, [
+        return $this->renderAttachments([], function (Attachment $attachment) {
+            // If this is a gallery attachment, we'll render it separately.
+
+            if ($this->galleryAttachments()->first(fn (Attachment $galleryAttachment) => $galleryAttachment->is($attachment))) {
+                return null;
+            }
+
+            return HtmlConversion::fragmentForHtml($this->renderAttachment($attachment, [
                 'in_gallery' => false,
-            ]))
+            ]));
+        })->renderAttachmentGalleries(fn (AttachmentGallery $attachmentGallery) => (
+            $attachmentGallery->richTextRender()
         ))->fragment->toHtml();
+    }
+
+    public function renderAttachmentGalleries(callable $renderer): static
+    {
+        $content = (new FragmentByCanonicalizingAttachmentGalleries)->fragmentByReplacingAttachmentGalleryNodes($this->fragment, function (DOMElement $node) use ($renderer) {
+            return HtmlConversion::document($renderer($this->attachmentGalleryForNode($node)));
+        });
+
+        return new static($content, ['canonicalize' => false]);
     }
 
     public function renderAttachment(Attachment $attachment, array $locals = []): string

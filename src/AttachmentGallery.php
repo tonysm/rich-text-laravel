@@ -48,6 +48,13 @@ class AttachmentGallery
         return $this->attachments()->count();
     }
 
+    public function richTextRender(): string
+    {
+        return view('rich-text-laravel::attachment_galleries._attachment_gallery', [
+            'attachmentGallery' => $this,
+        ])->render();
+    }
+
     private function computeAttachments(): Collection
     {
         $xpath = new DOMXPath($this->node->ownerDocument);

@@ -16,7 +16,7 @@ class FragmentByCanonicalizingAttachmentGalleries
     public function __invoke($content, callable $next)
     {
         return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, function (DOMElement $node) {
-            return HtmlConversion::fragmentForHtml(sprintf(
+            return HtmlConversion::document(sprintf(
                 '<%s>%s</%s>',
                 AttachmentGallery::TAG_NAME,
                 $this->getInnerHtmlOfNode($node),
@@ -32,7 +32,7 @@ class FragmentByCanonicalizingAttachmentGalleries
                 // The fragment is wrapped with a rich-text-root tag, so we need
                 // to dig a bit deeper to get to the attachment gallery.
 
-                $newNode = $callback($node)->source->firstChild->firstChild;
+                $newNode = $callback($node)->firstChild->firstChild;
 
                 if ($importedNode = $source->importNode($newNode, deep: true)) {
                     $node->replaceWith($importedNode);
