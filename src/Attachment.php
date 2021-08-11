@@ -128,6 +128,11 @@ class Attachment
             });
     }
 
+    public function is(Attachment $attachment): bool
+    {
+        return $this->attachable->equalsToAttachable($attachment->attachable);
+    }
+
     public function __call($method, $arguments)
     {
         return $this->forwardCallTo($this->attachable, $method, $arguments);

@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Attachables;
 
+use Illuminate\Database\Eloquent\Model;
 use Tonysm\RichTextLaravel\GlobalId;
 
 /**
@@ -29,7 +30,7 @@ trait Attachable
         return null;
     }
 
-    public function richTextMetadata(?string $key)
+    public function richTextMetadata(?string $key = null)
     {
         return null;
     }
@@ -58,5 +59,14 @@ trait Attachable
     public function richTextSgid(): string
     {
         return (new GlobalId($this))->toString();
+    }
+
+    public function equalsToAttachable(AttachableContract $attachable): bool
+    {
+        if ($this instanceof Model && $attachable instanceof Model) {
+            return $this->is($attachable);
+        }
+
+        return $this->richTextRender() == $attachable->richTextRender();
     }
 }

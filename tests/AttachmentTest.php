@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\GlobalId;
 use Tonysm\RichTextLaravel\Tests\Stubs\User;
@@ -74,10 +75,42 @@ class AttachmentTest extends TestCase
         $this->assertEquals('custom plain text render', $attachment->toPlainText());
     }
 
+    /** @test */
+    public function equality()
+    {
+        $userAttachment = Attachment::fromAttachable($user = $this->attachable());
+        $sameUserAttachment = Attachment::fromAttachable($user);
+        $anotherUserAttachment = Attachment::fromAttachable($this->attachable());
+        $imageAttachment = Attachment::fromAttachable($image = $this->imageAttachable('blue.png'));
+        $sameImageAttachment = Attachment::fromAttachable($image);
+        $anotherImageAttachment = Attachment::fromAttachable($this->imageAttachable('red.png'));
+
+        $this->assertTrue($userAttachment->is($sameUserAttachment));
+        $this->assertFalse($userAttachment->is($anotherUserAttachment));
+
+        $this->assertTrue($imageAttachment->is($sameImageAttachment));
+        $this->assertFalse($imageAttachment->is($anotherImageAttachment));
+
+        $this->assertFalse($userAttachment->is($imageAttachment));
+    }
+
     private function attachable(): User
     {
         return User::create([
             'name' => 'Some user',
+        ]);
+    }
+
+    public function imageAttachable(string $filename): RemoteImage
+    {
+        return new RemoteImage([
+            'url' => 'http://example.com/' . $filename,
+            'width' => 200,
+            'height' => 200,
+            'content_type' => 'image/png',
+            'caption' => 'hey there',
+            'filename' => $filename,
+            'filesize' => 200,
         ]);
     }
 }
