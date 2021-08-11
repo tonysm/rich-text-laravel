@@ -36,11 +36,10 @@ class ModelTest extends TestCase
     {
         $post = Post::create([]);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(trim(<<<HTML
         <div class="trix-content">
         </div>
-
-        HTML, "{$post->content}");
+        HTML), trim("{$post->content}"));
 
         $this->assertTrue($post->content->isEmpty());
     }
