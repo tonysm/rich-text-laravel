@@ -261,7 +261,7 @@ class ContentTest extends TestCase
     {
         $content = $this->fromHtml(<<<HTML
         <div>
-            <h1>Hey there</h1>yello
+            <h1>Hey there</h1>
             <rich-text-attachment presentation="gallery" url="http://example.com/white.png" filename="white.png" filesize="1" content-type="image/png" width="200" height="200" caption="should not get"></rich-text-attachment>
             <div class="this will be removed">
                 <rich-text-attachment presentation="gallery" url="http://example.com/red-1.png" filename="red-1.png" filesize="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
@@ -284,6 +284,49 @@ class ContentTest extends TestCase
         $this->assertEquals('red-2.png', $galleryAttachments[2]->attachable->filename);
         $this->assertEquals('blue-2.png', $galleryAttachments[3]->attachable->filename);
         $this->assertEquals('green-2.png', $galleryAttachments[4]->attachable->filename);
+    }
+
+    /** @test */
+    public function canonicalizes_attachment_galleries()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure
+                data-trix-attachment='{"sgid": "123", "contentType": "text/plain", "width": 200, "height": 100}'
+                data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+            ></figure>
+
+            <div class="this will be removed">
+                <figure
+                    data-trix-attachment='{"contentType": "text/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+                <figure
+                    data-trix-attachment='{"contentType": "text/png", "width": 200, "height": 100, "url": "http://example.com/blue-1.png", "filename": "blue-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+            </div>
+            <div class="this will be removed">
+                <figure
+                    data-trix-attachment='{"contentType": "text/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+                <figure
+                    data-trix-attachment='{"contentType": "text/png", "width": 200, "height": 100, "url": "http://example.com/blue-1.png", "filename": "blue-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+                <figure
+                    data-trix-attachment='{"contentType": "text/png", "width": 200, "height": 100, "url": "http://example.com/green-1.png", "filename": "green-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+            </div>
+        </div>
+        HTML);
+
+        $this->assertStringNotContainsString('this will be removed', $content->raw());
+        $this->assertCount(2, $content->attachmentGalleries());
+        $this->assertCount(5, $content->galleryAttachments());
     }
 
     private function withAttachmentTagName(string $tagName, callable $callback)

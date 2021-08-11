@@ -2,23 +2,45 @@
 
 namespace Tonysm\RichTextLaravel\Actions;
 
+use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
 use Illuminate\Support\Collection;
 use Tonysm\RichTextLaravel\AttachmentGallery;
 use Tonysm\RichTextLaravel\Fragment;
+use Tonysm\RichTextLaravel\HtmlConversion;
 
 class FragmentByCanonicalizingAttachmentGalleries
 {
     public function __invoke($content, callable $next)
     {
-        return $next($this->parse($content));
+        return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, function (DOMElement $node) {
+            return HtmlConversion::fragmentForHtml(sprintf(
+                '<%s>%s</%s>',
+                AttachmentGallery::TAG_NAME,
+                $this->getInnerHtmlOfNode($node),
+                AttachmentGallery::TAG_NAME,
+            ));
+        }));
     }
 
-    public function parse($content)
+    public function fragmentByReplacingAttachmentGalleryNodes($content, callable $callback): Fragment
     {
-        return $content;
+        return Fragment::wrap($content)->update(function (DOMDocument $source) use ($callback) {
+            $this->findAttachmentGalleryNodes($source)->each(function (DOMElement $node) use ($source, $callback) {
+                // The fragment is wrapped with a rich-text-root tag, so we need
+                // to dig a bit deeper to get to the attachment gallery.
+
+                $newNode = $callback($node)->source->firstChild->firstChild;
+
+                if ($importedNode = $source->importNode($newNode, deep: true)) {
+                    $node->replaceWith($importedNode);
+                }
+            });
+
+            return $source;
+        });
     }
 
     public function findAttachmentGalleryNodes($content): Collection
@@ -38,6 +60,17 @@ class FragmentByCanonicalizingAttachmentGalleries
 
                 return true;
             });
+    }
+
+    private function getInnerHtmlOfNode(DOMElement $node): string
+    {
+        $innerContent = '';
+
+        foreach ($node->childNodes as $child) {
+            $innerContent .= $child->ownerDocument->saveHtml($child);
+        }
+
+        return $innerContent;
     }
 
     private function galleryAttachmentNode(DOMNode $node): bool
