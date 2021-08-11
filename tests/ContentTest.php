@@ -380,6 +380,45 @@ class ContentTest extends TestCase
         HTML, $content->renderWithAttachments());
     }
 
+    /** @test */
+    public function renders_galleries_to_trix_html()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure
+                data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+            ></figure>
+
+            <div class="this will be removed">
+                <figure
+                    data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+                <figure
+                    data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/blue-1.png", "filename": "blue-1.png", "filesize": 100}'
+                    data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
+                ></figure>
+            </div>
+        </div>
+        HTML);
+
+        // The markup indentation looks a bit off, but that's fine...
+
+        $this->assertEquals(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/red-1.png","filename":"red-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
+
+            <div>
+                <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/red-1.png","filename":"red-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
+                <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/blue-1.png","filename":"blue-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
+            </div>
+        </div>
+        HTML, $content->toTrixHtml());
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {
