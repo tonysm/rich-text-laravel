@@ -134,7 +134,7 @@ class Content
 
     public function isEmpty(): bool
     {
-        return empty($this->toHtml());
+        return empty(trim($this->toHtml()));
     }
 
     public function __toString(): string
