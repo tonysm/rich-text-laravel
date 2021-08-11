@@ -6,6 +6,7 @@ use DOMElement;
 use DOMNode;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Tonysm\RichTextLaravel\Actions\FragmentByCanonicalizingAttachmentGalleries;
 
 class Content
 {
@@ -13,6 +14,9 @@ class Content
 
     private $cachedAttachments;
     private $cachedAttachmentNodes;
+    private $cachedAttachmentGalleries;
+    private $cachedAttachmentGalleryNodes;
+    private $cachedGalleryAttachments;
 
     public static function fromStorage(?string $value = null): self
     {
@@ -57,6 +61,18 @@ class Content
         return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
             $this->attachmentForNode($node)
         ));
+    }
+
+    public function attachmentGalleries(): Collection
+    {
+        return $this->cachedAttachmentGalleries ??= $this->attachmentGalleryNodes()->map(fn (DOMElement $node) => (
+            $this->attachmentGalleryForNode($node)
+        ));
+    }
+
+    public function galleryAttachments(): Collection
+    {
+        return $this->cachedGalleryAttachments ??= $this->attachmentGalleries()->flatMap(fn (AttachmentGallery $attachmentGallery) => $attachmentGallery->attachments());
     }
 
     public function renderAttachments(array $options, callable $callback): static
@@ -129,6 +145,16 @@ class Content
     private function attachmentNodes(): Collection
     {
         return $this->cachedAttachmentNodes ??= $this->fragment->findAll(Attachment::$SELECTOR);
+    }
+
+    private function attachmentGalleryNodes(): Collection
+    {
+        return $this->cachedAttachmentGalleryNodes ??= (new FragmentByCanonicalizingAttachmentGalleries)->findAttachmentGalleryNodes($this->fragment);
+    }
+
+    private function attachmentGalleryForNode(DOMElement $node)
+    {
+        return AttachmentGallery::fromNode($node);
     }
 
     private function attachmentForNode(DOMNode $node, array $options = []): Attachment

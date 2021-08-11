@@ -28,9 +28,8 @@ class AttachmentGallery
     public static function selector(): string
     {
         return sprintf(
-            './/%s[count(.//%s/following-sibling::*[1]/self::%s) > 0]',
+            '//%s[count(%s) > 1]',
             static::TAG_NAME,
-            static::attachmentSelector(),
             static::attachmentSelector(),
         );
     }
@@ -52,7 +51,7 @@ class AttachmentGallery
     private function computeAttachments(): Collection
     {
         $xpath = new DOMXPath($this->node->ownerDocument);
-        $attachmentNodes = $xpath->query(sprintf('//%s', static::attachmentSelector()), $this->node);
+        $attachmentNodes = $xpath->query(static::attachmentSelector(), $this->node);
         $result = collect();
 
         if ($attachmentNodes === false) {

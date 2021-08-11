@@ -222,6 +222,70 @@ class ContentTest extends TestCase
         );
     }
 
+    /** @test */
+    public function gets_gallery_attachments()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <div class="this will be removed">
+                <rich-text-attachment presentation="gallery" url="http://example.com/red-1.png" filename="red-1.png" filesize="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/blue-1.png" filename="blue-1.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+            </div>
+            <div class="this will be removed">
+                <rich-text-attachment presentation="gallery" url="http://example.com/red-2.png" filename="red-2.png" filesize="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/blue-2.png" filename="blue-2.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/green-2.png" filename="green-2.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+            </div>
+        </div>
+        HTML);
+
+        $attachmentGalleries = $content->attachmentGalleries();
+
+        $this->assertCount(2, $attachmentGalleries, 'Could not find all attachment galleries.');
+
+        // First gallery attachments...
+        $this->assertCount(2, $attachmentGalleries->first()->attachments(), 'Failed to cast only attachment nodes to attachments.');
+        $this->assertEquals('red-1.png', $attachmentGalleries->first()->attachments()->first()->attachable->filename);
+        $this->assertEquals('blue-1.png', $attachmentGalleries->first()->attachments()->last()->attachable->filename);
+
+        // Second gallery attachments...
+        $this->assertCount(3, $attachmentGalleries->last()->attachments());
+        $this->assertEquals('red-2.png', $attachmentGalleries->last()->attachments()->first()->attachable->filename);
+        $this->assertEquals('blue-2.png', $attachmentGalleries->last()->attachments()->skip(1)->first()->attachable->filename);
+        $this->assertEquals('green-2.png', $attachmentGalleries->last()->attachments()->last()->attachable->filename);
+    }
+
+    /** @test */
+    public function gets_only_attachments_of_galleries()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>yello
+            <rich-text-attachment presentation="gallery" url="http://example.com/white.png" filename="white.png" filesize="1" content-type="image/png" width="200" height="200" caption="should not get"></rich-text-attachment>
+            <div class="this will be removed">
+                <rich-text-attachment presentation="gallery" url="http://example.com/red-1.png" filename="red-1.png" filesize="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/blue-1.png" filename="blue-1.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+            </div>
+            <div class="this will be removed">
+                <rich-text-attachment presentation="gallery" url="http://example.com/red-2.png" filename="red-2.png" filesize="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/blue-2.png" filename="blue-2.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+                <rich-text-attachment presentation="gallery" url="http://example.com/green-2.png" filename="green-2.png" filezie="200" content-type="image/png" width="300" height="300" caption="hey there"></rich-text-attachment>
+            </div>
+        </div>
+        HTML);
+
+        $galleryAttachments = $content->galleryAttachments();
+
+        $this->assertCount(5, $galleryAttachments, 'Could not find all gallery attachments.');
+
+        $this->assertEquals('red-1.png', $galleryAttachments[0]->attachable->filename);
+        $this->assertEquals('blue-1.png', $galleryAttachments[1]->attachable->filename);
+        $this->assertEquals('red-2.png', $galleryAttachments[2]->attachable->filename);
+        $this->assertEquals('blue-2.png', $galleryAttachments[3]->attachable->filename);
+        $this->assertEquals('green-2.png', $galleryAttachments[4]->attachable->filename);
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {
