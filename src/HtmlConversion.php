@@ -30,7 +30,7 @@ class HtmlConversion
         return $element;
     }
 
-    private static function document(?string $html = null): DOMDocument
+    public static function document(?string $html = null): DOMDocument
     {
         libxml_use_internal_errors(true);
         $document = new DOMDocument();
