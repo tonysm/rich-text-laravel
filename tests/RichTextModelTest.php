@@ -43,8 +43,12 @@ class RichTextModelTest extends TestCase
     }
 
     /** @test */
-    public function body_field_in_the_rich_text_model_gets_cast_to_rich_text()
+    public function fowards_calls_to_relationship()
     {
+        $post = $this->createPost();
+
+        $this->assertCount(1, $post->body->attachments());
+        $this->assertEquals($this->content(), $post->body->toTrixHtml());
     }
 
     private function createPost(): Post
@@ -56,10 +60,7 @@ class RichTextModelTest extends TestCase
     {
         return <<<HTML
         <h1>Hey, there</h1>
-        <figure
-            data-trix-attachment='{"contentType": "image/png", "width": 200, "height": 100, "url": "http://example.com/red-1.png", "filename": "red-1.png", "filesize": 100}'
-            data-trix-attributes='{"presentation": "gallery", "caption": "Captioned"}'
-        ></figure>
+        <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/red-1.png","filename":"red-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
         HTML;
     }
 }
