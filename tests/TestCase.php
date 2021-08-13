@@ -52,5 +52,8 @@ class TestCase extends Orchestra
             $table->string('name');
             $table->timestamps();
         });
+
+        $migration = require_once __DIR__.'/../database/migrations/create_rich_texts_table.php.stub';
+        $migration->up();
     }
 }
