@@ -2,6 +2,8 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Models\RichText;
 use Tonysm\RichTextLaravel\Tests\Stubs\HasRichText\Post;
@@ -77,6 +79,37 @@ class RichTextModelTest extends TestCase
 
         $this->assertEquals($expectedRender, "$post->body");
         $this->assertEquals($expectedRender, "$post->richTextBody");
+    }
+
+    /** @test */
+    public function can_eager_load_rich_text_fields()
+    {
+        $this->createPost()->fresh();
+        $this->createPost()->fresh();
+
+        $queryCounts = 0;
+
+        DB::listen(function () use (&$queryCounts) {
+            $queryCounts++;
+        });
+
+        // Without eager loading...
+        Post::all()->each(fn ($post) => $post->body);
+        $this->assertEquals(3, $queryCounts);
+
+        $queryCounts = 0;
+
+        // With eager loading...
+        Post::withRichText()->get()->each(fn ($post) => $post->body);
+        $this->assertEquals(2, $queryCounts);
+    }
+
+    /** @test */
+    public function throws_exception_when_eager_loading_unkown_rich_text_field()
+    {
+        $this->expectException(RuntimeException::class);
+
+        Post::withRichText(['unkown'])->get();
     }
 
     private function createPost(): Post

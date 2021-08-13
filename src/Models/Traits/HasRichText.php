@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Models\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -59,5 +60,24 @@ trait HasRichText
     public static function fieldToRichTextRelationship(string $field): string
     {
         return 'richText' . Str::studly($field);
+    }
+
+    public function scopeWithRichText(Builder $query, $fields = []): void
+    {
+        $allFields = (new static)->getRichTextFields();
+
+        $fields = Arr::wrap($fields);
+        $fields = empty($fields) ? $allFields : $fields;
+
+        // We're converting the attributes to the relationship pattern and
+        // only then we'll perform the eager loading. If any of the given
+        // fields is not a valid one, we'll throw an exception and halt.
+
+        $fields = collect($fields)
+            ->each(fn ($field) => throw_unless(in_array($field, $allFields), new RuntimeException(sprintf('Unknown rich text field: %s.', $field))))
+            ->map(fn ($field) => static::fieldToRichTextRelationship($field))
+            ->all();
+
+        $query->with($fields);
     }
 }
