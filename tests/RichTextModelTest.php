@@ -51,6 +51,34 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($this->content(), $post->body->toTrixHtml());
     }
 
+    /** @test */
+    public function renders_to_text()
+    {
+        $post = $this->createPost();
+
+        $expectedRender = <<<HTML
+        <div class="trix-content">
+            <h1>Hey, there</h1>
+        <figure class="attachment attachment--preview attachment--png">
+            <img src="http://example.com/red-1.png" width="200" height="100">
+            <figcaption class="attachment__caption">
+                Captioned
+            </figcaption>
+        </figure>
+
+        </div>
+
+        HTML;
+
+        $this->assertEquals($expectedRender, "$post->body");
+        $this->assertEquals($expectedRender, "$post->richTextBody");
+
+        $post->refresh();
+
+        $this->assertEquals($expectedRender, "$post->body");
+        $this->assertEquals($expectedRender, "$post->richTextBody");
+    }
+
     private function createPost(): Post
     {
         return Post::create(['body' => $this->content()]);

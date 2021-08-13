@@ -31,4 +31,9 @@ class RichText extends Model
 
         return parent::__call($method, $arguments);
     }
+
+    public function __toString(): string
+    {
+        return $this->body->render();
+    }
 }
