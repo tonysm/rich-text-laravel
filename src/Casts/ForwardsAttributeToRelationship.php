@@ -17,7 +17,15 @@ class ForwardsAttributeToRelationship implements CastsAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        // dd($model, $key, $value);
+        if (is_string($value)) {
+            $relationship = $model::fieldToRichTextRelationship($key);
+
+            $richText = $model->{$relationship}()->firstOrNew(['field' => $key], [
+                'body' => $value,
+            ]);
+
+            $model->setRelation($relationship, $richText);
+        }
 
         return [];
     }
@@ -33,5 +41,8 @@ class ForwardsAttributeToRelationship implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
+        $relationship = $model::fieldToRichTextRelationship($key);
+
+        return $model->{$relationship};
     }
 }

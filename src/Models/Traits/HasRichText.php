@@ -18,6 +18,17 @@ trait HasRichText
         foreach ($fields as $field) {
             static::registerRichTextRelationships($field);
         }
+
+        static::saved(function (Model $model) {
+            foreach ($model->getRichTextFields() as $field) {
+                $relationship = static::fieldToRichTextRelationship($field);
+
+                if ($model->relationLoaded($relationship) && $model->{$relationship}->isDirty()) {
+                    $model->{$relationship}->record()->associate($model);
+                    $model->{$relationship}->save();
+                }
+            }
+        });
     }
 
     protected static function registerRichTextRelationships(string $field): void
@@ -45,7 +56,7 @@ trait HasRichText
         return Arr::wrap($this->richTextFields);
     }
 
-    public static function fieldToRichTextRelationship(string $field)
+    public static function fieldToRichTextRelationship(string $field): string
     {
         return 'richText' . Str::studly($field);
     }

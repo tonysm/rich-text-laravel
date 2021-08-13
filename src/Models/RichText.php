@@ -17,4 +17,18 @@ class RichText extends Model
     protected $casts = [
         'body' => AsRichTextContent::class,
     ];
+
+    public function record()
+    {
+        return $this->morphTo();
+    }
+
+    public function __call($method, $arguments)
+    {
+        if (method_exists($this->body, $method)) {
+            return call_user_func([$this->body, $method], ...$arguments);
+        }
+
+        return parent::__call($method, $arguments);
+    }
 }
