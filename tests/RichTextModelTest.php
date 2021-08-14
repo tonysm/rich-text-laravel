@@ -87,21 +87,32 @@ class RichTextModelTest extends TestCase
         $this->createPost()->fresh();
         $this->createPost()->fresh();
 
+        $this->assertEquals(2, Post::count());
+
         $queryCounts = 0;
 
         DB::listen(function () use (&$queryCounts) {
             $queryCounts++;
         });
 
-        // Without eager loading...
-        Post::all()->each(fn ($post) => $post->body);
-        $this->assertEquals(3, $queryCounts);
+        // Without eager loading, it will load each post individually (2 DB
+        // calls) then, for each post, it will load each rich text field's
+        // relationship on demand (2 extrac DB calls, 1 for each field).
+
+        foreach (Post::query()->orderBy('id')->cursor() as $post) {
+            $post->body && $post->notes;
+        }
+
+        $this->assertEquals(5, $queryCounts);
+
+        return;
 
         $queryCounts = 0;
 
         // The Post model has 2 rich text fields, which means 2 relationships, so eager
         // loading all fields will result in one query for each relationship. Which,
         // for us, it means 1 query for the posts, and 1 for each relationship.
+
         Post::withRichText()->get()->each(fn ($post) => $post->body && $post->notes);
         $this->assertEquals(3, $queryCounts);
 
