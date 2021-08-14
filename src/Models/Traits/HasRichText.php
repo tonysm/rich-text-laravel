@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
-use Tonysm\RichTextLaravel\Models\RichText;
 
 trait HasRichText
 {
@@ -35,7 +34,7 @@ trait HasRichText
     protected static function registerRichTextRelationships(string $field): void
     {
         static::resolveRelationUsing(static::fieldToRichTextRelationship($field), function (Model $model) use ($field) {
-            return $model->morphOne(RichText::class, 'record')->where('field', $field);
+            return $model->morphOne(config('rich-text-laravel.model'), 'record')->where('field', $field);
         });
     }
 
