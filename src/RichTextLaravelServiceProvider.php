@@ -19,7 +19,7 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->name('rich-text-laravel')
             ->hasConfigFile()
             ->hasViews()
-            // ->hasMigration('create_rich-text-laravel_table')
+            ->hasMigration('create_rich_texts_table')
             ->hasCommand(RichTextLaravelInstallCommand::class);
     }
 }
