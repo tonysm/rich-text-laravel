@@ -13,5 +13,6 @@ class Post extends Model
 
     protected $richTextFields = [
         'body',
+        'notes',
     ];
 }

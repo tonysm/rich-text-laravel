@@ -112,6 +112,41 @@ class RichTextModelTest extends TestCase
         Post::withRichText(['unkown'])->get();
     }
 
+    /** @test */
+    public function can_have_different_fields_on_the_same_model()
+    {
+        $post = Post::create([
+            'body' => '<h1>hello from body</h1>',
+            'notes' => '<h1>hello from notes</h1>',
+        ]);
+
+        $expectedBodyContent = <<<HTML
+        <div class="trix-content">
+            <h1>hello from body</h1>
+        </div>
+
+        HTML;
+
+        $expectedNotesContent = <<<HTML
+        <div class="trix-content">
+            <h1>hello from notes</h1>
+        </div>
+
+        HTML;
+
+        $this->assertEquals($expectedNotesContent, "$post->notes");
+        $this->assertEquals($expectedBodyContent, "$post->body");
+        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
+        $this->assertEquals($expectedBodyContent, "$post->richTextBody");
+
+        $post->refresh();
+
+        $this->assertEquals($expectedNotesContent, "$post->notes");
+        $this->assertEquals($expectedBodyContent, "$post->body");
+        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
+        $this->assertEquals($expectedBodyContent, "$post->richTextBody");
+    }
+
     private function createPost(): Post
     {
         return Post::create(['body' => $this->content()]);
