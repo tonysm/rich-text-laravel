@@ -488,6 +488,64 @@ Cheers,
 
 If you're attaching models, you can implement the `richTextAsPlainText(?string $caption = null): string` method on it, where you should return the plain text representation of that attachable. If the method is not implemented on the attachable and no caption is stored in the Trix attachment, that attachment won't be present in the Plain Text version of the content.
 
+### Sanitization
+<a name="sanitization"></a>
+
+Since we're output unescaped HTML, you need to sanitize to avoid any security issues. One suggestion is to to use the [mews/purifier](https://github.com/mewebstudio/Purifier) package, before any final render (with the exception of rendering inside the value attribute of the input field that feeds Trix). That would look like this:
+
+```php
+{!! clean($post->body) !!}
+```
+
+You need to add some customizations to the config file created when you install the `mews/purifier` package, like so:
+
+```php
+return [
+    // ...
+    'settings' => [
+        // ...
+        'default' => [
+            // ...
+            'HTML.Allowed' => 'rich-text-attachment[sgid|content-type|url|href|filename|filesize|height|width|previewable|presentation|caption|data-trix-attachment|data-trix-attributes],div,b,strong,i,em,u,a[href|title|data-turbo-frame],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],del,h1,blockquote,figure[data-trix-attributes|data-trix-attachment],figcaption,*[class]',
+        ],
+        // ...
+        'custom_definition' => [
+            // ...
+            'elements' => [
+                // ...
+                ['rich-text-attachment', 'Block', 'Flow', 'Common'],
+            ],
+        ],
+        // ...
+        'custom_attributes' => [
+            // ...
+            ['rich-text-attachment', 'sgid', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'content-type', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'url', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'href', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'filename', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'filesize', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'height', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'width', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'previewable', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'presentation', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'caption', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'data-trix-attachment', new HTMLPurifier_AttrDef_Text],
+            ['rich-text-attachment', 'data-trix-attributes', new HTMLPurifier_AttrDef_Text],
+            ['figure', 'data-trix-attachment', new HTMLPurifier_AttrDef_Text],
+            ['figure', 'data-trix-attributes', new HTMLPurifier_AttrDef_Text],
+        ],
+        // ...
+        'custom_elements' => [
+            // ...
+            ['rich-text-attachment', 'Block', 'Flow', 'Common'],
+        ],
+    ],
+];
+```
+
+**Attention**: I'm not an expert in HTML content sanitization, so take this with an extra grain of salt and, please, consult someone more with more security experience on this if you can.
+
 ## Testing
 
 ```bash
