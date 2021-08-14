@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use RuntimeException;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
+use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 
 trait HasRichText
 {
@@ -50,7 +50,7 @@ trait HasRichText
     protected function getRichTextFields(): array
     {
         if (! property_exists($this, 'richTextFields')) {
-            throw new RuntimeException(sprintf('Missing protected property $richTextFields in %s model.', static::class));
+            throw RichTextException::missingRichTextFieldsProperty(static::class);
         }
 
         return Arr::wrap($this->richTextFields);
@@ -73,7 +73,7 @@ trait HasRichText
         // fields is not a valid one, we'll throw an exception and halt.
 
         $fields = collect($fields)
-            ->each(fn ($field) => throw_unless(in_array($field, $allFields), new RuntimeException(sprintf('Unknown rich text field: %s.', $field))))
+            ->each(fn ($field) => throw_unless(in_array($field, $allFields), RichTextException::unknownRichTextFieldOnEagerLoading($field)))
             ->map(fn ($field) => static::fieldToRichTextRelationship($field))
             ->all();
 

@@ -3,8 +3,8 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 use Tonysm\RichTextLaravel\Content;
+use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 use Tonysm\RichTextLaravel\Models\RichText;
 use Tonysm\RichTextLaravel\Tests\Stubs\HasRichText\Post;
 
@@ -126,7 +126,7 @@ class RichTextModelTest extends TestCase
     /** @test */
     public function throws_exception_when_eager_loading_unkown_rich_text_field()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(RichTextException::class);
 
         Post::withRichText(['unkown'])->get();
     }
