@@ -356,7 +356,88 @@ class Post extends Model
 ### Image Upload
 <a name="image-upload"></a>
 
-TODO
+The default image attachment implementation that ships with Trix won't work out of the box with Laravel. It's up to you to implement the image uploading and update the attachment accordingly after that with the image URL. Here's a suggested implementation using Stimulus, but you can do it on any front-end framework of your choice. We won't cover how to setup Stimulus on your project here, check their docs or, if you are already using the [Turbo Laravel](https://github.com/tonysm/turbo-laravel) package, you can see how it [installs Stimulus there](https://github.com/tonysm/turbo-laravel/blob/main/stubs/resources/js/stimulus.js).
+
+First, we need to create the Stimulus controller, let's call it `trix_controller.js`:
+
+```js
+import { Controller } from "stimulus";
+
+export default class extends Controller {
+    // ...
+}
+```
+
+Then, we can listen to the `trix-attachment-add` event that the Trix editor dispatched whenever a new attachment is added, like so:
+
+```html
+<trix-editor
+    data-controller="trix"
+    data-action="
+        trix-attachment-add->trix#upload
+    "
+></trix-editor>
+```
+
+Now, let's implement the `upload` method in the `trix_controller.js` we just created:
+
+```js
+import { Controller } from "stimulus";
+
+export default class extends Controller {
+    upload(event) {
+        if (! event?.attachment?.file) {
+            return;
+        }
+
+        this._uploadFile(event.attachment);
+    }
+
+    _uploadFile(attachment) {
+        const form = new FormData();
+        form.append('attachment', attachment.file);
+
+        window.axios.post('/attachments', form, {
+            onUploadProgress: (progressEvent) => {
+                attachment.setUploadProgress(progressEvent.loaded / progressEvent.total * 100);
+            }
+        }).then(resp => {
+            attachment.setAttributes({
+                url: resp.data.image_url,
+                href: resp.data.image_url,
+            });
+        });
+    }
+}
+```
+
+This will send a POST request to `/attachments` with the `attachment` field, which should be a file Blob. The expected response should contain an `image_url` field. Here's what that route in Laravel could look like:
+
+```php
+Route::middleware(['auth:sanctum', 'verified'])->post('attachments', function () {
+    request()->validate([
+        'attachment' => ['required', 'file'],
+    ]);
+
+    $path = request()->file('attachment')->store('trix-attachments', 'uploads');
+
+    return [
+        'image_url' => Storage::disk('uploads')->url($path),
+    ];
+})->name('attachments.store');
+```
+
+In this example, the image will be stored in the `uploads` disk inside the `trix-attachments/` folder, and the URL to that file will be returned in the `image_url` property. That image will be stored in the Trix content as a remote image. This is only a simplified version of doing image uploads. Another way would be to use something like the [Media Library](https://spatie.be/docs/laravel-medialibrary/v9/introduction) package from spatie and [customizing the Media model](https://spatie.be/docs/laravel-medialibrary/v9/advanced-usage/using-your-own-model) and make it an attachable too. This way, the Media model would have its own SGID and you would set that attribute in the attachment as well, like so:
+
+```php
+attachment.setAttributes({
+    sgid: resp.data.sgid,
+    url: resp.data.image_url,
+    href: resp.data.image_url,
+});
+```
+
+This would allow more advanced things like retrieving all attachments of the `Media` model in the Rich Text content and saving the embedded Media attachments as a relationship on the model that has rich text content, as we did with mentions in the (attachments)[#attachments] section. This way, you have a reference of which images are being used on rich text codes (can be useful if you want to prune the images later).
 
 ### Plain Text Rendering
 <a name="plain-text"></a>
