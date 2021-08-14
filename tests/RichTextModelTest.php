@@ -99,8 +99,16 @@ class RichTextModelTest extends TestCase
 
         $queryCounts = 0;
 
-        // With eager loading...
-        Post::withRichText()->get()->each(fn ($post) => $post->body);
+        // The Post model has 2 rich text fields, which means 2 relationships, so eager
+        // loading all fields will result in one query for each relationship. Which,
+        // for us, it means 1 query for the posts, and 1 for each relationship.
+        Post::withRichText()->get()->each(fn ($post) => $post->body && $post->notes);
+        $this->assertEquals(3, $queryCounts);
+
+        $queryCounts = 0;
+
+        // Eager loading only one field will only load that specific field's relationship...
+        Post::withRichText('body')->get()->each(fn ($post) => $post->body);
         $this->assertEquals(2, $queryCounts);
     }
 
