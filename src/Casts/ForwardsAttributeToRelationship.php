@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 
 class ForwardsAttributeToRelationship implements CastsAttributes
 {
@@ -18,13 +19,8 @@ class ForwardsAttributeToRelationship implements CastsAttributes
     public function set($model, $key, $value, $attributes)
     {
         if (is_string($value)) {
-            $relationship = $model::fieldToRichTextRelationship($key);
-
-            $richText = $model->{$relationship}()->firstOrNew(['field' => $key], [
-                'body' => $value,
-            ]);
-
-            $model->setRelation($relationship, $richText);
+            $richText = $this->firstOrNewRelationship($model, $key);
+            $richText->fill(['body' => $value]);
         }
 
         return [];
@@ -41,8 +37,20 @@ class ForwardsAttributeToRelationship implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
-        $relationship = $model::fieldToRichTextRelationship($key);
+        return $this->firstOrNewRelationship($model, $key);
+    }
 
-        return $model->{$relationship};
+    public function firstOrNewRelationship(Model $model, string $field)
+    {
+        $relationship = $model::fieldToRichTextRelationship($field);
+
+        if ($model->{$relationship}) {
+            return $model->{$relationship};
+        }
+
+        $richText = $model->{$relationship}()->make(['field' => $field]);
+        $model->setRelation($relationship, $richText);
+
+        return $richText;
     }
 }

@@ -23,9 +23,9 @@ trait HasRichText
             foreach ($model->getRichTextFields() as $field) {
                 $relationship = static::fieldToRichTextRelationship($field);
 
-                if ($model->relationLoaded($relationship) && $model->{$relationship}->isDirty()) {
-                    $model->{$relationship}->record()->associate($model);
-                    $model->{$relationship}->save();
+                if ($model->relationLoaded($relationship) && $model->{$field}->isDirty()) {
+                    $model->{$field}->record()->associate($model);
+                    $model->{$field}->save();
                 }
             }
         });

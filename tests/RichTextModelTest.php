@@ -84,10 +84,21 @@ class RichTextModelTest extends TestCase
     /** @test */
     public function can_eager_load_rich_text_fields()
     {
-        $this->createPost()->fresh();
-        $this->createPost()->fresh();
+        $this->createPost(
+            body: '<p>this is the body</p>',
+            notes: '<p>this is the notes</p>',
+        )->fresh();
+
+        $this->createPost(
+            body: '<p>this is the body</p>',
+            notes: '<p>this is the notes</p>',
+        )->fresh();
 
         $this->assertEquals(2, Post::count());
+
+        // Without eager loading, it will load each post individually (2 DB
+        // calls) then, for each post, it will load each rich text field's
+        // relationship on demand (2 extrac DB calls, 1 for each field).
 
         $queryCounts = 0;
 
@@ -95,17 +106,11 @@ class RichTextModelTest extends TestCase
             $queryCounts++;
         });
 
-        // Without eager loading, it will load each post individually (2 DB
-        // calls) then, for each post, it will load each rich text field's
-        // relationship on demand (2 extrac DB calls, 1 for each field).
-
         foreach (Post::query()->orderBy('id')->cursor() as $post) {
             $post->body && $post->notes;
         }
 
         $this->assertEquals(5, $queryCounts);
-
-        return;
 
         $queryCounts = 0;
 
@@ -153,22 +158,78 @@ class RichTextModelTest extends TestCase
 
         HTML;
 
-        $this->assertEquals($expectedNotesContent, "$post->notes");
         $this->assertEquals($expectedBodyContent, "$post->body");
-        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
-        $this->assertEquals($expectedBodyContent, "$post->richTextBody");
-
-        $post->refresh();
-
         $this->assertEquals($expectedNotesContent, "$post->notes");
-        $this->assertEquals($expectedBodyContent, "$post->body");
-        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
         $this->assertEquals($expectedBodyContent, "$post->richTextBody");
+        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
+
+        $post = $post->fresh();
+
+        $this->assertEquals($expectedBodyContent, "$post->body");
+        $this->assertEquals($expectedNotesContent, "$post->notes");
+        $this->assertEquals($expectedBodyContent, "$post->richTextBody");
+        $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
     }
 
-    private function createPost(): Post
+    /** @test */
+    public function can_update_content()
     {
-        return Post::create(['body' => $this->content()]);
+        $post = $this->createPost(
+            body: '<p>this is the old body</p>',
+        );
+
+        $this->assertEquals(<<<HTML
+        <div class="trix-content">
+            <p>this is the old body</p>
+        </div>
+
+        HTML, "{$post->body}");
+
+        $post->body = "<p>Hey</p>";
+        $post->save();
+
+        $this->assertEquals(<<<HTML
+        <div class="trix-content">
+            <p>Hey</p>
+        </div>
+
+        HTML, "{$post->body}");
+
+        $post = $post->fresh();
+
+        $this->assertEquals(<<<HTML
+        <div class="trix-content">
+            <p>Hey</p>
+        </div>
+
+        HTML, "{$post->body}");
+
+        $post->body = "<p>Changed 2</p>";
+        $post->save();
+
+        $this->assertEquals(<<<HTML
+        <div class="trix-content">
+            <p>Changed 2</p>
+        </div>
+
+        HTML, "{$post->body}");
+
+        $post = $post->fresh();
+
+        $this->assertEquals(<<<HTML
+        <div class="trix-content">
+            <p>Changed 2</p>
+        </div>
+
+        HTML, "{$post->body}");
+    }
+
+    private function createPost(?string $body = null, ?string $notes = null): Post
+    {
+        return Post::create([
+            'body' => $body ?: $this->content(),
+            'notes' => $notes ?: '',
+        ]);
     }
 
     private function content(): string
