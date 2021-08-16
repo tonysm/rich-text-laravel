@@ -34,7 +34,7 @@ class ContentTest extends TestCase
         $html = '<a href="http://example.com/1">first link</a><br><a href="http://example.com/1">second link</a>';
         $content = $this->fromHtml($html);
 
-        $this->assertEquals(['http://example.com/1'], $content->links());
+        $this->assertEquals(['http://example.com/1'], $content->links()->all());
     }
 
     /** @test */

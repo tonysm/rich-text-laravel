@@ -48,12 +48,11 @@ class Content
         }
     }
 
-    public function links(): array
+    public function links(): Collection
     {
         return $this->fragment->findAll('//a[@href]')
             ->map(fn (DOMElement $node) => $node->getAttribute('href'))
-            ->unique()
-            ->all();
+            ->unique();
     }
 
     public function attachments(): Collection
