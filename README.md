@@ -210,149 +210,6 @@ When feeding the Trix editor again, you need to do it differently:
 
 Rendering for the editor is a bit different, so it has to be like that.
 
-### Trix Attachments
-<a name="attachments"></a>
-
-Trix has a concept of Attachments. A common example is attaching images. Trix already ships with an image attachment toolbar button, you only have to implement the actual uploading of the image. Uploaded images may not need a model representation on your application, so you can just have it as a remote image. See the [image upload](#image-upload) section for more about this.
-
-Although images make a straight-forward example, you can actually attach anything to your Trix rich text content. For instance, you may want to implement a mentions feature inside the editor, so you would want to make the User model a Trix attachable. To do that, you may implement the `AttachableContract` and use the `Attachable` trait in a model. Besides that, you may also implement a `richTextRender(array $options): string` where you tell the package how to render that model inside Trix:
-
-```php
-use Tonysm\RichTextLaravel\Attachables\AttachableContract;
-use Tonysm\RichTextLaravel\Attachables\Attachable;
-
-class User extends Model implements AttachableContract
-{
-    use Attachable;
-
-    public function richTextRender(array $options = []): string
-    {
-        return view('users._mention', [
-            'user' => $this,
-        ])->render();
-    }
-}
-```
-
-Then inside that `users._mention` Blade template you have full control over the HTML for this attachable field.
-
-The `$options` array is there in case you're rendering multiple models inside a gallery, so you would get a `in_gallery` boolean field (optional) in thase case, which is not the case for this user mentions example, so we can simply ignore it.
-
-Trix content can also be converted to Plain Text, so you optionally implement the `richTextAsPlainText()`  method on any attachable and return a plain text string corresponding to that attachment. Read more about this in the [plain text](#plain-text) section.
-
-##### Getting Attachables
-
-You may retrieve all the attachments of a rich content field using the `attachments()` method both in the RichText model instance or the Content instance:
-
-```php
-$post->body->attachments()
-```
-
-This will return a collection of all the attachments, anything that is an attachable, really, so images and users, for instance - if you want only attachments of a specific attachable you can use the filter method on the collection, like so:
-
-```php
-// Getting only attachments of users inside the rich text content.
-
-$post->body->attachments()
-    ->filter(fn (Attachment $attachment) => $attachment->attachable instanceof User)
-    ->unique();
-```
-
-In our user mentions implementation, this may be useful so we can sync the mentions relationship in the post model with all the user attachments in the rich text content, here's a semi-complete implementation of the mentions feature, where we store the mentions associated with the Post and we sync those up everytime the Post model changes to make sure users get the notification even when the Post is updated afterwards to include their mention:
-
-```php
-class User extends Model implements AttachableContract
-{
-    use Attachable;
-
-    public function mentions()
-    {
-        return $this->hasMany(Mention::class);
-    }
-
-    public function richTextRender(array $options = []): string
-    {
-        return view('users._mention', [
-            'user' => $this,
-        ])->render();
-    }
-}
-
-class Mention extends Model
-{
-    public static function booted()
-    {
-        static::created(queueable(function (Mention $mention) {
-            $mention->sendUserNotification();
-        }));
-    }
-
-    public function post()
-    {
-        return $this->belongsTo(Post::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function sendUserNotification(): void
-    {
-        $this->user->notify(new MentionedNotification($mention));
-    }
-}
-
-class Post extends Model
-{
-    use HasRichText;
-
-    protected $guarded = [];
-
-    protected $richTextFields = [
-        'body',
-    ];
-
-    public static function booted()
-    {
-        static::saved(queueable(function (Post $post) {
-            $post->syncMentions();
-        }));
-    }
-
-    public function mentions()
-    {
-        return $this->hasMany(Mention::class);
-    }
-
-    public function syncMentions(): void
-    {
-        $attachedUsers = $this->body->attachments()
-            ->filter(fn (Attachment $attachment) => $attachment->attachable instanceof User)
-            ->map(fn (Attachment $attachment) => $attachment->attachable)
-            ->unique();
-
-        $this->loadMissing('mentions.user');
-
-        // Remove mentions for users that are no longer attached in the content...
-        $this->mentions->filter(fn (Mention $mention) => (
-            null === $attachedUsers->first(fn (User $user) => $mention->user->is($user)))
-        ))->each->delete();
-
-        // Create mentions for users that are now listed and there are no prior mentions for them...
-        $newMentions = $attachedUsers->filter(fn (User $user) => (
-            null === $this->mentions->first(fn (Mention $mention) => $mention->user->is($user))
-        ))->map(fn (User $user) => $user->mentions()->make());
-
-        if ($newMentions->isNotEmpty()) {
-            $this->mentions()->saveMany($newMentions);
-        }
-
-        $this->mentions->merge($newMentions);
-    }
-}
-```
-
 ### Image Upload
 <a name="image-upload"></a>
 
@@ -427,7 +284,7 @@ Route::middleware(['auth:sanctum', 'verified'])->post('attachments', function ()
 })->name('attachments.store');
 ```
 
-In this example, the image will be stored in the `uploads` disk inside the `trix-attachments/` folder, and the URL to that file will be returned in the `image_url` property. That image will be stored in the Trix content as a remote image. This is only a simplified version of doing image uploads. Another way would be to use something like the [Media Library](https://spatie.be/docs/laravel-medialibrary/v9/introduction) package from spatie and [customizing the Media model](https://spatie.be/docs/laravel-medialibrary/v9/advanced-usage/using-your-own-model) and make it an attachable too. This way, the Media model would have its own SGID and you would set that attribute in the attachment as well, like so:
+In this example, the image will be stored in the `uploads` disk inside the `trix-attachments/` folder, and the URL to that file will be returned in the `image_url` property. That image will be stored in the Trix content as a remote image. This is only a simplified version of doing image uploads. Another way would be to use something like the [Media Library](https://spatie.be/docs/laravel-medialibrary/v9/introduction) package from Spatie and [customizing the Media model](https://spatie.be/docs/laravel-medialibrary/v9/advanced-usage/using-your-own-model) and make it an attachable too. This way, the Media model would have its own SGID and you would set that attribute in the attachment as well, like so:
 
 ```php
 attachment.setAttributes({
@@ -437,7 +294,230 @@ attachment.setAttributes({
 });
 ```
 
-This would allow more advanced things like retrieving all attachments of the `Media` model in the Rich Text content and saving the embedded Media attachments as a relationship on the model that has rich text content, as we did with mentions in the (attachments)[#attachments] section. This way, you have a reference of which images are being used on rich text codes (can be useful if you want to prune the images later).
+This would allow more advanced things like retrieving all attachments of the `Media` model in the Rich Text content and saving the embedded Media attachments as a relationship on the model that has rich text content, as we did with mentions in the [attachments](#attachments) section. This way, you have a reference of which images are being used on rich text codes (can be useful if you want to prune the images later).
+
+### Content Attachments
+<a name="attachments"></a>
+
+With Trix we can have [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature on top of Trix. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The JavaScript portion is the same, so we're recreating that portion here.
+
+To turn the User model into an _Attachable_, you must implement the `AttachableContract` and use the `Attachable` trait on the User model. Besides that, you must also implement a `richTextRender(array $options): string` where you tell the package how to render that model inside Trix:
+
+```php
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+use Tonysm\RichTextLaravel\Attachables\Attachable;
+
+class User extends Model implements AttachableContract
+{
+    use Attachable;
+
+    public function richTextRender(array $options = []): string
+    {
+        return view('users._mention', [
+            'user' => $this,
+        ])->render();
+    }
+}
+```
+
+The `$options` array passed to the `richTextRender` is there in case you're rendering multiple models inside a gallery, so you would get a `in_gallery` boolean field (optional) in that case, which is not the case for this user mentions example, so we can ignore it.
+
+Then inside that `users._mention` Blade template you have full control over the HTML for this attachable field. You may want to show the user's avatar and their name in a span tag inside the attachment, so the `users._mention` view would look like this:
+
+```blade
+<span class="flex items-center space-x-1">
+    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="inline-block object-cover w-4 h-4 rounded-full" />
+    <span>{{ $user->name }}</span>
+</span>
+```
+
+Now, to the dropdown and to trigger opening the dropdown whenever users type the `@` symbol inside the Trix editor, you may use something like [Zurb's Tribute](https://github.com/zurb/tribute), or you could build your own dropbown and listen to keydown events on the editor watching when users type an `@` symbol to open the dropdown. Your choice. Let's first create a new Stimulus controller for mentions called `mentions_controller.js`:
+
+```js
+import { Controller } from "stimulus";
+
+export default class extends Controller {
+    // ...
+}
+```
+
+Next, we're going to import Tribute and initiate it when the controller connects to the DOM element it's attached to as well as which method it will use to look for users (the `fetchUsers`). We need to attach Tribute to the element so it knows where to add the event listeners which trigger the mentions dropdown. We also need to override what Tribute does when an option is picked, that's why we're adding our own implementation of the `range.pasteHtml` method on the instance (see the code below). We also need to :
+
+```js
+import { Controller } from "stimulus";
+import Tribute from 'tributejs';
+import Trix from 'trix';
+
+require('tributejs/tribute.css');
+
+export default class extends Controller {
+    connect() {
+        this.initializeTribute();
+    }
+
+    initializeTribute() {
+        this.tribute = new Tribute({
+            allowSpaces: true,
+            lookup: 'name',
+            values: this.fetchUsers,
+        })
+
+        this.tribute.attach(this.element);
+        this.tribute.range.pasteHtml = this._pasteHtml.bind(this);
+    }
+
+    fetchUsers(text, callback) {
+        window.axios.get(`/mentions?search=${text}`)
+            .then(resp => callback(resp.data))
+            .catch(error => callback([]))
+    }
+
+    _pasteHtml(html, startPosition, endPosition) {
+        // We need to remove everything the user has typed
+        // while searching for a user. We'll later inject
+        // the mention into Trix as a content attachment.
+
+        let range = this.editor.getSelectedRange();
+        let position = range[0];
+        let length = endPosition - startPosition;
+
+        this.editor.setSelectedRange([position - length, position])
+        this.editor.deleteInDirection('backward');
+    }
+}
+```
+
+Now we need to attach the mentions controller to the Trix editor, just like we did with the image upload example:
+
+```html
+<trix-editor
+    data-controller="trix mentions"
+    data-action="
+        trix-attachment-add->trix#upload
+    "
+></trix-editor>
+```
+
+The `GET /mentions?search=` route could look something like this:
+
+```php
+Route::middleware(['auth:sanctum', 'verified'])->get('mentions', function () {
+    return auth()->user()->currentTeam->allUsers()
+        ->when(request('search'), fn ($users, $search) => (
+            $users->filter(fn (User $user) => str_starts_with(strtolower($user->name), strtolower($search)))
+        ))
+        ->sortBy('name')
+        ->take(10)
+        ->map(fn (User $user) => [
+            'sgid' => $user->richTextSgid(),
+            'name' => $user->name,
+            'content' => $user->richTextRender(),
+        ])
+        ->values();
+})->name('mentions.index');
+```
+
+You see we're returning the `sgid`, which is a method from the `Attachable` trait. It basically generates a unique global identifier for this model inside your application. More on that in the [SGDI](#sgid) section. It also returns the user's name, which will be used by Tribute to show the options, and the content, which is the rich text render that we're going to insert into the `Trix.Attachment`. However, if you try to run this code yet, this should not work as you'd expect. After choosing an option, the stuff that you wrote while looking for the option, something like `@Ton`, should be gone but no attachment was placed instead. That's because we haven't implemented this part yet.
+
+When you choose an option in Tribute, you need to listen to the `tribute-replaced` event and call a method inside the `mentions_controller.js`, let's hook it:
+
+```html
+<trix-editor
+    data-controller="trix mentions"
+    data-action="
+        trix-attachment-add->trix#upload
+        tribute-replaced>mentions#tributeReplaced
+    "
+></trix-editor>
+```
+
+Next, let's implement that method inside out mentions controller. The event that we get there should contain the user object (the one with the `sgid`, `name`, and `content` attributes we returned from the Controller) inside the `detail.item.original` path. We can take that and create an instance of the `Trix.Attachment` passing the `sgid` and `content` attributes to it, then inserting that attachment into the editor:
+
+```js
+import { Controller } from "stimulus";
+import Tribute from 'tributejs';
+import Trix from 'trix';
+
+require('tributejs/tribute.css');
+
+export default class extends Controller {
+    // ...
+
+    tributeReplaced(e) {
+        let mention = e.detail.item.original;
+        let attachment = new Trix.Attachment({
+            sgid: mention.sgid,
+            content: mention.content,
+        });
+
+        this.editor.insertAttachment(attachment);
+        this.editor.insertString(" ");
+    }
+
+    get editor() {
+        return this.element.editor;
+    }
+}
+```
+
+Now we're done. The example here is using user mentions, but you could really attach anything into the Trix document. And you have full control over how that document is rendered. When that document is submitted to your backend to be stored, the package will then minimize any content attachments, similar to what was done in the image upload example. But this time, the `sgid` will be used to identify the User attachable that was mentioned and the `users._mention` Blade template will be rendered again later whenever you're displaying that document. This is useful because you can tweak how user mentions look like inside your app without having to worry about the documents at-rest in the database.
+
+You can later retrieve all attachments from that rich text content. See [The Content Object](#content-object) section for more.
+
+### The Content Object
+<a name="content-object"></a>
+
+You may want to retrieve all the attachables in that rich text content at a later point and do something fancy with it, say _actually_ storing the User's mentions associated with the Post model, for example. Or you can fetch all the links inside that rich text content and do something with it.
+
+#### Getting Attachables
+
+You may retrieve all the attachments of a rich content field using the `attachments()` method both in the RichText model instance or the Content instance:
+
+```php
+$post->body->attachments()
+```
+
+This will return a collection of all the attachments, anything that is an attachable, really, so images and users, for instance - if you want only attachments of a specific attachable you can use the filter method on the collection, like so:
+
+```php
+// Getting only attachments of users inside the rich text content.
+$post->body->attachments()
+    ->filter(fn (Attachment $attachment) => $attachment->attachable instanceof User)
+    ->unique();
+```
+
+#### Getting Links
+
+To extract links from the rich text content you may call the `links()` method, like so:
+
+```php
+$post->body->links()
+```
+
+#### Getting Attachment Galleries
+
+Trix has a concept of galleries, you may want to retrieve all the galleries:
+
+```php
+$post->body->attachmentGalleries()
+```
+
+This should return a collection of all the image gallery `DOMElement`s.
+
+#### Getting Gallery Attachments
+
+You may also want to get only the _attachments_ inside of image galleries. You can achieve that like this:
+
+```php
+$post->body->galleryAttachments()
+```
+
+Which should return a collection with all the attachments of the images inside galleries (all of them). You can then retrieve just the `RemoteImage` attachable instances like so:
+
+```php
+$post->body->galleryAttachments()
+    ->map(fn (Attachment $attachment) => $attachment->attachable)
+```
 
 ### Plain Text Rendering
 <a name="plain-text"></a>
@@ -545,6 +625,10 @@ return [
 ```
 
 **Attention**: I'm not an expert in HTML content sanitization, so take this with an extra grain of salt and, please, consult someone more with more security experience on this if you can.
+
+### SGID
+
+TODO
 
 ## Testing
 
