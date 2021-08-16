@@ -341,7 +341,7 @@ export default class extends Controller {
 }
 ```
 
-Next, we're going to import Tribute and initiate it when the controller connects to the DOM element it's attached to as well as which method it will use to look for users (the `fetchUsers`). We need to attach Tribute to the element so it knows where to add the event listeners which trigger the mentions dropdown. We also need to override what Tribute does when an option is picked, that's why we're adding our own implementation of the `range.pasteHtml` method on the instance (see the code below). We also need to :
+Next, we're going to import Tribute and initiate it when the controller connects to the DOM element it's attached to - and also detach it when the controller disconnects, as well as which method it will use to look for users (the `fetchUsers`). We need to attach Tribute to the element so it knows where to add the event listeners which trigger the mentions dropdown. We also need to override what Tribute does when an option is picked, that's why we're adding our own implementation of the `range.pasteHtml` method on the instance (see the code below). We also need to :
 
 ```js
 import { Controller } from "stimulus";
@@ -353,6 +353,10 @@ require('tributejs/tribute.css');
 export default class extends Controller {
     connect() {
         this.initializeTribute();
+    }
+
+    disconnect() {
+        this.tribute.detach(this.element);
     }
 
     initializeTribute() {
