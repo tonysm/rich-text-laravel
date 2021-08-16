@@ -473,7 +473,7 @@ You can later retrieve all attachments from that rich text content. See [The Con
 
 You may want to retrieve all the attachables in that rich text content at a later point and do something fancy with it, say _actually_ storing the User's mentions associated with the Post model, for example. Or you can fetch all the links inside that rich text content and do something with it.
 
-#### Getting Attachables
+#### Getting Attachments
 
 You may retrieve all the attachments of a rich content field using the `attachments()` method both in the RichText model instance or the Content instance:
 
