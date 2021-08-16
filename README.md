@@ -47,7 +47,7 @@ There are two ways of using the package:
 1. With the recommended database structure where all rich text content will be stored outside of the model that has rich text content (recommended); and
 1. Only using the `AsRichTextContent` trait to cast a rich text content field on any model, on any table you want.
 
-Below, we cover each usage way.
+Below, we cover each usage way. It's recommended that you at least read the [Trix documentation](https://github.com/basecamp/trix) first to get a better overview of the client-side of it.
 
 ### The RichText Model
 <a name="rich-text-model"></a>
@@ -426,7 +426,7 @@ When you choose an option in Tribute, you need to listen to the `tribute-replace
     data-controller="trix mentions"
     data-action="
         trix-attachment-add->trix#upload
-        tribute-replaced>mentions#tributeReplaced
+        tribute-replaced->mentions#tributeReplaced
     "
 ></trix-editor>
 ```
