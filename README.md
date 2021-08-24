@@ -632,7 +632,9 @@ return [
 
 ### SGID
 
-TODO
+When storing references of custom attachments, the package uses another package called [GlobalID Laravel](https://github.com/tonysm/globalid-laravel). We store a Signed Global ID, which means users cannot simply change the sgids at-rest. They would need to generate another valid signature using the `APP_KEY`, which is secret.
+
+In case you want to rotate your key, you would need to loop-through all the rich text content, take all attachables with an `sgid` attribute, assign a new value to it with the new signature using the new secret, and store the content with that new value.
 
 ## Testing
 
