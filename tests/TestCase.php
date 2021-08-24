@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Tonysm\GlobalId\GlobalIdServiceProvider;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class TestCase extends Orchestra
@@ -29,6 +30,7 @@ class TestCase extends Orchestra
     {
         return [
             RichTextLaravelServiceProvider::class,
+            GlobalIdServiceProvider::class,
         ];
     }
 

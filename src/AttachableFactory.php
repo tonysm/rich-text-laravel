@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
+use Tonysm\GlobalId\Facades\Locator;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 
 class AttachableFactory
@@ -22,6 +23,8 @@ class AttachableFactory
 
     private static function attachableFromSgid(string $sgid)
     {
-        return GlobalId::findRecord($sgid);
+        return Locator::locateSigned($sgid, [
+            'for' => 'rich-text-laravel',
+        ]);
     }
 }

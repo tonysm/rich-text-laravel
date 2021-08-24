@@ -30,7 +30,10 @@ trait TrixConvertion
     public function toTrixAttachment($content = null)
     {
         /** @psalm-suppress UndefinedThisPropertyFetch */
-        $content = $content ?: $this->attachable->toTrixContent();
+        if (! $content && method_exists($this->attachable, 'toTrixContent')) {
+            $content = $this->attachable->toTrixContent();
+        }
+
         /** @psalm-suppress UndefinedMethod */
         $attributes = $this->fullAttributes()->filter()->all();
 

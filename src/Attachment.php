@@ -108,7 +108,9 @@ class Attachment
 
     private function attachableAttributes(): Collection
     {
-        return $this->cachedAttachableAttributes ??= collect($this->attachable->toRichTextAttributes());
+        return $this->cachedAttachableAttributes ??= collect(
+            $this->attachable->toRichTextAttributes([])
+        );
     }
 
     private function sgidAttributes(): Collection

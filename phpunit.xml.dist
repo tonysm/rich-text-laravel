@@ -37,6 +37,7 @@
         <junit outputFile="build/report.junit.xml"/>
     </logging>
     <php>
+        <env name="APP_NAME" value="Rich Text Laravel" />
         <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
     </php>
 </phpunit>

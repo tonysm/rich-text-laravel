@@ -3,18 +3,13 @@
 namespace Tonysm\RichTextLaravel\Attachables;
 
 use Illuminate\Database\Eloquent\Model;
-use Tonysm\RichTextLaravel\GlobalId;
+use Tonysm\GlobalId\SignedGlobalId;
 
 /**
  * @mixin AtachableContract
  */
 trait Attachable
 {
-    public function richTextContentType(): string
-    {
-        return 'application/octet-stream';
-    }
-
     public function richTextPreviewable(): bool
     {
         return false;
@@ -33,6 +28,11 @@ trait Attachable
     public function richTextMetadata(?string $key = null)
     {
         return null;
+    }
+
+    public function richTextContentType(): string
+    {
+        return 'application/octet-stream';
     }
 
     public function toRichTextAttributes(array $attributes = []): array
@@ -58,7 +58,10 @@ trait Attachable
 
     public function richTextSgid(): string
     {
-        return (new GlobalId($this))->toString();
+        return SignedGlobalId::create($this, [
+            'for' => 'rich-text-laravel',
+            'expires_at' => null,
+        ])->toString();
     }
 
     public function equalsToAttachable(AttachableContract $attachable): bool
