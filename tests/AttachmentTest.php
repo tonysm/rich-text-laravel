@@ -2,9 +2,9 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Tonysm\GlobalId\Facades\Locator;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
-use Tonysm\RichTextLaravel\GlobalId;
 use Tonysm\RichTextLaravel\Tests\Stubs\User;
 
 class AttachmentTest extends TestCase
@@ -38,7 +38,9 @@ class AttachmentTest extends TestCase
 
         $trixAttachment = $attachment->toTrixAttachment();
 
-        $this->assertTrue($attachable->is(GlobalId::findRecord($trixAttachment->attributes()['sgid'])));
+        $this->assertTrue($attachable->is(Locator::locateSigned($trixAttachment->attributes()['sgid'], [
+            'for' => 'rich-text-laravel',
+        ])));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 
@@ -58,7 +60,7 @@ class AttachmentTest extends TestCase
 
         $trixAttachment = $attachment->toTrixAttachment('trix content');
 
-        $this->assertTrue($attachable->is(GlobalId::findRecord($trixAttachment->attributes()['sgid'])));
+        $this->assertTrue($attachable->is(Locator::locateSigned($trixAttachment->attributes()['sgid'], ['for' => 'rich-text-laravel'])));
         $this->assertEquals($attachable->richTextContentType(), $trixAttachment->attributes()['contentType']);
         $this->assertEquals('Hey, there', $trixAttachment->attributes()['caption']);
 

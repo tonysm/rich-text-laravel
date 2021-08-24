@@ -10,6 +10,13 @@ use Tonysm\RichTextLaravel\Tests\Stubs\User;
 
 class ContentTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->travelTo(now()->parse('2021-08-23T02:05:59+00:00'));
+    }
+
     /** @test */
     public function equality()
     {

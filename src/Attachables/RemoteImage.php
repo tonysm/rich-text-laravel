@@ -7,8 +7,6 @@ use Illuminate\Support\Str;
 
 class RemoteImage implements AttachableContract
 {
-    use Attachable;
-
     public $url;
     public $contentType;
     public $width;
@@ -55,7 +53,7 @@ class RemoteImage implements AttachableContract
         return $this->contentType;
     }
 
-    public function richTextMetadata(?string $key)
+    public function richTextMetadata(?string $key = null)
     {
         $data = [
             'width' => $this->width,
@@ -79,9 +77,21 @@ class RemoteImage implements AttachableContract
         return '';
     }
 
-    public function toTrixContent(): ?string
+    public function toRichTextAttributes(array $attributes): array
     {
-        return null;
+        return [
+            'content_type' => $this->richTextContentType(),
+            'filename' => $this->filename,
+            'filesize' => $this->filesize,
+            'width' => $this->width,
+            'height' => $this->height,
+        ];
+    }
+
+    public function equalsToAttachable(AttachableContract $attachable): bool
+    {
+        return $attachable instanceof static
+            && $attachable->richTextMetadata() == $this->richTextMetadata();
     }
 
     public function richTextRender(array $options = []): string
