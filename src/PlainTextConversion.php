@@ -57,6 +57,31 @@ class PlainTextConversion
         return static::plainTextForBlock($node);
     }
 
+    public static function plainTextForH2Node(DOMNode $node)
+    {
+        return static::plainTextForBlock($node);
+    }
+
+    public static function plainTextForH3Node(DOMNode $node)
+    {
+        return static::plainTextForBlock($node);
+    }
+
+    public static function plainTextForH4Node(DOMNode $node)
+    {
+        return static::plainTextForBlock($node);
+    }
+
+    public static function plainTextForH5Node(DOMNode $node)
+    {
+        return static::plainTextForBlock($node);
+    }
+
+    public static function plainTextForH6Node(DOMNode $node)
+    {
+        return static::plainTextForBlock($node);
+    }
+
     public static function plainTextForPNode(DOMNode $node)
     {
         return static::plainTextForBlock($node);

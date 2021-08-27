@@ -42,13 +42,43 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function h1_tags_are_separated_by_two_new_lines()
+    public function headings()
     {
-        $this->assertConvertedTo(
-            "Hello world!\n\nHow are you?",
-            "<h1>Hello world!</h1><div>How are you?</div>"
-        );
+        return [
+            'h1' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h1>Hello world!</h1><div>How are you?</div>",
+            ],
+            'h2' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h2>Hello world!</h2><div>How are you?</div>",
+            ],
+            'h3' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h3>Hello world!</h3><div>How are you?</div>",
+            ],
+            'h4' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h4>Hello world!</h4><div>How are you?</div>",
+            ],
+            'h5' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h5>Hello world!</h5><div>How are you?</div>",
+            ],
+            'h6' => [
+                'expected' => "Hello world!\n\nHow are you?",
+                'content' => "<h6>Hello world!</h6><div>How are you?</div>",
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider headings
+     * @test
+     */
+    public function heading_tags_are_separated_by_two_new_lines($expected, $content)
+    {
+        $this->assertConvertedTo($expected, $content);
     }
 
     /** @test */
