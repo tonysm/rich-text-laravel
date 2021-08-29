@@ -26,6 +26,18 @@ class RichTextLaravelInstallCommand extends Command
             ] + $packages;
         });
 
+        $trixRelativeDestinationPath = 'resources/js/libs/trix.js';
+        $trixAbsoluteDestinationPath = base_path($trixRelativeDestinationPath);
+
+        if (File::exists($trixAbsoluteDestinationPath)) {
+            $this->warn("File {$trixRelativeDestinationPath} already exists.");
+        } else {
+            File::copy(__DIR__ . '/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
+            $this->info("The Trix setup JS file to your resources folder at: {$trixRelativeDestinationPath}.");
+        }
+
+        $this->info("Make sure to add `import './libs/trix';` to your main JS file.");
+
         $this->info("Next, add these CSS lines to your CSS compilation process:\n");
         $this->warn(File::get(__DIR__ . '/../../resources/css/trix.css'));
 
