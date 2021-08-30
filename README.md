@@ -14,7 +14,7 @@
 
 Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails.
 
-**🚧 This is still in development. It's not production-ready yet.**
+**🚧 This package is in beta. Please, try it out and report back. I'll give it a couple more days before tagging the 1.0.0 release.**
 
 ## Installation
 
