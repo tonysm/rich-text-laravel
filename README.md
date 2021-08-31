@@ -36,10 +36,7 @@ This will install the package with the recommended model structure. However, you
 php artisan richtext:install --no-model
 ```
 
-This will only make sure you have the latest version of Trix installed locally and from there, you can use the custom cast on your model.
-You can find more information about the recommended database structure at the [rich text model](#rich-text-model) section.
-
-When you run the `richtext:install` command it will create a `resources/js/libs/trix.js` file where Trix is initialized. You may have the following line to your main JS file, usually at `resources/js/app.js`:
+This will only make sure you have the latest version of Trix installed locally. It will also create a `resources/js/libs/trix.js` file where Trix is initialized. You may have the following line to your main JS file, usually at `resources/js/app.js`:
 
 ```js
 require('./bootstrap');
