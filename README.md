@@ -146,6 +146,8 @@ rich_texts
     id (primary key)
     field (string)
     body (long text)
+    record_type (string)
+    record_id (unsigned big int)
     created_at (timestamp)
     updated_at (timestamp)
 ```
