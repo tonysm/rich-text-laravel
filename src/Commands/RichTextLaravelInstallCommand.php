@@ -32,6 +32,7 @@ class RichTextLaravelInstallCommand extends Command
         if (File::exists($trixAbsoluteDestinationPath)) {
             $this->warn("File {$trixRelativeDestinationPath} already exists.");
         } else {
+            File::makeDirectory(dirname($trixAbsoluteDestinationPath), recursive: true);
             File::copy(__DIR__ . '/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
             $this->info("The Trix setup JS file to your resources folder at: {$trixRelativeDestinationPath}.");
         }
