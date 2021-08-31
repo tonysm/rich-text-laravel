@@ -152,7 +152,7 @@ rich_texts
     updated_at (timestamp)
 ```
 
-| 💡 You may change the migration to use `uuidMorphs` but that means all your model with Rich Text content must use UUIDs. |
+| 💡 If you use UUIDs, you may change the migration to use `uuidMorphs` instead of `morphs` in the migration to create the `rich_texts` table. However, that means all your model with Rich Text content must also use UUIDs. |
 |------------------------|
 
 We store a back-reference to the field name in the `rich_texts` table because a model may have multiple rich text fields, so that is used in the dynamic relationship the `HasRichText` creates for you. There's also a unique constraint on this table, which prevents having multiple entries for the same model/field pair.
