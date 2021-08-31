@@ -38,13 +38,13 @@ class RichTextLaravelInstallCommand extends Command
         }
 
         $this->info("Make sure to add the following line to your main JS file:");
-        $this->warn("\t import './libs/trix';");
+        $this->warn("\nimport './libs/trix';\n");
 
         $this->info("Next, add these CSS lines to your CSS compilation process:\n");
         $this->warn(File::get(__DIR__ . '/../../resources/css/trix.css'));
 
         $this->info("Then, to finish the installation you may run:");
-        $this->warn("\n\tnpm install && npm run dev\n");
+        $this->warn("\nnpm install && npm run dev\n");
         $this->info("After that you should be good to go.");
     }
 
