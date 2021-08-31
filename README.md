@@ -36,7 +36,7 @@ This will install the package with the recommended model structure. However, you
 php artisan richtext:install --no-model
 ```
 
-This will only make sure you have the latest version of Trix installed locally. It will also create a `resources/js/libs/trix.js` file where Trix is initialized. You may have the following line to your main JS file, usually at `resources/js/app.js`:
+This will only make sure you have the latest version of Trix installed locally. It will also create a `resources/js/libs/trix.js` file where Trix is initialized. You may add the following line to your main JS file, usually at `resources/js/app.js`:
 
 ```js
 require('./bootstrap');
