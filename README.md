@@ -36,7 +36,25 @@ This will install the package with the recommended model structure. However, you
 php artisan richtext:install --no-model
 ```
 
-This will only make sure you have the latest version of Trix installed locally and from there, you can use the custom cast on your model. You can find more information about the recommended database structure at the [rich text model](#rich-text-model) section.
+This will only make sure you have the latest version of Trix installed locally and from there, you can use the custom cast on your model.
+You can find more information about the recommended database structure at the [rich text model](#rich-text-model) section.
+
+When you run the `richtext:install` command it will create a `resources/js/libs/trix.js` file where Trix is initialized. You may have the following line to your main JS file, usually at `resources/js/app.js`:
+
+```js
+require('./bootstrap');
+import './libs/trix.js';
+```
+
+You may also want to copy the CSS snippets the install command will tell you about. Those are needed to render the new `rich-text-attachment` tag properly.
+
+After this is done, you may want to install Trix and compile your assets:
+
+```bash
+npm install && npm run dev
+```
+
+Now, you have the `<trix-editor>` custom element available for you. Check out the [Trix usage documentation](https://github.com/basecamp/trix#integrating-with-forms) to know more about it.
 
 ## Usage
 
