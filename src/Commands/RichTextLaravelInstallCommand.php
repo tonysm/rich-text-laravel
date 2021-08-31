@@ -37,7 +37,8 @@ class RichTextLaravelInstallCommand extends Command
             $this->info("The Trix setup JS file to your resources folder at: {$trixRelativeDestinationPath}.");
         }
 
-        $this->info("Make sure to add `import './libs/trix';` to your main JS file.");
+        $this->info("Make sure to add the following line to your main JS file:");
+        $this->warn("\t import './libs/trix';");
 
         $this->info("Next, add these CSS lines to your CSS compilation process:\n");
         $this->warn(File::get(__DIR__ . '/../../resources/css/trix.css'));
