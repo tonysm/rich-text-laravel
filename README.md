@@ -14,14 +14,12 @@
 
 Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails.
 
-**🚧 This package is in beta. Please, try it out and report back. I'll give it a couple more days before tagging the 1.0.0 release.**
-
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require tonysm/rich-text-laravel "1.0.0-RC1"
+composer require tonysm/rich-text-laravel
 ```
 
 Then, you may install it running:
