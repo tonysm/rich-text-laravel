@@ -12,7 +12,7 @@
     </a>
 </p>
 
-Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails.
+Integrates the [Trix Editor](https://trix-editor.org/) with Laravel. Inspired by the Action Text gem from Rails.
 
 ## Installation
 
