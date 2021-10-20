@@ -33,10 +33,23 @@ class HtmlConversion
     public static function document(?string $html = null): DOMDocument
     {
         libxml_use_internal_errors(true);
-        $document = new DOMDocument('1.0', 'UTF-8');
+        $document = new DOMDocument(null, 'UTF-8');
 
         if ($html) {
-            $document->loadHTML(mb_convert_encoding("<rich-text-root>{$html}</rich-text-root>", 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
+            // We're using a hack here to force the document encoding properly.
+            // Then, we're going to remove the encoding tag from the document
+            // right before returning it so we can have a clean document.
+            // @see http://php.net/manual/en/domdocument.loadhtml.php#95251
+
+            $document->loadHTML("<?xml encoding=\"UTF-8\"><rich-text-root>{$html}</rich-text-root>", LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
+
+            foreach ($document->childNodes as $item) {
+                if ($item->nodeType == XML_PI_NODE) {
+                    $document->removeChild($item);
+                }
+            }
+
+            $document->encoding = 'UTF-8';
         }
 
         return $document;
