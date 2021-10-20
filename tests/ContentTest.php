@@ -36,6 +36,15 @@ class ContentTest extends TestCase
     }
 
     /** @test */
+    public function handles_emojis()
+    {
+        $html = "<div>Emojis 🎉🎉🎉</div>";
+        $content = $this->fromHtml($html);
+
+        $this->assertStringContainsString($html, $content->toHtml());
+    }
+
+    /** @test */
     public function extracts_links()
     {
         $html = '<a href="http://example.com/1">first link</a><br><a href="http://example.com/1">second link</a>';
