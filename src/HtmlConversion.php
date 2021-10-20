@@ -33,7 +33,7 @@ class HtmlConversion
     public static function document(?string $html = null): DOMDocument
     {
         libxml_use_internal_errors(true);
-        $document = new DOMDocument(null, 'UTF-8');
+        $document = new DOMDocument('1.0', 'UTF-8');
 
         if ($html) {
             // We're using a hack here to force the document encoding properly.
