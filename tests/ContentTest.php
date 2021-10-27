@@ -141,6 +141,30 @@ class ContentTest extends TestCase
     }
 
     /** @test */
+    public function converts_non_image_attachments()
+    {
+        $html = <<<HTML
+        <div>
+            <figure
+                data-trix-attachment='{"contentType": "text/csv", "filename": "Test.csv", "filesize": "65"}'
+                data-trix-content-type="text/csv"
+                class="attachment attachment--file attachment--csv"
+            >
+                <figcaption class="attachment__caption">
+                    <span class="attachment__name">Test.csv</span> <span class="attachment__size">65 Bytes</span>
+                </figcaption>
+            </figure>
+        </div>
+        HTML;
+
+        $content = $this->fromHtml($html);
+
+        $this->assertCount(1, $content->attachments());
+
+        $this->assertStringContainsString('<rich-text-attachment content-type="text/csv" filename="Test.csv" filesize="65"></rich-text-attachment>', $content->toHtml());
+    }
+
+    /** @test */
     public function converts_trix_formatetd_attachments_with_custom_tag_name()
     {
         $this->withAttachmentTagName('arbitrary-tag', function () {
@@ -431,6 +455,29 @@ class ContentTest extends TestCase
                 <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/red-1.png","filename":"red-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
                 <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/blue-1.png","filename":"blue-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
             </div>
+        </div>
+        HTML, $content->toTrixHtml());
+    }
+
+    /** @test */
+    public function renders_file_attachments()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure
+                data-trix-attachment='{"contentType": "text/csv", "url": "http://example.com/test.csv", "filename": "test.csv", "filesize": 100}'
+                data-trix-attributes='{}'
+            ></figure>
+        </div>
+        HTML);
+
+        // The markup indentation looks a bit off, but that's fine...
+
+        $this->assertEquals(<<<HTML
+        <div>
+            <h1>Hey there</h1>
+            <figure data-trix-attachment='{"contentType":"text\/csv","url":"http:\/\/example.com\/test.csv","filename":"test.csv","filesize":100}'></figure>
         </div>
         HTML, $content->toTrixHtml());
     }

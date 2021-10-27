@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Tonysm\GlobalId\Facades\Locator;
+use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\Tests\Stubs\User;
@@ -86,6 +87,9 @@ class AttachmentTest extends TestCase
         $imageAttachment = Attachment::fromAttachable($image = $this->imageAttachable('blue.png'));
         $sameImageAttachment = Attachment::fromAttachable($image);
         $anotherImageAttachment = Attachment::fromAttachable($this->imageAttachable('red.png'));
+        $fileAttachment = Attachment::fromAttachable($file = $this->fileAttachable('file.csv'));
+        $sameFileAttachment = Attachment::fromAttachable($file);
+        $anotherFileAttachment = Attachment::fromAttachable($this->fileAttachable('another-file.csv'));
 
         $this->assertTrue($userAttachment->is($sameUserAttachment));
         $this->assertFalse($userAttachment->is($anotherUserAttachment));
@@ -93,7 +97,11 @@ class AttachmentTest extends TestCase
         $this->assertTrue($imageAttachment->is($sameImageAttachment));
         $this->assertFalse($imageAttachment->is($anotherImageAttachment));
 
+        $this->assertTrue($fileAttachment->is($sameFileAttachment));
+        $this->assertFalse($fileAttachment->is($anotherFileAttachment));
+
         $this->assertFalse($userAttachment->is($imageAttachment));
+        $this->assertFalse($userAttachment->is($fileAttachment));
     }
 
     private function attachable(): User
@@ -110,6 +118,17 @@ class AttachmentTest extends TestCase
             'width' => 200,
             'height' => 200,
             'content_type' => 'image/png',
+            'caption' => 'hey there',
+            'filename' => $filename,
+            'filesize' => 200,
+        ]);
+    }
+
+    public function fileAttachable(string $filename): RemoteFile
+    {
+        return new RemoteFile([
+            'url' => 'http://example.com/' . $filename,
+            'content_type' => 'text/csv',
             'caption' => 'hey there',
             'filename' => $filename,
             'filesize' => 200,
