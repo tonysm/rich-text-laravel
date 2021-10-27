@@ -104,15 +104,15 @@ class RemoteFile implements AttachableContract
     public function filesizeForHumans(): string
     {
         if ($this->filesize >= 1 << 30) {
-            return number_format($this->filesize/(1<<30), 2) . " GB";
+            return number_format($this->filesize / (1 << 30), 2) . " GB";
         }
 
-        if ($this->filesize >= 1<<20) {
-            return number_format($this->filesize/(1<<20), 2) ." MB";
+        if ($this->filesize >= 1 << 20) {
+            return number_format($this->filesize / (1 << 20), 2) ." MB";
         }
 
-        if ($this->filesize >= 1<<10) {
-            return number_format($this->filesize/(1<<10), 2) ." KB";
+        if ($this->filesize >= 1 << 10) {
+            return number_format($this->filesize / (1 << 10), 2) ." KB";
         }
 
         return number_format($this->filesize) . " Bytes";
