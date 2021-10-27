@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
 use Tonysm\GlobalId\Facades\Locator;
+use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 
 class AttachableFactory
@@ -15,6 +16,10 @@ class AttachableFactory
         }
 
         if ($attachable = RemoteImage::fromNode($node)) {
+            return $attachable;
+        }
+
+        if ($attachable = RemoteFile::fromNode($node)) {
             return $attachable;
         }
 
