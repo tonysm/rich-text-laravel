@@ -97,7 +97,7 @@ class PlainTextConversion
         return static::plainTextForList($node);
     }
 
-    private static function plainTextForBrNode(DOMNode $node): string
+    private static function plainTextForBrNode(): string
     {
         return "\n";
     }
