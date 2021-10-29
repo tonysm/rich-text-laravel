@@ -100,6 +100,33 @@ class PlainTextConversionTest extends TestCase
     }
 
     /** @test */
+    public function basic_nested_ul_tags_are_indented()
+    {
+        $this->assertConvertedTo(
+            "• Item 1\n  • Item 2",
+            "<ul><li>Item 1<ul><li>Item 2</li></ul></li></ul>"
+        );
+    }
+
+    /** @test */
+    public function basic_nested_ol_tags_are_indented()
+    {
+        $this->assertConvertedTo(
+            "1. Item 1\n  1. Item 2",
+            "<ol><li>Item 1<ol><li>Item 2</li></ol></li></ol>"
+        );
+    }
+
+    /** @test */
+    public function complex_nested_and_mixed_list_tags_are_indented()
+    {
+        $this->assertConvertedTo(
+            "• Item 0\n• Item 1\n  • Item A\n    1. Item i\n    2. Item ii\n  • Item B\n    • Item i\n• Item 2",
+            "<ul><li>Item 0</li><li>Item 1<ul><li>Item A<ol><li>Item i</li><li>Item ii</li></ol></li><li>Item B<ul><li>Item i</li></ul></li></ul></li><li>Item 2</li></ul>"
+        );
+    }
+
+    /** @test */
     public function br_are_separated_by_one_new_line()
     {
         $this->assertConvertedTo(
