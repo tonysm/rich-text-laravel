@@ -52,6 +52,15 @@ class ContentAttachment implements AttachableContract
             && $attachable->name === $this->name;
     }
 
+    public function richTextAsPlainText(): string
+    {
+        if ($this->name === 'horizontal-rule') {
+            return " ┄ ";
+        }
+
+        return ' ';
+    }
+
     public function richTextRender(array $options = []): string
     {
         return view('rich-text-laravel::contents._content', [
