@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
 use Tonysm\GlobalId\Facades\Locator;
+use Tonysm\RichTextLaravel\Attachables\ContentAttachment;
 use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 
@@ -12,6 +13,10 @@ class AttachableFactory
     public static function fromNode(DOMElement $node): Attachables\AttachableContract
     {
         if ($node->hasAttribute('sgid') && $attachable = static::attachableFromSgid($node->getAttribute('sgid'))) {
+            return $attachable;
+        }
+
+        if ($attachable = ContentAttachment::fromNode($node)) {
             return $attachable;
         }
 

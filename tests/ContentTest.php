@@ -482,6 +482,47 @@ class ContentTest extends TestCase
         HTML, $content->toTrixHtml());
     }
 
+    /** @test */
+    public function renders_horizontal_rules_as_content_attachment()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <figure
+                data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
+            >
+                <hr>
+            </figure>
+        </div>
+        HTML);
+
+        $this->assertEquals(<<<HTML
+        <div>
+            <hr>
+
+        </div>
+        HTML, $content->renderWithAttachments());
+    }
+
+    /** @test */
+    public function renders_horizontal_rules_for_trix()
+    {
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            <figure
+                data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
+            >
+                <hr>
+            </figure>
+        </div>
+        HTML);
+
+        $this->assertEquals(<<<HTML
+        <div>
+            <figure data-trix-attachment='{"contentType":"vnd.richtextlaravel.horizontal-rule.html","content":"&lt;hr&gt;\\n"}'></figure>
+        </div>
+        HTML, $content->toTrixHtml());
+    }
+
     private function withAttachmentTagName(string $tagName, callable $callback)
     {
         try {
