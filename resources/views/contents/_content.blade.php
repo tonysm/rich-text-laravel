@@ -1,0 +1,1 @@
+{!! trim($content->renderTrixContentAttachment($options)) !!}
