@@ -17,6 +17,7 @@ class Content
     private $cachedAttachmentGalleries;
     private $cachedAttachmentGalleryNodes;
     private $cachedGalleryAttachments;
+    private $cachedAttachables;
 
     public static function fromStorage(?string $value = null): self
     {
@@ -66,6 +67,13 @@ class Content
     {
         return $this->cachedAttachmentGalleries ??= $this->attachmentGalleryNodes()->map(fn (DOMElement $node) => (
             $this->attachmentGalleryForNode($node)
+        ));
+    }
+
+    public function attachables(): Collection
+    {
+        return $this->cachedAttachables ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
+            AttachableFactory::fromNode($node)
         ));
     }
 
