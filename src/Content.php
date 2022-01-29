@@ -17,6 +17,7 @@ class Content
     private $cachedAttachmentGalleries;
     private $cachedAttachmentGalleryNodes;
     private $cachedGalleryAttachments;
+    private $cachedAttachables;
 
     public static function fromStorage(?string $value = null): self
     {
