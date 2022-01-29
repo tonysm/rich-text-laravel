@@ -54,7 +54,7 @@ class ContentTest extends TestCase
     }
 
     /** @test */
-    public function extracts_attachables()
+    public function extracts_attachments()
     {
         $attachable = User::create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
@@ -71,6 +71,26 @@ class ContentTest extends TestCase
 
         $this->assertEquals("Captioned", $attachment->caption());
         $this->assertTrue($attachment->attachable->is($attachable));
+    }
+
+    /** @test */
+    public function extracts_attachables()
+    {
+        $attachable = User::create(['name' => 'Jon Doe']);
+        $sgid = $attachable->richTextSgid();
+
+        $html = <<<HTML
+        <rich-text-attachment sgid="$sgid" trix-attributes="{'caption': 'Captioned"></rich-text-attachment>
+        HTML;
+
+        $content = $this->fromHtml($html);
+
+        $this->assertCount(1, $content->attachables());
+
+        $extractedAttachable = $content->attachables()->first();
+
+        $this->assertNotNull($extractedAttachable);
+        $this->assertTrue($extractedAttachable->is($attachable));
     }
 
     /** @test */

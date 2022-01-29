@@ -69,6 +69,13 @@ class Content
         ));
     }
 
+    public function attachables(): Collection
+    {
+        return $this->cachedAttachables ??= $this->attachmentNodes()->map(fn (DOMElement $node) => (
+            AttachableFactory::fromNode($node)
+        ));
+    }
+
     public function galleryAttachments(): Collection
     {
         return $this->cachedGalleryAttachments ??= $this->attachmentGalleries()->flatMap(fn (AttachmentGallery $attachmentGallery) => $attachmentGallery->attachments());
