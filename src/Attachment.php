@@ -99,6 +99,11 @@ class Attachment
         return $this->caption() ?: '';
     }
 
+    public function toHtml(): string
+    {
+        return HtmlConversion::nodeElementToHtml($this->node);
+    }
+
     public function fullAttributes(): Collection
     {
         return $this->nodeAttributes()
@@ -133,6 +138,11 @@ class Attachment
     public function is(Attachment $attachment): bool
     {
         return $this->attachable->equalsToAttachable($attachment->attachable);
+    }
+
+    public function __toString()
+    {
+        return $this->toHtml();
     }
 
     public function __call($method, $arguments)
