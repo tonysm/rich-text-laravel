@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.0|^8.1",
-        "illuminate/contracts": "^8.37|^9.0",
+        "illuminate/contracts": "^8.47|^9.0",
         "spatie/laravel-package-tools": "^1.9.2",
         "tonysm/globalid-laravel": "dev-main"
     },
