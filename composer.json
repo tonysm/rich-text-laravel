@@ -19,7 +19,7 @@
         "php": "^8.0|^8.1",
         "illuminate/contracts": "^8.47|^9.0",
         "spatie/laravel-package-tools": "^1.9.2",
-        "tonysm/globalid-laravel": "dev-main"
+        "tonysm/globalid-laravel": "^1.1.0"
     },
     "require-dev": {
         "nunomaduro/collision": "^5.3|^6.0",
