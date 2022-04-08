@@ -31,6 +31,17 @@ trait HasRichText
         });
     }
 
+    public function unsetRichTextRelationshipsForLivewireDehydration()
+    {
+        $relationships = array_map(fn ($field) => static::fieldToRichTextRelationship($field), $this->getRichTextFields());
+
+        foreach ($relationships as $relationship) {
+            if ($this->relationLoaded($relationship)) {
+                $this->unsetRelation($relationship);
+            }
+        }
+    }
+
     protected static function registerRichTextRelationships(string $field): void
     {
         static::resolveRelationUsing(static::fieldToRichTextRelationship($field), function (Model $model) use ($field) {

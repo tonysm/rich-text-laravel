@@ -22,4 +22,9 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasMigration('create_rich_texts_table')
             ->hasCommand(RichTextLaravelInstallCommand::class);
     }
+
+    public function packageBooted()
+    {
+        LivewireSupportsRichText::init();
+    }
 }
