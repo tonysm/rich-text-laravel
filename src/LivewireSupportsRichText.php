@@ -42,6 +42,6 @@ class LivewireSupportsRichText
             return;
         }
 
-        $value->unsetRelationshipsForLivewireDehydration();
+        $value->unsetRichTextRelationshipsForLivewireDehydration();
     }
 }
