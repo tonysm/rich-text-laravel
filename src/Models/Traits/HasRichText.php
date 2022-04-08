@@ -3,9 +3,11 @@
 namespace Tonysm\RichTextLaravel\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
 use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 
@@ -29,6 +31,34 @@ trait HasRichText
                 }
             }
         });
+
+        if (class_exists(Livewire::class)) {
+            Livewire::listen('component.dehydrate', function (\Livewire\Component $instance) {
+                foreach ($instance->getPublicPropertiesDefinedBySubClass() as $value) {
+                    static::unsetRichTextRelationshipsOn($value);
+                }
+            });
+        }
+    }
+
+    protected static function unsetRichTextRelationshipsOn($value)
+    {
+        if ($value instanceof static) {
+            $value->unsetRichTextRelationships();
+        } elseif ($value instanceof Collection) {
+            $value->each(fn ($each) => static::unsetRichTextRelationshipsOn($each));
+        }
+    }
+
+    protected function unsetRichTextRelationships()
+    {
+        $relationships = array_map(fn ($field) => static::fieldToRichTextRelationship($field), $this->getRichTextFields());
+
+        foreach ($relationships as $relationship) {
+            if ($this->relationLoaded($relationship)) {
+                $this->unsetRelation($relationship);
+            }
+        }
     }
 
     protected static function registerRichTextRelationships(string $field): void

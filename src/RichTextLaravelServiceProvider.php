@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel;
 
+use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Tonysm\RichTextLaravel\Commands\RichTextLaravelInstallCommand;
