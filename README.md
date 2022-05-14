@@ -649,6 +649,52 @@ return [
 
 **Attention**: I'm not an expert in HTML content sanitization, so take this with an extra grain of salt and, please, consult someone more with more security experience on this if you can.
 
+### Email Rendering
+
+If you'd like to send your Trix content by email, it can be rendered in a [Mailable](https://laravel.com/docs/9.x/mail) and delivered to users. Laravel's default email theme presents Trix content cleanly, even if you're using Markdown messages.
+
+To ensure your content displays well across different email clients, you should always sanitize your rendered HTML with the `mews/purifier` package, as detailed above, but using a custom ruleset to remove tags which could affect the message layout.
+
+Add a new `mail` rule to the `mews/purifier` configuration (being mindful of earlier comments about sanitization and security):
+
+```php
+return [
+    // ...
+    'settings' => [
+        // ...
+        'mail'              => [
+            'HTML.Allowed' => 'div,b,strong,i,em,u,a[href|title],ul,ol,li,p[style],br,span[style],img[alt|src],del,h1,h2,sup,blockquote,figure,figcaption,*[class]',
+            'CSS.AllowedProperties'    => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
+            'AutoFormat.AutoParagraph' => true,
+            'AutoFormat.RemoveEmpty'   => true,
+        ],
+        // ...
+```
+
+This rule differs from the normal configuration by removing `width` and `height` tags from `<img>` elements, and turning `<pre>` and `<code>` tags into normal paragraphs (as these seem to trip up the Markdown parser). If you rely on code blocks in Trix, you may be able to adjust the sanitizer ruleset to work around this.  
+
+To send the rich text content by email, create a Blade template for the message like in the example below:
+
+```php
+@component('mail::message')
+
+# Hi {{ $user->name }},
+
+## We've just published a new article: {{ $article->title }}
+
+<!-- //@formatter:off -->
+{!! preg_replace('/^ +/m', '', clean($article->content->render(), 'mail')) !!}
+<!-- //@formatter:on -->
+
+@endcomponent
+```
+
+Whilst the Blade message uses Markdown for the greeting, the Trix content will be rendered as HTML. This will only render correctly if it's *not indented in any way* — otherwise the Markdown parser tries to interpret nested content as code blocks.
+
+The `preg_replace()` function is used to remove leading whitespace from each rendered line of Trix content, after it's been cleaned. The second parameter in the `clean()` function tells it to reference the `mail` config entry, described above.
+
+The `//@formatter:*` comments are optional, but if you use an IDE like PhpStorm, these comments prevent it from trying to auto-indent the element if you run code cleanup tools.
+
 ### SGID
 
 When storing references of custom attachments, the package uses another package called [GlobalID Laravel](https://github.com/tonysm/globalid-laravel). We store a Signed Global ID, which means users cannot simply change the sgids at-rest. They would need to generate another valid signature using the `APP_KEY`, which is secret.
