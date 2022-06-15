@@ -5,6 +5,7 @@ namespace Tonysm\RichTextLaravel;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Tonysm\RichTextLaravel\Commands\RichTextLaravelInstallCommand;
+use Tonysm\RichTextLaravel\View\Components\TrixStyles;
 
 class RichTextLaravelServiceProvider extends PackageServiceProvider
 {
@@ -20,7 +21,8 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_rich_texts_table')
-            ->hasCommand(RichTextLaravelInstallCommand::class);
+            ->hasCommand(RichTextLaravelInstallCommand::class)
+            ->hasViewComponent('rich-text', TrixStyles::class);
     }
 
     public function packageBooted()
