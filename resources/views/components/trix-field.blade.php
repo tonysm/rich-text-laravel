@@ -5,7 +5,6 @@
     name="{{ $name }}"
     id="{{ $id }}_input"
     value="{{ $value }}"
-    {{ $attributes->except(['class', 'style', 'toolbar']) }}
 />
 
 <trix-editor
