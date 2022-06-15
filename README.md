@@ -28,32 +28,27 @@ Then, you may install it running:
 php artisan richtext:install
 ```
 
-This will install the package with the recommended model structure. However, you may choose to not want any of the database opinions and only use the custom cast. To achieve that, you may pass the `--no-model` flag:
+### Blade Components
 
-```bash
-php artisan richtext:install --no-model
+If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-laravel) package, make sure you add the Trix core styles Blade Component to the `head` tag on your layout file(s):
+
+```blade
+<x-rich-text-trix-styles />
 ```
 
-This will only make sure you have the latest version of Trix installed locally. It will also create a `resources/js/libs/trix.js` file where Trix is initialized. You may add the following line to your main JS file, usually at `resources/js/app.js`:
+If you're using Laravel Mix/Webpack, the `resources/js/trix.js` file has the JS setup and the CSS import as well, so no need to use the the Blade Component.
 
-```js
-require('./bootstrap');
-import './libs/trix.js';
+The package also publishes a Blade Component for you which can be used inside your forms, like so:
+
+```blade
+<x-trix-field id="bio" name="bio" />
 ```
 
-You may also want to copy the CSS snippets the install command will tell you about. Those are needed to render the new `rich-text-attachment` tag properly.
+## Overview
 
-After this is done, you may want to install Trix and compile your assets:
+We extract attachments before saving the rich text field (which uses Trix) in the database and minimize the content for storage. Attachments are replaced with `rich-text-attachment` tags. Attachments from attachable models have a `sgid` attribute, which should globally identify them in your app.
 
-```bash
-npm install && npm run dev
-```
-
-Now, you have the `<trix-editor>` custom element available for you. Check out the [Trix usage documentation](https://github.com/basecamp/trix#integrating-with-forms) to know more about it.
-
-## Usage
-
-We're going to extract attachments before saving the rich text field (which uses Trix) in the database and minimize the content for storage. We replace the attachments with `rich-text-attachment` tags. If the attachment for a model attachable, we store a `sgid` which should globally identify that model. When storing images directly (say, for a simple image uploading where you don't have a model for representing that image on your application), we'll fill the `rich-text-attachment` with all the attachment's properties needded to render that image again. Storing a minimized (canonical) version of the rich text content means we don't store the inner contents of the attachment tags, only the metadata needded to render it again when needed.
+When storing images directly (say, for a simple image uploading where you don't have a model for representing that attachment in your application), we'll fill the `rich-text-attachment` with all the attachment's properties needded to render that image again. Storing a minimized (canonical) version of the rich text content means we don't store the inner contents of the attachment tags, only the metadata needded to render it again when needed.
 
 There are two ways of using the package:
 
@@ -155,12 +150,10 @@ rich_texts
 
 We store a back-reference to the field name in the `rich_texts` table because a model may have multiple rich text fields, so that is used in the dynamic relationship the `HasRichText` creates for you. There's also a unique constraint on this table, which prevents having multiple entries for the same model/field pair.
 
-
 Rendering the rich text content back to the Trix editor is a bit differently than rendering for the end users, so you may do that using the `toTrixHtml` method on the field, like so:
 
 ```blade
-<input id="post_body" value="{!! $post->body->toTrixHtml() !!}" type="hidden" />
-<trix-editor input="post_body" class="trix-content"></trix-editor>
+<x-trix-field id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
 ```
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
@@ -223,8 +216,7 @@ And when it renders it again, it will re-render the remote image again inside th
 When feeding the Trix editor again, you need to do it differently:
 
 ```blade
-<input id="post_body" value="{!! $post->body->toTrixHtml() !!}" type="hidden" />
-<trix-editor input="post_body" class="trix-content"></trix-editor>
+<x-trix-field id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.
@@ -247,12 +239,14 @@ export default class extends Controller {
 Then, we can listen to the `trix-attachment-add` event that the Trix editor dispatched whenever a new attachment is added, like so:
 
 ```html
-<trix-editor
+<x-trix-editor
+    id="post_body"
+    name="body"
     data-controller="trix"
     data-action="
         trix-attachment-add->trix#upload
     "
-></trix-editor>
+></x-trix-editor>
 ```
 
 Now, let's implement the `upload` method in the `trix_controller.js` we just created:
@@ -413,12 +407,14 @@ export default class extends Controller {
 Now we need to attach the mentions controller to the Trix editor, just like we did with the image upload example:
 
 ```html
-<trix-editor
+<x-trix-editor
+    id="post_body"
+    name="body"
     data-controller="trix mentions"
     data-action="
         trix-attachment-add->trix#upload
     "
-></trix-editor>
+></x-trix-editor>
 ```
 
 The `GET /mentions?search=` route could look something like this:
@@ -427,7 +423,9 @@ The `GET /mentions?search=` route could look something like this:
 Route::middleware(['auth:sanctum', 'verified'])->get('mentions', function () {
     return auth()->user()->currentTeam->allUsers()
         ->when(request('search'), fn ($users, $search) => (
-            $users->filter(fn (User $user) => str_starts_with(strtolower($user->name), strtolower($search)))
+            $users->filter(fn (User $user) => (
+                str_starts_with(strtolower($user->name), strtolower($search))
+            ))
         ))
         ->sortBy('name')
         ->take(10)
@@ -445,13 +443,15 @@ You see we're returning the `sgid`, which is a method from the `Attachable` trai
 When you choose an option in Tribute, you need to listen to the `tribute-replaced` event and call a method inside the `mentions_controller.js`, let's hook it:
 
 ```html
-<trix-editor
+<x-trix-editor
+    id="post_body"
+    name="body"
     data-controller="trix mentions"
     data-action="
         trix-attachment-add->trix#upload
         tribute-replaced->mentions#tributeReplaced
     "
-></trix-editor>
+></x-trix-editor>
 ```
 
 Next, let's implement that method inside out mentions controller. The event that we get there should contain the user object (the one with the `sgid`, `name`, and `content` attributes we returned from the Controller) inside the `detail.item.original` path. We can take that and create an instance of the `Trix.Attachment` passing the `sgid` and `content` attributes to it, then inserting that attachment into the editor:
@@ -506,6 +506,7 @@ This will return a collection of all the attachments, anything that is an attach
 // Getting only attachments of users inside the rich text content.
 $post->body->attachments()
     ->filter(fn (Attachment $attachment) => $attachment->attachable instanceof User)
+    ->map(fn (Attachment $attachment) => $attachment->attachable)
     ->unique();
 ```
 
@@ -671,7 +672,7 @@ return [
         // ...
 ```
 
-This rule differs from the normal configuration by removing `width` and `height` tags from `<img>` elements, and turning `<pre>` and `<code>` tags into normal paragraphs (as these seem to trip up the Markdown parser). If you rely on code blocks in Trix, you may be able to adjust the sanitizer ruleset to work around this.  
+This rule differs from the normal configuration by removing `width` and `height` tags from `<img>` elements, and turning `<pre>` and `<code>` tags into normal paragraphs (as these seem to trip up the Markdown parser). If you rely on code blocks in Trix, you may be able to adjust the sanitizer ruleset to work around this.
 
 To send the rich text content by email, create a Blade template for the message like in the example below:
 
