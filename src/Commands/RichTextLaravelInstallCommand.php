@@ -11,7 +11,6 @@ class RichTextLaravelInstallCommand extends Command
 {
     const JS_BOOTSTRAP_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?bootstrap[\'\"];?/';
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
-    const CSS_TAILWIND_BASE_LINE_PATTERN = '/\@import \"tailwindcss\/base\";/';
 
     public $signature = 'richtext:install
         {--no-model : Skip publishing the RichText model files.}
@@ -31,6 +30,7 @@ class RichTextLaravelInstallCommand extends Command
         $this->ensureTrixLibIsImported();
         $this->ensureTrixOverridesStylesIsPublished();
         $this->ensureTrixFieldComponentIsCopied();
+        $this->updateAppLayoutFiles();
 
         if (! $this->usingImportmaps()) {
             $this->info("to finish the installation you may run:");
@@ -89,7 +89,7 @@ class RichTextLaravelInstallCommand extends Command
             $this->warn("File {$trixRelativeDestinationPath} already exists.");
         } else {
             File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
-            File::copy(sprintf(__DIR__ . '/../../resources/js/trix-%s.js', $this->usingImportmaps() ? 'importmap' : 'webpack'), $trixAbsoluteDestinationPath);
+            File::copy(__DIR__ . '/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
             $this->info("The Trix setup JS file to your resources folder at: {$trixRelativeDestinationPath}.");
         }
 
@@ -125,20 +125,10 @@ class RichTextLaravelInstallCommand extends Command
     {
         File::copy(__DIR__ . '/../../resources/css/trix.css', resource_path('css/_trix.css'));
 
-        if (File::exists(resource_path('css/app.css')) && preg_match(self::CSS_TAILWIND_BASE_LINE_PATTERN, File::get(resource_path('css/app.css')))) {
-            File::put(
-                resource_path('css/app.css'),
-                preg_replace(
-                    self::CSS_TAILWIND_BASE_LINE_PATTERN,
-                    <<<CSS
-                    @import "tailwindcss/base";
-                    @import "./_trix.css";
-                    CSS,
-                    File::get(resource_path('css/app.css')),
-                ),
-            );
+        if (File::exists($mainCssFile = resource_path('css/app.css')) && ! str_contains(File::get($mainCssFile), '_trix.css')) {
+            File::prepend($mainCssFile, "@import './_trix.css';\n");
         } else {
-            $this->warn('Please, make sure you import the newly published css/_trix.css file to your main CSS file.');
+            $this->warn('Please, make sure you import the newly published resources/css/_trix.css file to your main CSS file.');
         }
     }
 
@@ -150,6 +140,30 @@ class RichTextLaravelInstallCommand extends Command
             __DIR__ . '/../../resources/views/components/trix-field.blade.php',
             resource_path('views/components/trix-field.blade.php'),
         );
+    }
+
+    private function updateAppLayoutFiles(): void
+    {
+        $layouts = collect(['app', 'guest']);
+
+        $layouts->each(function ($name) {
+            $absolute = base_path($relative = "resources/views/layouts/{$name}.blade.php");
+
+            if (! File::exists($absolute)) {
+                $this->warn(sprintf('Could not find layout file %s.', $relative));
+
+                return;
+            }
+
+            File::put(
+                $absolute,
+                preg_replace(
+                    "/(\s*)(\@vite.*)/",
+                    "$1<x-rich-text-trix-styles />$1$2",
+                    File::get($absolute),
+                ),
+            );
+        });
     }
 
     /**
