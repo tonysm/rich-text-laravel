@@ -179,27 +179,25 @@ class RichTextLaravelInstallCommand extends Command
     private function updateAppLayoutFiles(): void
     {
         $this->displayTask('updating layout files', function () {
-            $layouts = collect(['app', 'guest']);
-
-            $layouts->each(function ($name) {
-                $absolute = base_path("resources/views/layouts/{$name}.blade.php");
-
-                if (! File::exists($absolute)) {
-                    return;
-                }
-
-                File::put(
-                    $absolute,
+            $this->existingLayoutFiles()
+                ->each(fn ($file) => File::put(
+                    $file,
                     preg_replace(
-                        "/(\s*)(\@vite.*)/",
-                        "$1<x-rich-text-trix-styles />$1$2",
-                        File::get($absolute),
+                        '/(\s*)(<\/head>)/',
+                        "\\1    <x-rich-text-trix-styles />\n\\1\\2",
+                        File::get($file),
                     ),
-                );
-            });
+                ));
 
             return self::SUCCESS;
         });
+    }
+
+    private function existingLayoutFiles()
+    {
+        return collect(['app', 'guest'])
+            ->map(fn ($name) => resource_path("views/layouts/{$name}.blade.php"))
+            ->filter(fn ($file) => File::exists($file));
     }
 
     /**
