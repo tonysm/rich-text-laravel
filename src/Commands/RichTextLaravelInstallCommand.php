@@ -10,7 +10,7 @@ use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class RichTextLaravelInstallCommand extends Command
 {
-    const JS_BOOTSTRAP_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?bootstrap[\'\"];?/';
+    const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
 
     public $signature = 'richtext:install
@@ -129,7 +129,7 @@ class RichTextLaravelInstallCommand extends Command
                         '%path%',
                         $this->usingImportmaps() ? '' : './',
                         <<<JS
-                        import '%path%bootstrap';
+                        \\1
                         import '%path%libs/trix';
                         JS,
                     ),
