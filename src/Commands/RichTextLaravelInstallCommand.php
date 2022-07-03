@@ -43,7 +43,7 @@ class RichTextLaravelInstallCommand extends Command
         $this->ensureTrixFieldComponentIsCopied();
         $this->updateAppLayoutFiles();
 
-        $this->displayAfterNotes('After Notes & Next Steps');
+        $this->displayAfterNotes();
 
         $this->newLine();
         $this->line('<fg=white> Done!</>');
