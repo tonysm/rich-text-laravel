@@ -233,7 +233,7 @@ class RichTextLaravelInstallCommand extends Command
     private function displayTask($description, $task)
     {
         $width = (new Terminal())->getWidth();
-        $dots = max(str_repeat('<fg=gray>.</>', $width - strlen($description) - 13), 0);
+        $dots = str_repeat('<fg=gray>.</>', max($width - strlen($description) - 13, 0));
         $this->output->write(sprintf('    <fg=white>%s</> %s ', $description, $dots));
         $output = $task();
 
