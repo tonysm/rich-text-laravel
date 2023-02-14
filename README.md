@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://github.com/tonysm/rich-text-laravel/workflows/run-tests/badge.svg">
-        <img src="https://img.shields.io/github/workflow/status/tonysm/rich-text-laravel/run-tests?label=tests" />
+        <img src="https://img.shields.io/github/actions/workflow/status/tonysm/rich-text-laravel/run-tests.yml?branch=main" />
     </a>
     <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
         <img src="https://img.shields.io/packagist/dt/tonysm/rich-text-laravel" alt="Total Downloads">
