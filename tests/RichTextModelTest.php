@@ -58,7 +58,7 @@ class RichTextModelTest extends TestCase
     {
         $post = $this->createPost();
 
-        $expectedRender = <<<HTML
+        $expectedRender = <<<'HTML'
         <div class="trix-content">
             <h1>Hey, there</h1>
         <figure class="attachment attachment--preview attachment--png">
@@ -144,14 +144,14 @@ class RichTextModelTest extends TestCase
             'notes' => '<h1>hello from notes</h1>',
         ]);
 
-        $expectedBodyContent = <<<HTML
+        $expectedBodyContent = <<<'HTML'
         <div class="trix-content">
             <h1>hello from body</h1>
         </div>
 
         HTML;
 
-        $expectedNotesContent = <<<HTML
+        $expectedNotesContent = <<<'HTML'
         <div class="trix-content">
             <h1>hello from notes</h1>
         </div>
@@ -178,17 +178,17 @@ class RichTextModelTest extends TestCase
             body: '<p>this is the old body</p>',
         );
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <p>this is the old body</p>
         </div>
 
         HTML, "{$post->body}");
 
-        $post->body = "<p>Hey</p>";
+        $post->body = '<p>Hey</p>';
         $post->save();
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <p>Hey</p>
         </div>
@@ -197,17 +197,17 @@ class RichTextModelTest extends TestCase
 
         $post = $post->fresh();
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <p>Hey</p>
         </div>
 
         HTML, "{$post->body}");
 
-        $post->body = "<p>Changed 2</p>";
+        $post->body = '<p>Changed 2</p>';
         $post->save();
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <p>Changed 2</p>
         </div>
@@ -216,7 +216,7 @@ class RichTextModelTest extends TestCase
 
         $post = $post->fresh();
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <p>Changed 2</p>
         </div>

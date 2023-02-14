@@ -13,10 +13,15 @@ class Content
     public Fragment $fragment;
 
     private $cachedAttachments;
+
     private $cachedAttachmentNodes;
+
     private $cachedAttachmentGalleries;
+
     private $cachedAttachmentGalleryNodes;
+
     private $cachedGalleryAttachments;
+
     private $cachedAttachables;
 
     public static function fromStorage(?string $value = null): self

@@ -8,11 +8,17 @@ use Illuminate\Support\Str;
 class RemoteImage implements AttachableContract
 {
     public $url;
+
     public $contentType;
+
     public $width;
+
     public $height;
+
     public $filename;
+
     public $filesize;
+
     public $caption;
 
     public static function fromNode(DOMElement $node): ?static
@@ -103,7 +109,7 @@ class RemoteImage implements AttachableContract
 
     public function richTextAsPlainText($caption = null): string
     {
-        return sprintf("[%s]", $caption ?: 'Image');
+        return sprintf('[%s]', $caption ?: 'Image');
     }
 
     public function extension(): string

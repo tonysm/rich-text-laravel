@@ -55,7 +55,7 @@ class ContentAttachment implements AttachableContract
     public function richTextAsPlainText(): string
     {
         if ($this->name === 'horizontal-rule') {
-            return " ┄ ";
+            return ' ┄ ';
         }
 
         return ' ';
@@ -71,7 +71,7 @@ class ContentAttachment implements AttachableContract
 
     public function renderTrixContentAttachment(array $options = []): string
     {
-        return view('rich-text-laravel::contents._' . Str::of($this->name)->studly()->snake('_'), [
+        return view('rich-text-laravel::contents._'.Str::of($this->name)->studly()->snake('_'), [
             'content' => $this,
             'options' => $options,
         ])->render();

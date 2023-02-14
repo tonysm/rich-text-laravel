@@ -54,12 +54,12 @@ class TrixAttachmentTest extends TestCase
     /** @test */
     public function previewable_is_typecast()
     {
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => '']), ["previewable" => false]);
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => false]), ["previewable" => false]);
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => "false"]), ["previewable" => false]);
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => "garbage"]), ["previewable" => false]);
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => true]), ["previewable" => true]);
-        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'true']), ["previewable" => true]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => '']), ['previewable' => false]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => false]), ['previewable' => false]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'false']), ['previewable' => false]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'garbage']), ['previewable' => false]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => true]), ['previewable' => true]);
+        $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'true']), ['previewable' => true]);
     }
 
     /** @test */

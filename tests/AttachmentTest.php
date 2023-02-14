@@ -13,7 +13,7 @@ class AttachmentTest extends TestCase
     /** @test */
     public function from_attachable()
     {
-        $attachment = Attachment::fromAttachable($attachable = $this->attachable(), ["caption" => "Hey, there"]);
+        $attachment = Attachment::fromAttachable($attachable = $this->attachable(), ['caption' => 'Hey, there']);
 
         $this->assertSame($attachment->attachable, $attachable);
         $this->assertEquals('Hey, there', $attachment->caption());
@@ -73,11 +73,11 @@ class AttachmentTest extends TestCase
     {
         $attachment = Attachment::fromAttachable($this->attachable(), ['caption' => 'hey, there']);
         $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzEiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--3442b51e2f1b56d5928b4654847c19e4d4b03f57dcfa02bcd6cbdc01ccec004c" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
-        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzEiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--3442b51e2f1b56d5928b4654847c19e4d4b03f57dcfa02bcd6cbdc01ccec004c" content-type="application/octet-stream"></rich-text-attachment>', (string)$attachment);
+        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzEiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--3442b51e2f1b56d5928b4654847c19e4d4b03f57dcfa02bcd6cbdc01ccec004c" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
 
         $attachment = Attachment::fromAttachable(User::create(['name' => 'hey']));
         $this->assertEquals('<rich-text-attachment sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzIiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--e260941c7b4f1875c536edf100274fbb3c4c8e3a1b41afd00efa16cf258a1982" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
-        $this->assertEquals('<rich-text-attachment sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzIiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--e260941c7b4f1875c536edf100274fbb3c4c8e3a1b41afd00efa16cf258a1982" content-type="application/octet-stream"></rich-text-attachment>', (string)$attachment);
+        $this->assertEquals('<rich-text-attachment sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzIiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--e260941c7b4f1875c536edf100274fbb3c4c8e3a1b41afd00efa16cf258a1982" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
     }
 
     /** @test */
@@ -126,7 +126,7 @@ class AttachmentTest extends TestCase
     public function imageAttachable(string $filename): RemoteImage
     {
         return new RemoteImage([
-            'url' => 'http://example.com/' . $filename,
+            'url' => 'http://example.com/'.$filename,
             'width' => 200,
             'height' => 200,
             'content_type' => 'image/png',
@@ -139,7 +139,7 @@ class AttachmentTest extends TestCase
     public function fileAttachable(string $filename): RemoteFile
     {
         return new RemoteFile([
-            'url' => 'http://example.com/' . $filename,
+            'url' => 'http://example.com/'.$filename,
             'content_type' => 'text/csv',
             'caption' => 'hey there',
             'filename' => $filename,

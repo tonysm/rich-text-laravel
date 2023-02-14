@@ -13,7 +13,7 @@ class ModelTest extends TestCase
             'content' => '<h1>Hello World</h1>',
         ]);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <h1>Hello World</h1>
         </div>
@@ -36,7 +36,7 @@ class ModelTest extends TestCase
     {
         $post = Post::create([]);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
         </div>
 
@@ -72,7 +72,7 @@ class ModelTest extends TestCase
             'content' => '<h1>New Value</h1>',
         ]);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div class="trix-content">
             <h1>New Value</h1>
         </div>

@@ -10,12 +10,13 @@ use Illuminate\Support\Collection;
 class Fragment
 {
     private $cachedPlainText;
+
     private $cachedHtml;
 
     /**
-     * @param string|Fragment|DOMDocument $fragmentOrHtml
+     * @param  string|Fragment|DOMDocument  $fragmentOrHtml
      */
-    public static function wrap(string | Fragment | DOMDocument $fragmentOrHtml)
+    public static function wrap(string|Fragment|DOMDocument $fragmentOrHtml)
     {
         if ($fragmentOrHtml instanceof Fragment) {
             return $fragmentOrHtml;

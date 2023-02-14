@@ -9,9 +9,11 @@ use Illuminate\Support\Str;
 class TrixAttachment
 {
     public static $TAG_NAME = 'figure';
+
     public static $SELECTOR = '//*[@data-trix-attachment]';
 
     const COMPOSED_ATTRIBUTES = ['caption', 'presentation'];
+
     const ATTRIBUTES = [...self::COMPOSED_ATTRIBUTES, 'sgid', 'contentType', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'content'];
 
     private $attributesCache;
@@ -29,7 +31,6 @@ class TrixAttachment
         if ($trixAttributes) {
             $node->setAttribute('data-trix-attributes', json_encode($trixAttributes ?: []));
         }
-
 
         return new static($node);
     }
@@ -49,8 +50,8 @@ class TrixAttachment
     private static function typeCast(string $key, $value)
     {
         return match ($key) {
-            "previewable" => $value === true || $value === "true",
-            "filesize", "height", "width" => is_numeric($value) ? intval($value) : $value,
+            'previewable' => $value === true || $value === 'true',
+            'filesize', 'height', 'width' => is_numeric($value) ? intval($value) : $value,
             default => "{$value}",
         };
     }

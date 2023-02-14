@@ -15,12 +15,15 @@ class Attachment
     use ForwardsCalls;
 
     public static $TAG_NAME = 'rich-text-attachment';
+
     public static $SELECTOR = '//rich-text-attachment';
 
     const ATTRIBUTES = ['sgid', 'content-type', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'presentation', 'caption'];
 
     private $cachedAttributes;
+
     private $cachedSgidAttributes;
+
     private $cachedAttachableAttributes;
 
     public static function useTagName(string $tagName): void

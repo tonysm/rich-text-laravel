@@ -14,7 +14,7 @@ class HtmlConversion
 
     public static function nodeToHtml(DOMDocument $node): string
     {
-        return preg_replace("#</?rich-text-root>\n*#", "", $node->saveHTML($node->documentElement));
+        return preg_replace("#</?rich-text-root>\n*#", '', $node->saveHTML($node->documentElement));
     }
 
     public static function fragmentForHtml(?string $html = null): Fragment

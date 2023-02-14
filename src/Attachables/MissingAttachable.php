@@ -11,7 +11,7 @@ class MissingAttachable implements AttachableContract
 
     public function richTextAsPlainText($caption = null): string
     {
-        return sprintf("[%s]", $caption ?: 'Missing Attachment');
+        return sprintf('[%s]', $caption ?: 'Missing Attachment');
     }
 
     public function equalsToAttachable(AttachableContract $attachable): bool

@@ -20,7 +20,7 @@ class ContentTest extends TestCase
     /** @test */
     public function equality()
     {
-        $html = "<div>test</div>";
+        $html = '<div>test</div>';
         $content = $this->fromHtml($html);
 
         $this->assertStringContainsString($html, $content->toHtml());
@@ -29,7 +29,7 @@ class ContentTest extends TestCase
     /** @test */
     public function keeps_newlines_consistent()
     {
-        $html = "<div>a<br></div>";
+        $html = '<div>a<br></div>';
         $content = $this->fromHtml($html);
 
         $this->assertStringContainsString($html, $content->toHtml());
@@ -38,7 +38,7 @@ class ContentTest extends TestCase
     /** @test */
     public function handles_emojis()
     {
-        $html = "<div>Emojis 🎉🎉🎉</div>";
+        $html = '<div>Emojis 🎉🎉🎉</div>';
         $content = $this->fromHtml($html);
 
         $this->assertStringContainsString($html, $content->toHtml());
@@ -69,7 +69,7 @@ class ContentTest extends TestCase
 
         $attachment = $content->attachments()->first();
 
-        $this->assertEquals("Captioned", $attachment->caption());
+        $this->assertEquals('Captioned', $attachment->caption());
         $this->assertTrue($attachment->attachable->is($attachable));
     }
 
@@ -96,7 +96,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_remote_image_attachables()
     {
-        $html = <<<HTML
+        $html = <<<'HTML'
         <rich-text-attachment content-type="image" url="http://example.com/cat.jpg" width="200" height="100" caption="Captioned"></rich-text-attachment>
         HTML;
         $content = $this->fromHtml($html);
@@ -133,7 +133,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_missing_attachables()
     {
-        $html = <<<HTML
+        $html = <<<'HTML'
         <rich-text-attachment sgid="missing" caption="Captioned"></rich-text-attachment>
         HTML;
 
@@ -146,7 +146,7 @@ class ContentTest extends TestCase
     /** @test */
     public function converts_trix_formatted_attachments()
     {
-        $html = <<<HTML
+        $html = <<<'HTML'
         <figure
             data-trix-attachment='{"sgid": "123", "contentType": "text/plain", "width": 200, "height": 100}'
             data-trix-attributes='{"caption": "Captioned"}'
@@ -163,7 +163,7 @@ class ContentTest extends TestCase
     /** @test */
     public function converts_non_image_attachments()
     {
-        $html = <<<HTML
+        $html = <<<'HTML'
         <div>
             <figure
                 data-trix-attachment='{"contentType": "text/csv", "filename": "Test.csv", "filesize": "65"}'
@@ -188,7 +188,7 @@ class ContentTest extends TestCase
     public function converts_trix_formatetd_attachments_with_custom_tag_name()
     {
         $this->withAttachmentTagName('arbitrary-tag', function () {
-            $html = <<<HTML
+            $html = <<<'HTML'
             <figure
                 data-trix-attachment='{"sgid": "123", "contentType": "text/plain", "width": 200, "height": 100}'
                 data-trix-attributes='{"caption": "Captioned"}'
@@ -206,7 +206,7 @@ class ContentTest extends TestCase
     /** @test */
     public function ignores_trix_formatteed_attachments_with_bad_json()
     {
-        $html = <<<HTML
+        $html = <<<'HTML'
         <div data-trix-attachment='{"sgid": "pure garbate...}'></div>
         HTML;
 
@@ -268,7 +268,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_to_trix_html_with_image_attachments()
     {
-        $attachmentHtml = <<<HTML
+        $attachmentHtml = <<<'HTML'
         <div>Hey, <rich-text-attachment content-type="image/png" url="http://localhost/blue.png" filename="blue.png" filesize="1168" width="300" height="300" previewable="true" presentation="gallery"></rich-text-attachment></div>
         HTML;
 
@@ -285,7 +285,7 @@ class ContentTest extends TestCase
     /** @test */
     public function gets_gallery_attachments()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <div class="this will be removed">
@@ -319,7 +319,7 @@ class ContentTest extends TestCase
     /** @test */
     public function gets_only_attachments_of_galleries()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <rich-text-attachment presentation="gallery" url="http://example.com/white.png" filename="white.png" filesize="1" content-type="image/png" width="200" height="200" caption="should not get"></rich-text-attachment>
@@ -349,7 +349,7 @@ class ContentTest extends TestCase
     /** @test */
     public function canonicalizes_attachment_galleries()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <figure
@@ -392,7 +392,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_galleries()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <figure
@@ -415,7 +415,7 @@ class ContentTest extends TestCase
 
         // The markup indentation looks a bit off, but that's fine...
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <rich-text-attachment content-type="image/png" width="200" height="100" url="http://example.com/red-1.png" filename="red-1.png" filesize="100" presentation="gallery" caption="Captioned"></rich-text-attachment>
@@ -443,7 +443,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_galleries_to_trix_html()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <figure
@@ -482,7 +482,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_file_attachments()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <h1>Hey there</h1>
             <figure
@@ -505,7 +505,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_horizontal_rules_as_content_attachment()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <figure
                 data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
@@ -515,7 +515,7 @@ class ContentTest extends TestCase
         </div>
         HTML);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div>
             <hr>
 
@@ -526,7 +526,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_horizontal_rules_for_trix()
     {
-        $content = $this->fromHtml(<<<HTML
+        $content = $this->fromHtml(<<<'HTML'
         <div>
             <figure
                 data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
@@ -536,9 +536,9 @@ class ContentTest extends TestCase
         </div>
         HTML);
 
-        $this->assertEquals(<<<HTML
+        $this->assertEquals(<<<'HTML'
         <div>
-            <figure data-trix-attachment='{"contentType":"vnd.richtextlaravel.horizontal-rule.html","content":"&lt;hr&gt;\\n"}'></figure>
+            <figure data-trix-attachment='{"contentType":"vnd.richtextlaravel.horizontal-rule.html","content":"&lt;hr&gt;\n"}'></figure>
         </div>
         HTML, $content->toTrixHtml());
     }

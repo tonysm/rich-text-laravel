@@ -119,7 +119,7 @@ class PlainTextConversion
 
     private static function plainTextForFigcaptionNode(DOMNode $node): string
     {
-        return sprintf("[%s]", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
+        return sprintf('[%s]', static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
 
     private static function plainTextForBlockquoteNode(DOMNode $node): ?string
@@ -141,10 +141,10 @@ class PlainTextConversion
     private static function bulletForLiNode(DOMNode $node, $index): string
     {
         if ($node->parentNode->nodeName === 'ol') {
-            return sprintf("%s.", $index + 1);
+            return sprintf('%s.', $index + 1);
         }
 
-        return "•";
+        return '•';
     }
 
     private static function breakIfNestedList(DOMNode $node, string $text): string

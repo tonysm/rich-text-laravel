@@ -69,7 +69,7 @@ trait HasRichText
 
     public static function fieldToRichTextRelationship(string $field): string
     {
-        return 'richText' . Str::studly($field);
+        return 'richText'.Str::studly($field);
     }
 
     public function scopeWithRichText(Builder $query, $fields = []): void

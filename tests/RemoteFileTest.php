@@ -30,6 +30,7 @@ class RemoteFileTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider filesizesProvider
      */
     public function converts_file_size_to_human_readable($bytes, $humanReadable)

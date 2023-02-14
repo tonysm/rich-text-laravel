@@ -10,7 +10,7 @@ class AttachmentGalleryTest extends TestCase
     /** @test */
     public function gets_attachment()
     {
-        $document = HtmlConversion::document(<<<HTML
+        $document = HtmlConversion::document(<<<'HTML'
         <rich-text-attachment presentation="gallery" url="http://example.com/blue.png" content-type="image/png" width="300" height="300" filename="blue.png" filesize="200"></rich-text-attachment>
         <rich-text-attachment presentation="gallery" url="http://example.com/red.png" content-type="image/png" width="300" height="300" filename="red.png" filesize="200"></rich-text-attachment>
         HTML);

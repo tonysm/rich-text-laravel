@@ -23,7 +23,7 @@ class TestCase extends Orchestra
             fn (string $modelName) => 'Tonysm\\RichTextLaravel\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
 
-        View::addLocation(__DIR__ . '/Stubs/views');
+        View::addLocation(__DIR__.'/Stubs/views');
     }
 
     protected function getPackageProviders($app)

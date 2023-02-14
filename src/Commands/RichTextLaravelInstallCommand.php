@@ -11,6 +11,7 @@ use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 class RichTextLaravelInstallCommand extends Command
 {
     const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
+
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
 
     public $signature = 'richtext:install
@@ -88,7 +89,7 @@ class RichTextLaravelInstallCommand extends Command
         $this->displayTask('installing JS dependencies (Importmaps)', function () {
             $dependencies = array_keys($this->jsDependencies());
 
-            return Artisan::call('importmap:pin ' . implode(' ', $dependencies));
+            return Artisan::call('importmap:pin '.implode(' ', $dependencies));
         });
     }
 
@@ -106,7 +107,7 @@ class RichTextLaravelInstallCommand extends Command
                 return self::INVALID;
             } else {
                 File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
-                File::copy(__DIR__ . '/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
+                File::copy(__DIR__.'/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
 
                 return self::SUCCESS;
             }
@@ -128,8 +129,8 @@ class RichTextLaravelInstallCommand extends Command
                     str_replace(
                         '%path%',
                         $this->usingImportmaps() ? '' : './',
-                        <<<JS
-                        \\1
+                        <<<'JS'
+                        \1
                         import '%path%libs/trix';
                         JS,
                     ),
@@ -144,7 +145,7 @@ class RichTextLaravelInstallCommand extends Command
     private function ensureTrixOverridesStylesIsPublished(): void
     {
         $this->displayTask('publishing Trix styles', function () {
-            File::copy(__DIR__ . '/../../resources/css/trix.css', resource_path('css/_trix.css'));
+            File::copy(__DIR__.'/../../resources/css/trix.css', resource_path('css/_trix.css'));
 
             return self::SUCCESS;
         });
@@ -168,7 +169,7 @@ class RichTextLaravelInstallCommand extends Command
             File::ensureDirectoryExists(resource_path('views/components'));
 
             File::copy(
-                __DIR__ . '/../../resources/views/components/trix-field.blade.php',
+                __DIR__.'/../../resources/views/components/trix-field.blade.php',
                 resource_path('views/components/trix-field.blade.php'),
             );
 
@@ -203,8 +204,8 @@ class RichTextLaravelInstallCommand extends Command
     /**
      * Update the "package.json" file.
      *
-     * @param callable $callback
-     * @param bool $dev
+     * @param  callable  $callback
+     * @param  bool  $dev
      * @return void
      */
     protected static function updateNodePackages(callable $callback, $dev = true)
@@ -226,7 +227,7 @@ class RichTextLaravelInstallCommand extends Command
 
         file_put_contents(
             base_path('package.json'),
-            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
+            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
         );
     }
 
