@@ -22,11 +22,6 @@ jobs:
       - name: Install PHP dependencies
         run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress
 
-      - name: Run PHP CS Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
-        with:
-          args: --config=.php-cs-fixer.dist.php --allow-risky=yes
-
       - name: Run Pint
         run: php vendor/bin/pint -v
 
