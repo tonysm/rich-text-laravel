@@ -1,4 +1,4 @@
-name: Check & fix styling
+name: Check & Fix Styling
 
 on: [push]
 
@@ -12,10 +12,23 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress
+
       - name: Run PHP CS Fixer
         uses: docker://oskarstark/php-cs-fixer-ga
         with:
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
+
+      - name: Run Pint
+        run: php vendor/bin/pint -v
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
