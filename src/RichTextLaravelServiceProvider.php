@@ -2,10 +2,10 @@
 
 namespace Tonysm\RichTextLaravel;
 
+use Illuminate\View\Compilers\BladeCompiler;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Tonysm\RichTextLaravel\Commands\RichTextLaravelInstallCommand;
-use Tonysm\RichTextLaravel\View\Components\TrixStyles;
+use Tonysm\RichTextLaravel\Commands\InstallCommand;
 
 class RichTextLaravelServiceProvider extends PackageServiceProvider
 {
@@ -21,12 +21,15 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_rich_texts_table')
-            ->hasCommand(RichTextLaravelInstallCommand::class)
-            ->hasViewComponent('rich-text', TrixStyles::class);
+            ->hasCommand(InstallCommand::class);
     }
 
     public function packageBooted()
     {
         LivewireSupportsRichText::init();
+
+        $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade) {
+            $blade->anonymousComponentPath(dirname(__DIR__).implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
+        });
     }
 }

@@ -11,7 +11,7 @@ class TrixCoreStylesComponentTest extends TestCase
     /** @test */
     public function renders_core_styles_component()
     {
-        $this->blade('<x-rich-text-trix-styles />')
+        $this->blade('<x-rich-text::styles />')
             ->assertSee('<style ', escape: false)
             ->assertSee('</style>', escape: false)
             ->assertSee('trix-editor {', escape: false);
@@ -20,7 +20,7 @@ class TrixCoreStylesComponentTest extends TestCase
     /** @test */
     public function renders_core_styles_component_with_attributes()
     {
-        $this->blade('<x-rich-text-trix-styles nonce="lorem" />')
+        $this->blade('<x-rich-text::styles nonce="lorem" />')
             ->assertSee('<style nonce="lorem">', escape: false)
             ->assertSee('</style>', escape: false)
             ->assertSee('trix-editor {', escape: false);

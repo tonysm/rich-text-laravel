@@ -33,7 +33,13 @@ php artisan richtext:install
 If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-laravel) package, make sure you add the Trix core styles Blade Component to the `head` tag on your layout file(s):
 
 ```blade
-<x-rich-text-trix-styles />
+<x-rich-text::styles />
+```
+
+If you're using breeze, you may want to pass the `breeze` prop to this styles component:
+
+```blade
+<x-rich-text::styles breeze />
 ```
 
 If you're using Laravel Mix/Webpack, the `resources/js/trix.js` file has the JS setup and the CSS import as well, so no need to use the the Blade Component.
@@ -41,7 +47,7 @@ If you're using Laravel Mix/Webpack, the `resources/js/trix.js` file has the JS 
 The package also publishes a Blade Component for you which can be used inside your forms, like so:
 
 ```blade
-<x-trix-field id="bio" name="bio" />
+<x-trix-input id="bio" name="bio" />
 ```
 
 ## Overview
@@ -153,7 +159,7 @@ We store a back-reference to the field name in the `rich_texts` table because a 
 Rendering the rich text content back to the Trix editor is a bit differently than rendering for the end users, so you may do that using the `toTrixHtml` method on the field, like so:
 
 ```blade
-<x-trix-field id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
+<x-trix-input id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
 ```
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
@@ -216,7 +222,7 @@ And when it renders it again, it will re-render the remote image again inside th
 When feeding the Trix editor again, you need to do it differently:
 
 ```blade
-<x-trix-field id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
+<x-trix-input id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.

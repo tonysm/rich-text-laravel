@@ -3,12 +3,13 @@
 namespace Tonysm\RichTextLaravel\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Terminal;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
-class RichTextLaravelInstallCommand extends Command
+class InstallCommand extends Command
 {
     const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
 
@@ -67,7 +68,7 @@ class RichTextLaravelInstallCommand extends Command
     private function jsDependencies(): array
     {
         return [
-            'trix' => '^1.3.1',
+            'trix' => '^2.0.8',
         ];
     }
 
@@ -107,14 +108,19 @@ class RichTextLaravelInstallCommand extends Command
                 return self::INVALID;
             } else {
                 File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
-                File::copy(__DIR__.'/../../resources/js/trix.js', $trixAbsoluteDestinationPath);
+                File::copy(__DIR__.'/../../stubs/resources/js/trix.js', $trixAbsoluteDestinationPath);
 
                 return self::SUCCESS;
             }
         });
 
         $this->displayTask('importing the `libs/trix.js` file', function () {
-            if (! File::exists(resource_path('js/app.js'))) {
+            $entrypoint = Arr::first([
+                resource_path('js/libs/index.js'),
+                resource_path('js/app.js'),
+            ], fn ($file) => file_exists($file));
+
+            if (! File::exists($entrypoint)) {
                 $this->afterMessages[] = sprintf('<fg=white>* Add `%s` to your main JS file.</>', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './'));
 
                 return self::INVALID;
@@ -123,8 +129,8 @@ class RichTextLaravelInstallCommand extends Command
             // If the import line doesn't exist on the js/app.js file, add it after the import
             // of the bootstrap.js file that ships with Laravel's default scaffolding.
 
-            if (! preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get(resource_path('js/app.js')))) {
-                File::put(resource_path('js/app.js'), preg_replace(
+            if (! preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
+                File::put($entrypoint, preg_replace(
                     self::JS_BOOTSTRAP_IMPORT_PATTERN,
                     str_replace(
                         '%path%',
@@ -134,7 +140,7 @@ class RichTextLaravelInstallCommand extends Command
                         import '%path%libs/trix';
                         JS,
                     ),
-                    File::get(resource_path('js/app.js')),
+                    File::get($entrypoint),
                 ));
             }
 
@@ -145,7 +151,7 @@ class RichTextLaravelInstallCommand extends Command
     private function ensureTrixOverridesStylesIsPublished(): void
     {
         $this->displayTask('publishing Trix styles', function () {
-            File::copy(__DIR__.'/../../resources/css/trix.css', resource_path('css/_trix.css'));
+            File::copy(__DIR__.'/../../stubs/resources/css/trix.css', resource_path('css/_trix.css'));
 
             return self::SUCCESS;
         });
@@ -165,12 +171,12 @@ class RichTextLaravelInstallCommand extends Command
 
     private function ensureTrixFieldComponentIsCopied(): void
     {
-        $this->displayTask('publishing the <x-trix-field /> component', function () {
+        $this->displayTask('publishing the <x-trix-input /> component', function () {
             File::ensureDirectoryExists(resource_path('views/components'));
 
             File::copy(
-                __DIR__.'/../../resources/views/components/trix-field.blade.php',
-                resource_path('views/components/trix-field.blade.php'),
+                __DIR__.'/../../stubs/resources/views/components/trix-input.blade.php',
+                resource_path('views/components/trix-input.blade.php'),
             );
 
             return self::SUCCESS;
@@ -185,7 +191,7 @@ class RichTextLaravelInstallCommand extends Command
                     $file,
                     preg_replace(
                         '/(\s*)(<\/head>)/',
-                        "\\1    <x-rich-text-trix-styles />\n\\1\\2",
+                        "\\1    <x-rich-text::styles />\n\\1\\2",
                         File::get($file),
                     ),
                 ));
