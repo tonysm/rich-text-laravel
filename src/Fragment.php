@@ -13,9 +13,6 @@ class Fragment
 
     private $cachedHtml;
 
-    /**
-     * @param  string|Fragment|DOMDocument  $fragmentOrHtml
-     */
     public static function wrap(string|Fragment|DOMDocument $fragmentOrHtml)
     {
         if ($fragmentOrHtml instanceof Fragment) {

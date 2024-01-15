@@ -210,7 +210,6 @@ class InstallCommand extends Command
     /**
      * Update the "package.json" file.
      *
-     * @param  callable  $callback
      * @param  bool  $dev
      * @return void
      */
