@@ -483,9 +483,14 @@
             vertical-align: top;
             font-family: monospace;
             font-size: 0.9em;
-            padding: 0.5em;
+            padding: 0;
+            margin: 0.5em 0;
             white-space: pre;
             overflow-x: auto;
+        }
+
+        trix-editor.trix-content pre {
+            padding: 0.5em;
         }
 
         .trix-content img {
