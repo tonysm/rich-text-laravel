@@ -11,8 +11,8 @@ use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
 class Attachment
 {
-    use TrixConvertion;
     use ForwardsCalls;
+    use TrixConvertion;
 
     public static $TAG_NAME = 'rich-text-attachment';
 
@@ -41,7 +41,7 @@ class Attachment
         return null;
     }
 
-    public static function fromNode(DOMElement $node, AttachableContract $attachable = null): static
+    public static function fromNode(DOMElement $node, ?AttachableContract $attachable = null): static
     {
         return new static($node, $attachable ?: AttachableFactory::fromNode($node));
     }
@@ -49,7 +49,7 @@ class Attachment
     /**
      * @return null|static
      */
-    public static function fromAttributes(array $attributes = [], AttachableContract $attachable = null)
+    public static function fromAttributes(array $attributes = [], ?AttachableContract $attachable = null)
     {
         if ($node = static::nodeFromAttributes($attributes)) {
             return static::fromNode($node, $attachable);
