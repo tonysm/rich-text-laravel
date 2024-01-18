@@ -601,7 +601,7 @@ If you're attaching models, you can implement the `richTextAsPlainText(?string $
 ### Sanitization
 <a name="sanitization"></a>
 
-Since we're output unescaped HTML, you need to sanitize to avoid any security issues. One suggestion is to to use the [mews/purifier](https://github.com/mewebstudio/Purifier) package, before any final render (with the exception of rendering inside the value attribute of the input field that feeds Trix). That would look like this:
+Since we're rendering user-generated HTML, you need to sanitize to avoid any security issues, even though we control the input element (malicious users may tweak the HTML and swap it for something else that allows them to enter their own HTML). One suggestion is to to use the [mews/purifier](https://github.com/mewebstudio/Purifier) package, before any final render (with the exception of rendering inside the value attribute of the input field that feeds Trix). That would look like this:
 
 ```php
 {!! clean($post->body) !!}
