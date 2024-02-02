@@ -11,6 +11,7 @@ use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 class InstallCommand extends Command
 {
     const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
+
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
 
     public $signature = 'richtext:install
@@ -93,7 +94,7 @@ class InstallCommand extends Command
     {
         $this->components->info('Installing JS dependencies (Importmaps).');
 
-        $this->callSilent('importmap:pin '.implode(' ' , array_keys($this->jsDependencies())));
+        $this->callSilent('importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
     }
 
     private function ensureTrixLibIsImported(): void
@@ -118,6 +119,7 @@ class InstallCommand extends Command
 
         if (! File::exists($entrypoint)) {
             $this->components->warn(sprintf('Add `%s` your main JS file.', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './')));
+
             return;
         }
 
