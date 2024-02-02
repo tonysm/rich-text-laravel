@@ -182,7 +182,7 @@ class InstallCommand extends Command
                     return;
                 }
 
-                File::put($file, preg_replace('/(\s*)(<\/head>)/', "\\1    <x-rich-text::styles />\n\\1\\2", $contents));
+                File::put($file, preg_replace('/(\s*)(<\/head>)/', "\\1    <x-rich-text::styles breeze data-turbo-track=\"false\" />\n\\1\\2", $contents));
             });
     }
 
