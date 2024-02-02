@@ -4,7 +4,6 @@ namespace Tonysm\RichTextLaravel\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Terminal;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
@@ -12,7 +11,6 @@ use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 class InstallCommand extends Command
 {
     const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
-
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
 
     public $signature = 'richtext:install
@@ -21,34 +19,34 @@ class InstallCommand extends Command
 
     public $description = 'Installs the package.';
 
-    private $afterMessages = [];
-
     public function handle()
     {
-        $this->displayHeader('Installing Rich Text Laravel', '<bg=blue;fg=black> INFO </>');
-
-        $this->displayTask('publishing config', fn () => $this->callSilently('vendor:publish', [
-            '--tag' => 'rich-text-laravel-config',
-            '--provider' => RichTextLaravelServiceProvider::class,
-        ]));
+        $this->components->info('Installing Rich Text Laravel.');
 
         if (! $this->option('no-model')) {
-            $this->displayTask('publishing migrations', fn () => $this->callSilently('vendor:publish', [
-                '--tag' => 'rich-text-laravel-migrations',
-                '--provider' => RichTextLaravelServiceProvider::class,
-            ]));
+            $this->publishMigration();
         }
 
-        $this->updateJsDependencies();
         $this->ensureTrixLibIsImported();
         $this->ensureTrixOverridesStylesIsPublished();
         $this->ensureTrixFieldComponentIsCopied();
         $this->updateAppLayoutFiles();
+        $this->updateJsDependencies();
 
-        $this->displayAfterNotes();
+        $this->line('');
+        $this->components->info('Rich Text Laravel installed successfully.');
 
-        $this->newLine();
-        $this->line('<fg=white> Done!</>');
+        return self::SUCCESS;
+    }
+
+    private function publishMigration()
+    {
+        $this->components->info('Publishing migrations.');
+
+        $this->callSilently('vendor:publish', [
+            '--tag' => 'rich-text-laravel-migrations',
+            '--provider' => RichTextLaravelServiceProvider::class,
+        ]);
     }
 
     private function updateJsDependencies()
@@ -74,130 +72,116 @@ class InstallCommand extends Command
 
     private function updateJsDependenciesWithNpm(): void
     {
-        $this->displayTask('adding JS dependencies (NPM)', function () {
-            $this->updateNodePackages(function ($packages) {
-                return $this->jsDependencies() + $packages;
-            });
+        $this->components->info('Installing JS dependencies (Node).');
 
-            $this->afterMessages[] = '<fg=white>* Run <fg=yellow>`npm install && npm run dev`</></>';
-
-            return self::SUCCESS;
+        $this->updateNodePackages(function ($packages) {
+            return $this->jsDependencies() + $packages;
         });
+
+        $this->components->info('Installing and building Node dependencies.');
+
+        if (file_exists(base_path('pnpm-lock.yaml'))) {
+            $this->runCommands(['pnpm install', 'pnpm run build']);
+        } elseif (file_exists(base_path('yarn.lock'))) {
+            $this->runCommands(['yarn install', 'yarn run build']);
+        } else {
+            $this->runCommands(['npm install', 'npm run build']);
+        }
     }
 
     private function installJsDependenciesWithImportmaps(): void
     {
-        $this->displayTask('installing JS dependencies (Importmaps)', function () {
-            $dependencies = array_keys($this->jsDependencies());
+        $this->components->info('Installing JS dependencies (Importmaps).');
 
-            return Artisan::call('importmap:pin '.implode(' ', $dependencies));
-        });
+        $this->callSilent('importmap:pin '.implode(' ' , array_keys($this->jsDependencies())));
     }
 
     private function ensureTrixLibIsImported(): void
     {
+        $this->components->info('Publishing resources/js/libs/trix.js module.');
+
         $trixRelativeDestinationPath = 'resources/js/libs/trix.js';
 
-        $this->displayTask('publishing libs/trix.js file', function () use ($trixRelativeDestinationPath) {
-            $trixAbsoluteDestinationPath = base_path($trixRelativeDestinationPath);
+        $trixAbsoluteDestinationPath = base_path($trixRelativeDestinationPath);
 
-            if (File::exists($trixAbsoluteDestinationPath)) {
-                $this->warn("File {$trixRelativeDestinationPath} already exists.");
-                $this->afterMessages[] = '<fg=white>* The file `resources/js/libs/trix.js` already existed;</>';
+        if (File::exists($trixAbsoluteDestinationPath)) {
+            $this->components->warn("File {$trixRelativeDestinationPath} already exists.");
+        } else {
+            File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
+            File::copy(__DIR__.'/../../stubs/resources/js/trix.js', $trixAbsoluteDestinationPath);
+        }
 
-                return self::INVALID;
-            } else {
-                File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
-                File::copy(__DIR__.'/../../stubs/resources/js/trix.js', $trixAbsoluteDestinationPath);
+        $entrypoint = Arr::first([
+            resource_path('js/libs/index.js'),
+            resource_path('js/app.js'),
+        ], fn ($file) => file_exists($file));
 
-                return self::SUCCESS;
-            }
-        });
+        if (! File::exists($entrypoint)) {
+            $this->components->warn(sprintf('Add `%s` your main JS file.', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './')));
+            return;
+        }
 
-        $this->displayTask('importing the `libs/trix.js` file', function () {
-            $entrypoint = Arr::first([
-                resource_path('js/libs/index.js'),
-                resource_path('js/app.js'),
-            ], fn ($file) => file_exists($file));
+        $this->components->info(sprintf('Importing the `libs/trix.js` module in `%s`', str($entrypoint)->after(resource_path())));
 
-            if (! File::exists($entrypoint)) {
-                $this->afterMessages[] = sprintf('<fg=white>* Add `%s` to your main JS file.</>', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './'));
+        // If the import line doesn't exist on the js/app.js file, add it after the import
+        // of the bootstrap.js file that ships with Laravel's default scaffolding.
 
-                return self::INVALID;
-            }
-
-            // If the import line doesn't exist on the js/app.js file, add it after the import
-            // of the bootstrap.js file that ships with Laravel's default scaffolding.
-
-            if (! preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
-                File::put($entrypoint, preg_replace(
-                    self::JS_BOOTSTRAP_IMPORT_PATTERN,
-                    str_replace(
-                        '%path%',
-                        $this->usingImportmaps() ? '' : './',
-                        <<<'JS'
-                        \1
-                        import '%path%libs/trix';
-                        JS,
-                    ),
-                    File::get($entrypoint),
-                ));
-            }
-
-            return self::SUCCESS;
-        });
+        if (! preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
+            File::put($entrypoint, preg_replace(
+                self::JS_BOOTSTRAP_IMPORT_PATTERN,
+                str_replace(
+                    '%path%',
+                    $this->usingImportmaps() ? '' : './',
+                    <<<'JS'
+                    \1
+                    import '%path%libs/trix';
+                    JS,
+                ),
+                File::get($entrypoint),
+            ));
+        }
     }
 
     private function ensureTrixOverridesStylesIsPublished(): void
     {
-        $this->displayTask('publishing Trix styles', function () {
-            File::copy(__DIR__.'/../../stubs/resources/css/trix.css', resource_path('css/_trix.css'));
+        $this->components->info('Publishing styles.');
+        File::copy(__DIR__.'/../../stubs/resources/css/trix.css', resource_path('css/_trix.css'));
 
-            return self::SUCCESS;
-        });
+        if (File::exists($mainCssFile = resource_path('css/app.css')) && ! str_contains(File::get($mainCssFile), '_trix.css')) {
+            $this->components->info('Importing the `resources/css/_trix.css` styles file.');
 
-        $this->displayTask('importing the css/_trix.css file', function () {
-            if (File::exists($mainCssFile = resource_path('css/app.css')) && ! str_contains(File::get($mainCssFile), '_trix.css')) {
-                File::prepend($mainCssFile, "@import './_trix.css';\n");
-
-                return self::SUCCESS;
-            } else {
-                $this->afterMessages[] = '<fg=white>* Import the `resources/css/_trix.css` in your main CSS file;</>';
-
-                return self::INVALID;
-            }
-        });
+            File::prepend($mainCssFile, "@import './_trix.css';\n");
+        } else {
+            $this->components->warn('Import the `resources/css/_trix.css` in your main CSS file.');
+        }
     }
 
     private function ensureTrixFieldComponentIsCopied(): void
     {
-        $this->displayTask('publishing the <x-trix-input /> component', function () {
-            File::ensureDirectoryExists(resource_path('views/components'));
+        $this->components->info('Publishing the `<x-trix-input />` Blade component.');
 
-            File::copy(
-                __DIR__.'/../../stubs/resources/views/components/trix-input.blade.php',
-                resource_path('views/components/trix-input.blade.php'),
-            );
+        File::ensureDirectoryExists(resource_path('views/components'));
 
-            return self::SUCCESS;
-        });
+        File::copy(
+            __DIR__.'/../../stubs/resources/views/components/trix-input.blade.php',
+            resource_path('views/components/trix-input.blade.php'),
+        );
     }
 
     private function updateAppLayoutFiles(): void
     {
-        $this->displayTask('updating layout files', function () {
-            $this->existingLayoutFiles()
-                ->each(fn ($file) => File::put(
-                    $file,
-                    preg_replace(
-                        '/(\s*)(<\/head>)/',
-                        "\\1    <x-rich-text::styles />\n\\1\\2",
-                        File::get($file),
-                    ),
-                ));
+        $this->components->info('Updating layouts.');
 
-            return self::SUCCESS;
-        });
+        $this->existingLayoutFiles()
+            ->each(function ($file) {
+                $contents = File::get($file);
+
+                if (str_contains($contents, '<x-rich-text::styles />')) {
+                    return;
+                }
+
+                File::put($file, preg_replace('/(\s*)(<\/head>)/', "\\1    <x-rich-text::styles />\n\\1\\2", $contents));
+            });
     }
 
     private function existingLayoutFiles()
@@ -259,16 +243,5 @@ class InstallCommand extends Command
         $this->newLine();
         $this->line(sprintf(' %s <fg=white>%s</>  ', $prefix, $text));
         $this->newLine();
-    }
-
-    private function displayAfterNotes()
-    {
-        if (count($this->afterMessages) > 0) {
-            $this->displayHeader('After Notes & Next Steps', '<bg=yellow;fg=black> NOTES </>');
-
-            foreach ($this->afterMessages as $message) {
-                $this->line('    '.$message);
-            }
-        }
     }
 }
