@@ -245,14 +245,14 @@ export default class extends Controller {
 Then, we can listen to the `trix-attachment-add` event that the Trix editor dispatched whenever a new attachment is added, like so:
 
 ```html
-<x-trix-editor
+<x-trix-input
     id="post_body"
     name="body"
     data-controller="trix"
     data-action="
         trix-attachment-add->trix#upload
     "
-></x-trix-editor>
+/>
 ```
 
 Now, let's implement the `upload` method in the `trix_controller.js` we just created:
@@ -413,14 +413,14 @@ export default class extends Controller {
 Now we need to attach the mentions controller to the Trix editor, just like we did with the image upload example:
 
 ```html
-<x-trix-editor
+<x-trix-input
     id="post_body"
     name="body"
     data-controller="trix mentions"
     data-action="
         trix-attachment-add->trix#upload
     "
-></x-trix-editor>
+/>
 ```
 
 The `GET /mentions?search=` route could look something like this:
@@ -449,7 +449,7 @@ You see we're returning the `sgid`, which is a method from the `Attachable` trai
 When you choose an option in Tribute, you need to listen to the `tribute-replaced` event and call a method inside the `mentions_controller.js`, let's hook it:
 
 ```html
-<x-trix-editor
+<x-trix-input
     id="post_body"
     name="body"
     data-controller="trix mentions"
@@ -457,7 +457,7 @@ When you choose an option in Tribute, you need to listen to the `tribute-replace
         trix-attachment-add->trix#upload
         tribute-replaced->mentions#tributeReplaced
     "
-></x-trix-editor>
+/>
 ```
 
 Next, let's implement that method inside out mentions controller. The event that we get there should contain the user object (the one with the `sgid`, `name`, and `content` attributes we returned from the Controller) inside the `detail.item.original` path. We can take that and create an instance of the `Trix.Attachment` passing the `sgid` and `content` attributes to it, then inserting that attachment into the editor:
@@ -598,10 +598,15 @@ Cheers,
 
 If you're attaching models, you can implement the `richTextAsPlainText(?string $caption = null): string` method on it, where you should return the plain text representation of that attachable. If the method is not implemented on the attachable and no caption is stored in the Trix attachment, that attachment won't be present in the Plain Text version of the content.
 
+| 💡 The plain text output representation is not HTML-safe. You must escape the plain text version generated. |
+|------------------------|
+
 ### Sanitization
 <a name="sanitization"></a>
 
-Since we're rendering user-generated HTML, you need to sanitize to avoid any security issues, even though we control the input element (malicious users may tweak the HTML and swap it for something else that allows them to enter their own HTML). One suggestion is to to use the [mews/purifier](https://github.com/mewebstudio/Purifier) package, before any final render (with the exception of rendering inside the value attribute of the input field that feeds Trix). That would look like this:
+Since we're rendering user-generated HTML, you must sanitize it to avoid any security issues. Even though we control the input element, malicious users may customize the HTML in the browser and swap it for something else that allows them to enter their own HTML.
+
+We suggest using something like [mews/purifier](https://github.com/mewebstudio/Purifier) package before any final render (with the exception of rendering inside the value attribute of the input field that feeds Trix). That would look like this:
 
 ```php
 {!! clean($post->body) !!}
@@ -707,8 +712,6 @@ The `//@formatter:*` comments are optional, but if you use an IDE like PhpStorm,
 When storing references of custom attachments, the package uses another package called [GlobalID Laravel](https://github.com/tonysm/globalid-laravel). We store a Signed Global ID, which means users cannot simply change the sgids at-rest. They would need to generate another valid signature using the `APP_KEY`, which is secret.
 
 In case you want to rotate your key, you would need to loop-through all the rich text content, take all attachables with an `sgid` attribute, assign a new value to it with the new signature using the new secret, and store the content with that new value.
-
-
 
 ### Livewire
 
