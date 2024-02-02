@@ -5,7 +5,9 @@ namespace Tonysm\RichTextLaravel\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 use Symfony\Component\Console\Terminal;
+use Symfony\Component\Process\Process;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class InstallCommand extends Command
@@ -88,6 +90,23 @@ class InstallCommand extends Command
         } else {
             $this->runCommands(['npm install', 'npm run build']);
         }
+    }
+
+    private function runCommands($commands)
+    {
+        $process = Process::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
+
+        if ('\\' !== DIRECTORY_SEPARATOR && file_exists('/dev/tty') && is_readable('/dev/tty')) {
+            try {
+                $process->setTty(true);
+            } catch (RuntimeException $e) {
+                $this->output->writeln('  <bg=yellow;fg=black> WARN </> '.$e->getMessage().PHP_EOL);
+            }
+        }
+
+        $process->run(function ($type, $line) {
+            $this->output->write('    '.$line);
+        });
     }
 
     private function installJsDependenciesWithImportmaps(): void
