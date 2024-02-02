@@ -9,7 +9,7 @@ class RichTextException extends RuntimeException
     public static function missingRichTextFieldsProperty(string $class)
     {
         return new static(sprintf(
-            'Missing protecetd property $richTextFields in the %s model.',
+            'Missing protecetd property $richTextAttributes in the %s model.',
             $class,
         ));
     }

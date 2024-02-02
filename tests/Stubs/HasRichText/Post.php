@@ -11,7 +11,7 @@ class Post extends Model
 
     protected $guarded = [];
 
-    protected $richTextFields = [
+    protected $richTextAttributes = [
         'body',
         'notes',
     ];

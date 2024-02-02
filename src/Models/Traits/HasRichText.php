@@ -60,11 +60,11 @@ trait HasRichText
 
     protected function getRichTextFields(): array
     {
-        if (! property_exists($this, 'richTextFields')) {
+        if (! property_exists($this, 'richTextAttributes')) {
             throw RichTextException::missingRichTextFieldsProperty(static::class);
         }
 
-        return Arr::wrap($this->richTextFields);
+        return Arr::wrap($this->richTextAttributes);
     }
 
     public static function fieldToRichTextRelationship(string $field): string
