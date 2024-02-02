@@ -79,7 +79,7 @@ class Post extends Model
 
     protected $guarded = [];
 
-    protected $richTextFields = [
+    protected $richTextAttributes = [
         'body',
         'notes',
     ];
@@ -767,7 +767,7 @@ class User extends Model
     use HasRichText;
 
     protected $fillable = ['bio'];
-    protected $richTextFields = ['bio'];
+    protected $richTextAttributes = ['bio'];
 }
 ```
 
