@@ -24,7 +24,7 @@
     "require-dev": {
         "laravel/pint": "^1.10",
         "nunomaduro/collision": "^5.3|^6.0",
-        "orchestra/testbench": "^8.14",
+        "orchestra/testbench": "^8.21",
         "phpunit/phpunit": "^9.6"
     },
     "autoload": {
@@ -35,13 +35,32 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tonysm\\RichTextLaravel\\Tests\\": "tests"
+            "Tonysm\\RichTextLaravel\\Tests\\": "tests",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
     "scripts": {
         "psalm": "vendor/bin/psalm",
         "test": "./vendor/bin/testbench package:test --parallel --no-coverage",
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "lint": [
+            "@php vendor/bin/pint",
+            "@php vendor/bin/phpstan analyse"
+        ]
     },
     "config": {
         "sort-packages": true
