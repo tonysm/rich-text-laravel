@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Workbench\App\Models\Post;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/posts');
+
+Route::get('/posts', function () {
+    return view('posts.index', [
+        'posts' => Post::query()
+            ->latest()
+            ->get(),
+    ]);
+})->name('posts.index');
+
+Route::get('/posts/create', function () {
+    return view('posts.create');
+})->name('posts.create');
+
+Route::post('/posts', function () {
+    $post = Post::create(request()->validate([
+        'title' => ['required'],
+        'body' => ['required'],
+    ]));
+
+    return to_route('posts.show', $post);
+})->name('posts.store');
+
+Route::get('/posts/{post}', function (Post $post) {
+    return view('posts.show', [
+        'post' => $post,
+    ]);
+})->name('posts.show');

@@ -1,2 +1,23 @@
 providers:
   - Tonysm\RichTextLaravel\RichTextLaravelServiceProvider
+  - Workbench\App\Providers\WorkbenchServiceProvider
+
+migrations:
+  - workbench/database/migrations
+
+components:
+  - workbench/resources/views/components
+
+workbench:
+  start: '/posts'
+  install: true
+  welcome: true
+  discovers:
+    web: true
+    views: true
+  build:
+    - create-sqlite-db
+    - db:wipe
+    - migrate:fresh
+  assets: []
+  sync: []
