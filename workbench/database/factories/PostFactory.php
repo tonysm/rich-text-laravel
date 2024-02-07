@@ -28,18 +28,20 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(),
+            'title' => $this->faker->words(4, asText: true),
         ];
     }
 
     public function configure()
     {
         return $this->afterCreating(function ($post) {
-            $quote = Inspiring::quote();
+            $quote = Inspiring::quotes()->random();
 
             $post->update(['body' => <<<HTML
             <div>Hello <b><i>World</i></b></div>
+            <div></div>
             <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium delectus, culpa ipsum laborum quibusdam et architecto asperiores, impedit alias eveniet enim temporibus totam. Officiis, provident perspiciatis facere amet unde enim.</div>
+            <div></div>
             <blockquote>{$quote}</blockquote>
             <h1>A title</h1>
             <ul>
@@ -47,6 +49,6 @@ class PostFactory extends Factory
                 <li>Second item</li>
             </ul>
             HTML]);
-        })
+        });
     }
 }

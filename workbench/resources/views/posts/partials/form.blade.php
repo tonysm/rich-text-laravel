@@ -15,7 +15,7 @@
 
     <div class="mt-4">
         <label class="block font-medium text-sm text-gray-700" for="body">{{ __('Body') }}</label>
-        <x-trix-input :id="$post?->exists ? 'post_'.$post->id.'_body' : 'create_post_body'" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" name="body" placeholder="{{ __('Share something with the world...') }}" value="{{ old('body', $post?->body) }}" autocomplete="off" />
+        <x-trix-input :id="$post?->exists ? 'post_'.$post->id.'_body' : 'create_post_body'" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" name="body" placeholder="{{ __('Share something with the world...') }}" :value="old('body', $post?->body?->toTrixHtml())" autocomplete="off" />
         @error('body')
         <span class="mt-1 block text-sm text-red-600">{{ $message }}</span>
         @enderror

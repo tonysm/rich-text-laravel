@@ -42,3 +42,18 @@ Route::get('/posts/{post}', function (Post $post) {
         'post' => $post,
     ]);
 })->name('posts.show');
+
+Route::get('/posts/{post}/edit', function (Post $post) {
+    return view('posts.edit', [
+        'post' => $post,
+    ]);
+})->name('posts.edit');
+
+Route::put('/posts/{post}', function (Post $post) {
+    $post->update(request()->validate([
+        'title' => ['required'],
+        'body' => ['required'],
+    ]));
+
+    return to_route('posts.show', $post);
+})->name('posts.update');

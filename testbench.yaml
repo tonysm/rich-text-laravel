@@ -8,6 +8,9 @@ migrations:
 components:
   - workbench/resources/views/components
 
+seeders:
+  - Workbench\Database\Seeders\DatabaseSeeder
+
 workbench:
   start: '/posts'
   install: true
