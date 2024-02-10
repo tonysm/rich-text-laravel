@@ -16,13 +16,13 @@
 
     <div class="mt-6 space-y-6">
         <h1 class="text-xl">The HTML version:</h1>
-        <div class="rounded border shadow p-6 space-y-2 trix-content prose prose-pre:text-gray-900 max-w-none">
+        <div class="rounded border shadow p-6 space-y-2 trix-content prose prose-pre:text-gray-900 max-w-none bg-white">
             {{-- DON'T DO THIS. YOU MUST SANITIZE IN PRODUTION. --}}
             {!! $post->body !!}
         </div>
 
         <h1 class="text-xl">The Plain Text version:</h1>
 
-        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line">{{ $post->body->toPlainText() }}</div>
+        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
     </div>
 </x-app-layout>

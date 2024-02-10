@@ -11,7 +11,7 @@
     </div>
 
     <div class="mt-6 space-y-6">
-       <div class="rounded border shadow p-6 space-y-2">
+       <div class="rounded border shadow p-6 space-y-2 bg-white">
             @include('posts.partials.form', ['post' => null])
         </div>
     </div>
