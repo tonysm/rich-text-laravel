@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rich Text Laravel</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -105,11 +106,39 @@
             }
         }
 
+        class UploadManager {
+            upload(event) {
+                if (! event?.attachment?.file) return
+
+                const form = new FormData()
+                form.append('attachment', event.attachment.file)
+
+                const options = {
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                        'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
+                    }
+                }
+
+                fetch('/attachments', options)
+                    .then(resp => resp.json())
+                    .then((data) => {
+                        event.attachment.setAttributes({
+                            url: data.image_url,
+                            href: data.image_url,
+                        })
+                    })
+            }
+        }
+
         Stimulus.register('rich-text', class extends Controller {
-            #autocompleter;
+            #autocompleter
+            #uploader
 
             connect() {
-                this.#autocompleter = new AutoCompleteManager(this.element);
+                this.#autocompleter = new AutoCompleteManager(this.element)
+                this.#uploader = new UploadManager()
             }
 
             disconnect() {
@@ -118,6 +147,10 @@
 
             addMention({ detail: { item: { original: mention }}}) {
                 this.#autocompleter.addMention(mention)
+            }
+
+            upload(event) {
+                this.#uploader.upload(event)
             }
         })
     </script>

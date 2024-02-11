@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Workbench\App\Models\Post;
 use Workbench\App\Models\User;
 
@@ -70,3 +71,31 @@ Route::get('/mentions', function (Request $request) {
             'content' => $user->richTextRender(),
         ]);
 })->name('mentions.index');
+
+Route::post('attachments', function () {
+    request()->validate([
+        'attachment' => ['required', 'file'],
+    ]);
+
+    $path = request()->file('attachment')->store('trix-attachments', 'public');
+
+    return [
+        'image_url' => route('attachments.show', $path),
+    ];
+})->name('attachments.store');
+
+// This route wouldn't exist in a real app
+Route::get('/attachments/{path}', function (string $path) {
+    $disk = Storage::disk('public');
+
+    abort_unless($disk->exists($path), 404);
+
+    $stream = $disk->readStream($path);
+
+    $headers = [
+        'Content-Type' => $disk->mimeType($path),
+        'Content-Length' => $disk->size($path),
+    ];
+
+    return response()->stream(fn () => fpassthru($stream), 200, $headers);
+})->name('attachments.show')->where('path', '.*');
