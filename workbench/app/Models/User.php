@@ -9,6 +9,6 @@ use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 class User extends Model implements AttachableContract
 {
     use HasFactory;
-    use User\Picturable;
     use User\Mentionee;
+    use User\Picturable;
 }
