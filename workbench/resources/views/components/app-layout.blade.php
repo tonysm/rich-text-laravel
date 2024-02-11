@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,20 +18,114 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif', "Apple Color Emoji", "Segoe UI Emoji"],
+                        sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif', "Apple Color Emoji",
+                            "Segoe UI Emoji"
+                        ],
                     }
                 }
             }
         }
     </script>
+    <style type="text/tailwindcss">
+    @layer components {
+        .trix-content .attachment--content {
+            @apply m-0 inline-flex items-center;
+        }
+    }
+    </style>
 
     <x-rich-text::styles />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js" integrity="sha512-/1nVu72YEESEbcmhE/EvjH/RxTg62EKvYWLG3NdeZibTCuEtW5M4z3aypcvsoZw03FAopi94y04GhuqRU9p+CQ==" crossorigin="anonymous"></script>
+    {{-- Tribute's Styles... --}}
+    <link rel="stylesheet" href="https://unpkg.com/tributejs@5.1.3/dist/tribute.css">
+
+    {{-- Install Stimulus via CDN --}}
+    <script type="module">
+        import {
+            Application,
+            Controller
+        } from 'https://cdn.skypack.dev/@hotwired/stimulus'
+        import Tribute from 'https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js'
+        import Trix from 'https://ga.jspm.io/npm:trix@2.0.10/dist/trix.esm.min.js'
+
+        window.Stimulus = Application.start()
+
+        class AutoCompleteManager {
+            #tribute
+            #element
+
+            constructor(element) {
+                this.#initializeTribute(element)
+            }
+
+            detach() {
+                this.#tribute.detach(this.#element)
+            }
+
+            addMention({ sgid, content }) {
+                const attachment = new Trix.Attachment({
+                    sgid,
+                    content,
+                    contentType: 'application/vnd.rich-text-laravel.user-mention+html'
+                })
+
+                this.#editor.insertAttachment(attachment)
+                this.#editor.insertString(" ")
+            }
+
+            #initializeTribute(element) {
+                this.#tribute = new Tribute({
+                    allowSpaces: true,
+                    lookup: 'name',
+                    values: this.#fetchUsers,
+                })
+
+                this.#tribute.attach(this.#element = element)
+                this.#tribute.range.pasteHtml = this.#pasteHtml.bind(this)
+            }
+
+            #fetchUsers(text, callback) {
+                fetch(`/mentions?search=${text}`)
+                    .then(resp => resp.json())
+                    .then(users => callback(users))
+                    .catch(error => callback([]))
+            }
+
+            #pasteHtml(html, startPosition, endPosition) {
+                let range = this.#editor.getSelectedRange()
+                let position = range[0]
+                let length = endPosition - startPosition
+
+                this.#editor.setSelectedRange([position - length, position])
+                this.#editor.deleteInDirection('backward')
+            }
+
+            get #editor() {
+                return this.#element.editor;
+            }
+        }
+
+        Stimulus.register('rich-text', class extends Controller {
+            #autocompleter;
+
+            connect() {
+                this.#autocompleter = new AutoCompleteManager(this.element);
+            }
+
+            disconnect() {
+                this.#autocompleter.detach()
+            }
+
+            addMention({ detail: { item: { original: mention }}}) {
+                this.#autocompleter.addMention(mention)
+            }
+        })
+    </script>
 </head>
+
 <body class="bg-gray-100">
     <main class="max-w-3xl w-full mx-auto my-10" {{ $attributes ?? '' }}>
         {{ $slot }}
-    </main
-</body>
+    </main </body>
+
 </html>

@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Workbench\App\Models\Post;
+use Workbench\App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,3 +59,14 @@ Route::put('/posts/{post}', function (Post $post) {
 
     return to_route('posts.show', $post);
 })->name('posts.update');
+
+Route::get('/mentions', function (Request $request) {
+    return User::query()
+        ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
+        ->get()
+        ->map(fn (User $user) => [
+            'sgid' => $user->richTextSgid(),
+            'name' => $user->name,
+            'content' => $user->richTextRender(),
+        ]);
+})->name('mentions.index');
