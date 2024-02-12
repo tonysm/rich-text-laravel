@@ -6,7 +6,8 @@ use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\Content;
-use Tonysm\RichTextLaravel\Tests\Stubs\User;
+use Workbench\App\Models\User;
+use Workbench\Database\Factories\UserFactory;
 
 class ContentTest extends TestCase
 {
@@ -56,7 +57,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_attachments()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
 
         $html = <<<HTML
@@ -76,7 +77,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_attachables()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
 
         $html = <<<HTML
@@ -116,7 +117,7 @@ class ContentTest extends TestCase
     /** @test */
     public function handles_destryed_attachables_as_missing()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
         $html = <<<HTML
         <rich-text-attachment sgid="$sgid" caption="User mention"></rich-text-attachment>
@@ -249,7 +250,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_to_trix_hmtl_with_model_attachments()
     {
-        $user = UserWithCustomRenderContent::create(['name' => 'Hey There']);
+        $user = UserWithCustomRenderContent::create(UserFactory::new()->raw(['name' => 'Hey There']));
         $sgid = $user->richTextSgid();
         $attachmentHtml = <<<HTML
         <div>Hey, <rich-text-attachment sgid="$sgid" content-type="application/octet-stream"></rich-text-attachment></div>
