@@ -29,7 +29,7 @@
         <h1 class="text-xl">The Plain Text version:</h1>
 
         <x-info>
-            <span>You can also render the document in plain text:</span>
+            <span>You may also render the document in plain text. Please, notice that even the plain text version <strong>MUST</strong> be escaped too, as image's captions and other custom attachments may contain user input:</span>
         </x-info>
 
         <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
