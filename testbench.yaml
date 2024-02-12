@@ -1,8 +1,10 @@
 providers:
   - Tonysm\RichTextLaravel\RichTextLaravelServiceProvider
+  - Tonysm\GlobalId\GlobalIdServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:
+  - vendor/orchestra/testbench-core/laravel/migrations/
   - workbench/database/migrations
 
 components:

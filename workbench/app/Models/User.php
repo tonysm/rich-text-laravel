@@ -11,4 +11,6 @@ class User extends Model implements AttachableContract
     use HasFactory;
     use User\Mentionee;
     use User\Picturable;
+
+    protected $guarded = [];
 }

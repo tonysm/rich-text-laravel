@@ -2,11 +2,16 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Tonysm\GlobalId\Facades\Locator;
+use Tonysm\RichTextLaravel\Attachables\Attachable;
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
-use Tonysm\RichTextLaravel\Tests\Stubs\User;
+use Workbench\App\Models\User;
+use Workbench\Database\Factories\UserFactory;
 
 class AttachmentTest extends TestCase
 {
@@ -72,21 +77,23 @@ class AttachmentTest extends TestCase
     public function converst_to_html()
     {
         $attachment = Attachment::fromAttachable($this->attachable(), ['caption' => 'hey, there']);
-        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzEiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--3442b51e2f1b56d5928b4654847c19e4d4b03f57dcfa02bcd6cbdc01ccec004c" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
-        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzEiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--3442b51e2f1b56d5928b4654847c19e4d4b03f57dcfa02bcd6cbdc01ccec004c" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
+        $sgid = $attachment->attachable->richTextSgid();
+        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="'.$sgid.'" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
+        $this->assertEquals('<rich-text-attachment caption="hey, there" sgid="'.$sgid.'" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
 
-        $attachment = Attachment::fromAttachable(User::create(['name' => 'hey']));
-        $this->assertEquals('<rich-text-attachment sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzIiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--e260941c7b4f1875c536edf100274fbb3c4c8e3a1b41afd00efa16cf258a1982" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
-        $this->assertEquals('<rich-text-attachment sgid="eyJzZ2lkIjoiZ2lkOlwvXC9yaWNoLXRleHQtbGFyYXZlbFwvVG9ueXNtJTVDUmljaFRleHRMYXJhdmVsJTVDVGVzdHMlNUNTdHVicyU1Q1VzZXJcLzIiLCJwdXJwb3NlIjoicmljaC10ZXh0LWxhcmF2ZWwiLCJleHBpcmVzX2F0IjpudWxsfQ==--e260941c7b4f1875c536edf100274fbb3c4c8e3a1b41afd00efa16cf258a1982" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
+        $attachment = Attachment::fromAttachable(UserFactory::new()->create(['name' => 'hey']));
+        $sgid = $attachment->attachable->richTextSgid();
+        $this->assertEquals('<rich-text-attachment sgid="'.$sgid.'" content-type="application/octet-stream"></rich-text-attachment>', $attachment->toHtml());
+        $this->assertEquals('<rich-text-attachment sgid="'.$sgid.'" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
     }
 
     /** @test */
     public function converst_to_plain_text()
     {
-        $attachment = Attachment::fromAttachable($this->attachable(), ['caption' => 'hey, there']);
+        $attachment = Attachment::fromAttachable(UserWithNoPlainTextConversion::create(UserFactory::new()->raw()), ['caption' => 'hey, there']);
         $this->assertEquals('hey, there', $attachment->toPlainText());
 
-        $attachment = Attachment::fromAttachable(UseWithCustomPlainTextRender::create(['name' => 'hey']));
+        $attachment = Attachment::fromAttachable(UseWithCustomPlainTextRender::create(UserFactory::new()->raw(['name' => 'hey'])));
         $this->assertEquals('custom plain text render', $attachment->toPlainText());
     }
 
@@ -118,7 +125,7 @@ class AttachmentTest extends TestCase
 
     private function attachable(): User
     {
-        return User::create([
+        return UserFactory::new()->create([
             'name' => 'Some user',
         ]);
     }
@@ -145,6 +152,23 @@ class AttachmentTest extends TestCase
             'filename' => $filename,
             'filesize' => 200,
         ]);
+    }
+}
+
+class UserWithNoPlainTextConversion extends Model implements AttachableContract
+{
+    use HasFactory;
+    use Attachable;
+
+    protected $guarded = [];
+
+    protected $table = 'users';
+
+    public function richTextRender(array $options = []): string
+    {
+        return view('mentions.partials.user', [
+            'user' => $this,
+        ])->render();
     }
 }
 
