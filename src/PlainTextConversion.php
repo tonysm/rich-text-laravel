@@ -166,7 +166,7 @@ class PlainTextConversion
         $depth = static::listNodeDepthForNode($node);
 
         if ($depth > 1) {
-            return str_repeat("  ", $depth - 1);
+            return str_repeat('  ', $depth - 1);
         }
 
         return '';
