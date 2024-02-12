@@ -61,7 +61,7 @@ class RichTextModelTest extends TestCase
         $expectedRender = <<<'HTML'
         <div class="trix-content">
             <h1>Hey, there</h1>
-        <figure class="attachment attachment--preview attachment--png">
+        <figure class="not-prose attachment attachment--preview attachment--png">
             <img src="http://example.com/red-1.png" width="200" height="100">
             <figcaption class="attachment__caption">
                 Captioned

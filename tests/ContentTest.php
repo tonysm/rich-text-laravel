@@ -421,14 +421,14 @@ class ContentTest extends TestCase
             <rich-text-attachment content-type="image/png" width="200" height="100" url="http://example.com/red-1.png" filename="red-1.png" filesize="100" presentation="gallery" caption="Captioned"></rich-text-attachment>
 
             <div class="attachment-gallery attachment-gallery--2">
-            <figure class="attachment attachment--preview attachment--png">
+            <figure class="not-prose attachment attachment--preview attachment--png">
             <img src="http://example.com/red-1.png" width="200" height="100">
             <figcaption class="attachment__caption">
                 Captioned
             </figcaption>
         </figure>
 
-            <figure class="attachment attachment--preview attachment--png">
+            <figure class="not-prose attachment attachment--preview attachment--png">
             <img src="http://example.com/blue-1.png" width="200" height="100">
             <figcaption class="attachment__caption">
                 Captioned

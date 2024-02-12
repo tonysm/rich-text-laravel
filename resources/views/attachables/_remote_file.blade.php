@@ -1,4 +1,4 @@
-<figure class="attachment attachment--file attachment--{{ $remoteFile->extension() }}">
+<figure class="not-prose attachment attachment--file attachment--{{ $remoteFile->extension() }}">
     <figcaption class="attachment__caption">
         @if ($remoteFile->caption)
             {{ $remoteFile->caption }}

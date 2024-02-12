@@ -21,7 +21,7 @@
             <span>Here is how the document will render. Notice the content is not escaped. That's dangerous! <strong>YOU MUST</strong> escape the Trix HTML document using something like <a class="text-blue-600 underline underline-offset-4" href="https://symfony.com/doc/current/html_sanitizer.html">Symfony's HTML Sanitizer</a>:</span>
         </x-info>
 
-        <div class="rounded border shadow p-6 space-y-2 trix-content prose prose-pre:text-gray-900 max-w-none bg-white">
+        <div class="rounded border shadow p-6 trix-content bg-white">
             {{-- DON'T DO THIS. YOU MUST SANITIZE IN PRODUTION. --}}
             {!! $post->body !!}
         </div>
@@ -33,6 +33,20 @@
         </x-info>
 
         <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
+
+        <h1 class="text-xl">Links in the document:</h1>
+
+        <x-info>
+            <span>There's also an easy way to extract links from the document:</span>
+        </x-info>
+
+        <ul class="list-disc list-inside">
+            @forelse ($post->body->links() as $link)
+            <li>{{ $link }}</li>
+            @empty
+            <li>No links were used.</li>
+            @endforelse
+        </ul>
 
         <h2 class="text-xl">User Mentions</h2>
 

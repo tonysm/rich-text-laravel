@@ -27,13 +27,6 @@
             }
         }
     </script>
-    <style type="text/tailwindcss">
-    @layer components {
-        .trix-content .attachment--content {
-            @apply m-0 inline-flex items-center;
-        }
-    }
-    </style>
 
     <x-rich-text::styles />
 

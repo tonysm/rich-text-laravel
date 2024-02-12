@@ -114,7 +114,7 @@ class PlainTextConversion
 
     private static function plainTextForDivNode(DOMNode $node): string
     {
-        return sprintf("%s\n", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
+        return sprintf("%s\n\n", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
 
     private static function plainTextForFigcaptionNode(DOMNode $node): string
@@ -136,6 +136,11 @@ class PlainTextConversion
         $indentation = static::indentationForLiNode($node);
 
         return sprintf("%s%s %s\n", $indentation, $bullet, $text);
+    }
+
+    private static function plainTextForPreNode(DOMNode $node, $index = 0): string
+    {
+        return static::plainTextForBlock($node);
     }
 
     private static function bulletForLiNode(DOMNode $node, $index): string
@@ -161,7 +166,7 @@ class PlainTextConversion
         $depth = static::listNodeDepthForNode($node);
 
         if ($depth > 1) {
-            return implode('', array_fill(0, $depth - 1, '  '));
+            return str_repeat("  ", $depth - 1);
         }
 
         return '';
