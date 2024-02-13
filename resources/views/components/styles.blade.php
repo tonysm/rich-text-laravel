@@ -539,7 +539,8 @@
         text-align: center;
     }
 
-    .trix-content .attachment__caption .attachment__name+.attachment__size::before {
+    .trix-content .attachment__caption .attachment__name+.attachment__size::before,
+    .trix-content .attachment__caption .attachment__size+.attachment__download::before {
         content: ' \2022 ';
     }
 
