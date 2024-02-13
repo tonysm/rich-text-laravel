@@ -157,8 +157,8 @@ class AttachmentTest extends TestCase
 
 class UserWithNoPlainTextConversion extends Model implements AttachableContract
 {
-    use HasFactory;
     use Attachable;
+    use HasFactory;
 
     protected $guarded = [];
 

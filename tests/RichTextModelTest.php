@@ -239,7 +239,7 @@ class RichTextModelTest extends TestCase
 
 class PostWithNotes extends Post
 {
-    protected $table ='posts';
+    protected $table = 'posts';
 
     protected $richTextAttributes = [
         'body',
