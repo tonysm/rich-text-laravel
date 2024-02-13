@@ -152,6 +152,6 @@
 <body class="bg-gray-100">
     <main class="max-w-3xl w-full mx-auto my-10" {{ $attributes ?? '' }}>
         {{ $slot }}
-    </main </body>
-
+    </main
+</body>
 </html>
