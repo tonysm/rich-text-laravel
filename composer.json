@@ -24,6 +24,7 @@
         "laravel/pint": "^1.10",
         "nunomaduro/collision": "^6.0",
         "orchestra/testbench": "^8.21",
+        "orchestra/workbench": "^1.0",
         "phpunit/phpunit": "^9.6"
     },
     "autoload": {
