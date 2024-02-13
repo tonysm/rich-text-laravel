@@ -78,7 +78,7 @@
             @csrf
 
             <div>
-                <label class="block font-medium text-sm text-gray-700" for="body">{{ __('Body') }}</label>
+                <label class="block font-medium text-sm text-gray-700" for="content">{{ __('New Comment') }}</label>
                 <x-trix-input id="create_comment" :accept-files="false" toolbar="minimal" name="content" placeholder="{{ __('Say something with the world...') }}" :value="old('content')" autocomplete="off" />
                 <span class="mt-1 block text-sm text-gray-600">{{ __('You may @-mention users here too.') }}</span>
                 @error('content')
