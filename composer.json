@@ -2,7 +2,6 @@
     "name": "tonysm/rich-text-laravel",
     "description": "Integrates Trix content with Laravel",
     "keywords": [
-        "tonysm",
         "laravel",
         "rich-text-laravel"
     ],
@@ -16,14 +15,14 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "illuminate/contracts": "^10.0",
         "spatie/laravel-package-tools": "^1.9.2",
         "tonysm/globalid-laravel": "^1.1"
     },
     "require-dev": {
         "laravel/pint": "^1.10",
-        "nunomaduro/collision": "^5.3|^6.0",
+        "nunomaduro/collision": "^6.0",
         "orchestra/testbench": "^8.21",
         "phpunit/phpunit": "^9.6"
     },
