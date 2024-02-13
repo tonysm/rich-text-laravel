@@ -11,6 +11,7 @@ use Workbench\Database\Factories\UserFactory;
 class DatabaseSeeder extends Seeder
 {
     const FIRST_IMAGE = 'https://trix-editor.org/images/attachments/plan-01.png';
+
     const SECOND_IMAGE = 'https://trix-editor.org/images/attachments/plan-02.png';
 
     /**
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        [$tony, $picard,,,] = UserFactory::new()->times(5)->sequence(
+        [$tony, $picard] = UserFactory::new()->times(5)->sequence(
             ['name' => 'Tony Messias'],
             ['name' => 'Jean-Luc Picard'],
             ['name' => 'James Kirk'],
