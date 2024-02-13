@@ -35,6 +35,8 @@ class PostFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function ($post) {
+            if ($post->richTextBody) return;
+
             $quote = Inspiring::quotes()->random();
 
             $post->update(['body' => <<<HTML

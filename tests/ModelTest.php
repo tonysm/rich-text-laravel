@@ -2,15 +2,15 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
-use Tonysm\RichTextLaravel\Tests\Stubs\Post;
+use Workbench\Database\Factories\PostFactory;
 
 class ModelTest extends TestCase
 {
     /** @test */
     public function converts_html()
     {
-        $post = Post::create([
-            'content' => '<h1>Hello World</h1>',
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Hello World</h1>',
         ]);
 
         $this->assertEquals(<<<'HTML'
@@ -18,58 +18,60 @@ class ModelTest extends TestCase
             <h1>Hello World</h1>
         </div>
 
-        HTML, "{$post->refresh()->content}");
+        HTML, "{$post->refresh()->body}");
     }
 
     /** @test */
     public function plain_text()
     {
-        $post = Post::create([
-            'content' => '<h1>Hello World</h1>',
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Hello World</h1>',
         ]);
 
-        $this->assertEquals('Hello World', $post->refresh()->content->toPlainText());
+        $this->assertEquals('Hello World', $post->refresh()->body->toPlainText());
     }
 
     /** @test */
     public function without_content()
     {
-        $post = Post::create([]);
+        $post = PostFactory::new()->create();
+        $post->richTextBody->delete();
+        $post->refresh();
 
         $this->assertEquals(<<<'HTML'
         <div class="trix-content">
         </div>
 
-        HTML, "{$post->content}");
+        HTML, "{$post->body}");
 
-        $this->assertTrue($post->content->isEmpty());
+        $this->assertTrue($post->body->isEmpty());
     }
 
     /** @test */
     public function with_blank_content()
     {
-        $post = Post::create([
-            'content' => '',
+        $post = PostFactory::new()->create([
+            'body' => '',
         ]);
 
         $this->assertEquals(<<<'HTML'
         <div class="trix-content">
         </div>
 
-        HTML, "{$post->content}");
+        HTML, "{$post->body}");
 
-        $this->assertTrue($post->content->isEmpty());
+        $this->assertTrue($post->body->isEmpty());
     }
 
     /** @test */
     public function updates_content()
     {
-        $post = Post::create([
-            'content' => '<h1>Old Value</h1>',
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
         ]);
 
         $post->refresh()->update([
-            'content' => '<h1>New Value</h1>',
+            'body' => '<h1>New Value</h1>',
         ]);
 
         $this->assertEquals(<<<'HTML'
@@ -77,6 +79,6 @@ class ModelTest extends TestCase
             <h1>New Value</h1>
         </div>
 
-        HTML, "{$post->refresh()->content}");
+        HTML, "{$post->refresh()->body}");
     }
 }

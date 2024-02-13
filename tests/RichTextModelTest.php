@@ -6,21 +6,17 @@ use Illuminate\Support\Facades\DB;
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 use Tonysm\RichTextLaravel\Models\RichText;
-use Tonysm\RichTextLaravel\Tests\Stubs\HasRichText\Post;
+use Workbench\App\Models\Post;
+use Workbench\Database\Factories\PostFactory;
 
 class RichTextModelTest extends TestCase
 {
     /** @test */
     public function traits_sets_up_relationship()
     {
-        $model = Post::create();
+        $model = PostFactory::new()->create();
 
-        $this->assertNull($model->richTextBody);
-
-        $richText = $model->richTextBody()->create([
-            'field' => 'body',
-            'body' => $this->content(),
-        ]);
+        $this->assertNotNull($richText = $model->richTextBody);
 
         $this->assertNotNull($model->refresh()->richTextBody);
         $this->assertTrue($model->richTextBody->is($richText));
@@ -94,7 +90,7 @@ class RichTextModelTest extends TestCase
             notes: '<p>this is the notes</p>',
         )->fresh();
 
-        $this->assertEquals(2, Post::count());
+        $this->assertEquals(2, PostWithNotes::count());
 
         // Without eager loading, it will load each post individually (2 DB
         // calls) then, for each post, it will load each rich text field's
@@ -106,7 +102,7 @@ class RichTextModelTest extends TestCase
             $queryCounts++;
         });
 
-        foreach (Post::query()->orderBy('id')->cursor() as $post) {
+        foreach (PostWithNotes::query()->orderBy('id')->cursor() as $post) {
             $post->body && $post->notes;
         }
 
@@ -118,13 +114,13 @@ class RichTextModelTest extends TestCase
         // loading all fields will result in one query for each relationship. Which,
         // for us, it means 1 query for the posts, and 1 for each relationship.
 
-        Post::withRichText()->get()->each(fn ($post) => $post->body && $post->notes);
+        PostWithNotes::withRichText()->get()->each(fn ($post) => $post->body && $post->notes);
         $this->assertEquals(3, $queryCounts);
 
         $queryCounts = 0;
 
         // Eager loading only one field will only load that specific field's relationship...
-        Post::withRichText('body')->get()->each(fn ($post) => $post->body);
+        PostWithNotes::withRichText('body')->get()->each(fn ($post) => $post->body);
         $this->assertEquals(2, $queryCounts);
     }
 
@@ -133,16 +129,16 @@ class RichTextModelTest extends TestCase
     {
         $this->expectException(RichTextException::class);
 
-        Post::withRichText(['unkown'])->get();
+        PostWithNotes::withRichText(['unknown'])->get();
     }
 
     /** @test */
     public function can_have_different_fields_on_the_same_model()
     {
-        $post = Post::create([
+        $post = PostWithNotes::create(PostFactory::new()->raw([
             'body' => '<h1>hello from body</h1>',
             'notes' => '<h1>hello from notes</h1>',
-        ]);
+        ]));
 
         $expectedBodyContent = <<<'HTML'
         <div class="trix-content">
@@ -224,12 +220,12 @@ class RichTextModelTest extends TestCase
         HTML, "{$post->body}");
     }
 
-    private function createPost(?string $body = null, ?string $notes = null): Post
+    private function createPost(?string $body = null, ?string $notes = null): PostWithNotes
     {
-        return Post::create([
+        return PostWithNotes::create(PostFactory::new()->raw([
             'body' => $body ?: $this->content(),
             'notes' => $notes ?: '',
-        ]);
+        ]));
     }
 
     private function content(): string
@@ -239,4 +235,14 @@ class RichTextModelTest extends TestCase
         <figure data-trix-attachment='{"contentType":"image\/png","url":"http:\/\/example.com\/red-1.png","filename":"red-1.png","filesize":100,"width":200,"height":100}' data-trix-attributes='{"presentation":"gallery","caption":"Captioned"}'></figure>
         HTML;
     }
+}
+
+class PostWithNotes extends Post
+{
+    protected $table ='posts';
+
+    protected $richTextAttributes = [
+        'body',
+        'notes',
+    ];
 }
