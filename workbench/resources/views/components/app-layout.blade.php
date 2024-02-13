@@ -126,6 +126,8 @@
         }
 
         Stimulus.register('rich-text', class extends Controller {
+            static values = { acceptFiles: Boolean }
+
             #autocompleter
             #uploader
 
@@ -143,6 +145,11 @@
             }
 
             upload(event) {
+                if (! this.acceptFilesValue) {
+                    event.preventDefault()
+                    return
+                }
+
                 this.#uploader.upload(event)
             }
         })

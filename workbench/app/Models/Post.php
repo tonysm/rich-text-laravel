@@ -14,4 +14,9 @@ class Post extends Model
     protected $guarded = [];
 
     protected $richTextAttributes = ['body'];
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->oldest();
+    }
 }

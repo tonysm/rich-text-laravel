@@ -61,5 +61,34 @@
             <li>No users were mentioned.</li>
             @endforelse
         </ul>
+
+        <h2 class="text-xl">Comments</h2>
+
+        @foreach($post->comments as $comment)
+            <div id="comment_{{ $comment->id }}" class="bg-white p-4 rounded">
+                <strong>You said:</strong>
+                {{-- YOU MUST ESCAPE THE HTML IN A REAL APP --}}
+                <div>{!! $comment->content !!}</div>
+            </div>
+        @endforeach
+
+        <x-info>Here you can see how you may customize the Trix toolbar for a mimimal look.</x-info>
+
+        <form action="{{ route('posts.comments.store', $post) }}" method="post">
+            @csrf
+
+            <div>
+                <label class="block font-medium text-sm text-gray-700" for="body">{{ __('Body') }}</label>
+                <x-trix-input id="create_comment" :accept-files="false" toolbar="minimal" name="content" placeholder="{{ __('Say something with the world...') }}" :value="old('content')" autocomplete="off" />
+                <span class="mt-1 block text-sm text-gray-600">{{ __('You may @-mention users here too.') }}</span>
+                @error('content')
+                <span class="mt-1 block text-sm text-red-600">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="mt-4 flex items-center space-x-4 justify-end">
+                <x-button type="submit">{{ __('Save') }}</x-button>
+            </div>
+        </form>
     </div>
 </x-app-layout>

@@ -61,6 +61,14 @@ Route::put('/posts/{post}', function (Post $post) {
     return to_route('posts.show', $post);
 })->name('posts.update');
 
+Route::post('/posts/{post}/comments', function (Post $post) {
+    $comment = $post->comments()->create(request()->validate([
+        'content' => ['required'],
+    ]));
+
+    return back()->withFragment(sprintf('#comment_%s', $comment->id));
+})->name('posts.comments.store');
+
 Route::get('/mentions', function (Request $request) {
     return User::query()
         ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
