@@ -1,6 +1,6 @@
 @props(['id', 'name', 'value' => '', 'toolbar' => null, 'acceptFiles' => true])
 
-<div class="w-full bg-white border border-gray-300 relative border-gray-300 p-2 focus-within:ring-1 focus-within:border-indigo-500 focus-within:ring-indigo-500 rounded-md shadow-sm [&_trix-toolbar]:sticky [&_trix-toolbar]:top-0 [&_trix-toolbar]:-mx-2 [&_trix-toolbar]:px-4 [&_trix-toolbar]:bg-white [&_trix-toolbar]:border-b [&_trix-toolbar]:shadow-sm [&_trix-toolbar]:py-2 [&_trix-toolbar]:z-10">
+<div class="w-full bg-white border border-gray-300 relative border-gray-300 px-2 focus-within:ring-1 focus-within:border-indigo-500 focus-within:ring-indigo-500 rounded-md shadow-sm [&_trix-toolbar]:sticky [&_trix-toolbar]:top-0 [&_trix-toolbar]:-mx-2 [&_trix-toolbar]:px-2 [&_trix-toolbar]:bg-white [&_trix-toolbar]:border-b [&_trix-toolbar]:rounded-t-lg [&_trix-toolbar]:shadow-sm [&_trix-toolbar]:pt-2 [&_trix-toolbar]:z-10">
     <input
         type="hidden"
         name="{{ $name }}"
@@ -41,10 +41,10 @@
     <trix-editor {{ $attributes->merge(array_filter([
         'id' => $id,
         'toolbar' => $toolbar ? $id . '_toolbar_' . $toolbar : null,
-        'class' => 'trix-content w-full ring-0 outline-none border-0 px-1 pb-0 pt-2 !shadow-none',
+        'class' => 'trix-content w-full ring-0 outline-none border-0 px-1 py-2 !shadow-none',
         'input' => "{$id}_input",
         'data-controller' => 'rich-text',
         'data-rich-text-accept-files-value' => $acceptFiles ? 'true' : 'false',
-        'data-action' => 'tribute-replaced->rich-text#addMention trix-attachment-add->rich-text#upload',
+        'data-action' => 'tribute-replaced->rich-text#addMention trix-attachment-add->rich-text#upload keydown->rich-text#submitByKeyboard',
     ])) }}></trix-editor>
 </div>

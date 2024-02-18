@@ -152,6 +152,21 @@
 
                 this.#uploader.upload(event)
             }
+
+            submitByKeyboard(event) {
+                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                    this.#submitMessage(event)
+                }
+            }
+
+            #submitMessage(event) {
+                event.preventDefault()
+
+                if (this.element.textContent.trim().length > 0) {
+
+                    this.element.closest('form').requestSubmit()
+                }
+            }
         })
     </script>
 </head>
