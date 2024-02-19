@@ -12,11 +12,22 @@ class EncryptedModelTest extends TestCase
     public function encrypt_content_based_on_encrypted_option_at_declaration_time()
     {
         $encryptedMessage = EncryptedMessage::create(['content' => 'Hello World']);
-        $this->assertStringNotContainsString('Hello World', DB::table('rich_texts')->where('record_id', $encryptedMessage->id)->value('body'));
-        $this->assertStringContainsString('Hello World', $encryptedMessage->refresh()->content->body->toHtml());
+        $this->assertEncryptedRichTextAttribute($encryptedMessage, 'content', 'Hello World');
 
         $clearMessage = Message::create(['content' => 'Hello World']);
-        $this->assertStringContainsString('Hello World', DB::table('rich_texts')->where('record_id', $clearMessage->id)->value('body'));
-        $this->assertStringContainsString('Hello World', $clearMessage->refresh()->content->body->toHtml());
+        $this->assertNotEncryptedRichTextAttribute($clearMessage, 'content', 'Hello World');
+    }
+
+    private function assertEncryptedRichTextAttribute($model, $field, $expectedValue)
+    {
+        $this->assertStringNotContainsString($expectedValue, $encrypted = DB::table('rich_texts')->where('record_id', $model->id)->value('body'));
+        $this->assertEquals($expectedValue, decrypt($encrypted));
+        $this->assertStringContainsString($expectedValue, $model->refresh()->{$field}->body->toHtml());
+    }
+
+    public function assertNotEncryptedRichTextAttribute($model, $field, $expectedValue)
+    {
+        $this->assertStringContainsString($expectedValue, DB::table('rich_texts')->where('record_id', $model->id)->value('body'));
+        $this->assertStringContainsString($expectedValue, $model->refresh()->{$field}->body->toHtml());
     }
 }
