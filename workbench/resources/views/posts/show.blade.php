@@ -68,7 +68,7 @@
             <div id="comment_{{ $comment->id }}" class="bg-white p-4 rounded">
                 <strong>You said:</strong>
                 {{-- YOU MUST ALWAYS ESCAPE THE USER-ENTERED HTML. --}}
-                <div>{{ clean($comment->content, 'minimal') }}</div>
+                <div>{{ clean($comment->content, config: 'minimal') }}</div>
             </div>
         @endforeach
 
