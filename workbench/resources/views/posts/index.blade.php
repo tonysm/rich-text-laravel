@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class="flex items-center justify-between space-x-2">
-        <div class="flex items-center justify-start space-x-2">
+    <div class="flex items-end sm:items-center justify-between space-x-2 px-2 sm:px-0">
+        <div class="space-y-4 items-center justify-start sm:space-x-2 sm:space-y-0 sm:flex">
             <x-button-link
                 href="{{ route('demo.index') }}"
                 icon="arrow-uturn-left"

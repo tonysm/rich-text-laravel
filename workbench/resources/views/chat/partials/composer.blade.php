@@ -8,7 +8,7 @@
             </svg>
         </div>
 
-        <div class="w-full h-full my-auto">
+        <div class="w-full h-full my-auto overflow-auto">
             @include('chat.partials.trix-input')
         </div>
 

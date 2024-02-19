@@ -10,7 +10,7 @@
     name="content"
     toolbar="create_message_toolbar"
     input="create_message_input"
-    class="trix-content rounded-0 p-0 min-h-0 max-h-[12vh] overflow-auto border-0 group-data-[composer-show-toolbar-value=true]:py-2 group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
+    class="trix-content rounded-0 p-0 [&_pre]:text-sm min-h-0 max-h-[12vh] overflow-auto border-0 group-data-[composer-show-toolbar-value=true]:py-2 group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
 ></trix-editor>
 
 <trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 group-data-[composer-show-toolbar-value=true]:mt-2">

@@ -5,7 +5,7 @@
             "col-start-2" => $message->created_at->gte(now()->subSeconds(10)),
         ])
     >
-        <div class="prose prose-pre:text-gray-900 prose-blockquote:my-0">
+        <div class="prose prose-pre:text-gray-900 break-words prose-pre:text-sm prose-blockquote:my-0">
             {!! $message->content !!}
         </div>
 
