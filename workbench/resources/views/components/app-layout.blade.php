@@ -29,7 +29,7 @@
         }
     </script>
 
-    <x-rich-text::styles />
+    <x-rich-text::styles theme="richtextlaravel" />
 
     {{-- Tribute's Styles... --}}
     <link rel="stylesheet" href="https://unpkg.com/tributejs@5.1.3/dist/tribute.css">
