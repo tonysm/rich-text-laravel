@@ -36,7 +36,7 @@ If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-lara
 <x-rich-text::styles />
 ```
 
-If you're using breeze, you may want to pass the `breeze` prop to this styles component:
+If you're using breeze, you might want to set `theme=richtextlaravel` prop to this styles component:
 
 ```blade
 <x-rich-text::styles theme="richtextlaravel" />
