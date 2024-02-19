@@ -17,12 +17,12 @@
         <h1 class="text-xl">The HTML version:</h1>
 
         <x-info>
-            <span>Here is how the document will render. Notice the content is not escaped. That's dangerous! <strong>YOU MUST</strong> escape the Trix HTML document using something like <a class="text-blue-600 underline underline-offset-4" href="https://symfony.com/doc/current/html_sanitizer.html">Symfony's HTML Sanitizer</a>:</span>
+            <span>Here is how the document will render. Notice the HTML content is being cleaned up using <a class="text-blue-600 underline underline-offset-4" href="https://symfony.com/doc/current/html_sanitizer.html">Symfony's HTML Sanitizer</a>. You <strong>MUST</strong> always escape both the HTML and the plain text version of the user-generated content.</span>
         </x-info>
 
         <div class="rounded border shadow p-6 trix-content bg-white">
-            {{-- DON'T DO THIS. YOU MUST SANITIZE IN     PRODUTION. --}}
-            {!! $post->body !!}
+            {{-- YOU MUST ALWAYS ESCAPE THE USER-ENTERED HTML. --}}
+            {{ clean($post->body) }}
         </div>
 
         <h1 class="text-xl">The Plain Text version:</h1>
@@ -31,6 +31,7 @@
             <span>You may also render the document in plain text. Please, notice that even the plain text version <strong>MUST</strong> be escaped too, as image's captions and other custom attachments may contain user input:</span>
         </x-info>
 
+        {{-- YOU MUST ALWAYS ESCAPE THE PLAIN-TEXT VERSION TOO. --}}
         <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
 
         <h1 class="text-xl">Links in the document:</h1>
@@ -66,8 +67,8 @@
         @foreach($post->comments as $comment)
             <div id="comment_{{ $comment->id }}" class="bg-white p-4 rounded">
                 <strong>You said:</strong>
-                {{-- YOU MUST ESCAPE THE HTML IN A REAL APP --}}
-                <div>{!! $comment->content !!}</div>
+                {{-- YOU MUST ALWAYS ESCAPE THE USER-ENTERED HTML. --}}
+                <div>{{ clean($comment->content, 'minimal') }}</div>
             </div>
         @endforeach
 
