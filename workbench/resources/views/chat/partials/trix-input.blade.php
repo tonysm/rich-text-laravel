@@ -10,10 +10,10 @@
     name="content"
     toolbar="create_message_toolbar"
     input="create_message_input"
-    class="trix-content min-h-0 max-h-[12vh] overflow-auto border-0 group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
+    class="trix-content rounded-0 p-0 min-h-0 max-h-[12vh] overflow-auto border-0 group-data-[composer-show-toolbar-value=true]:py-2 group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
 ></trix-editor>
 
-<trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 group-data-[composer-show-toolbar-value=true]:mt-2 mx-2">
+<trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 group-data-[composer-show-toolbar-value=true]:mt-2">
     <div class="trix-button-row !hidden group-data-[composer-show-toolbar-value=true]:!inline-block">
         <span class="trix-button-group trix-button-group--text-tools" data-trix-button-group="text-tools">
             <button type="button" class="trix-button trix-button--icon trix-button--icon-bold" data-trix-attribute="bold" data-trix-key="b" title="Bold" tabindex="-1">Bold</button>
