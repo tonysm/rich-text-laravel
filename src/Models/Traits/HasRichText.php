@@ -19,6 +19,16 @@ trait HasRichText
             static::registerRichTextRelationships($field);
         }
 
+        static::saving(function (Model $model) {
+            foreach ($model->getRichTextFields() as $field) {
+                $relationship = static::fieldToRichTextRelationship($field);
+
+                if ($model->relationLoaded($relationship) && $model->{$field}->isDirty() && $model->timestamps) {
+                    $model->updateTimestamps();
+                }
+            }
+        });
+
         static::saved(function (Model $model) {
             foreach ($model->getRichTextFields() as $field) {
                 $relationship = static::fieldToRichTextRelationship($field);

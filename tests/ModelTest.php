@@ -81,4 +81,40 @@ class ModelTest extends TestCase
 
         HTML, "{$post->refresh()->body}");
     }
+
+    /** @test */
+    public function touches_record_when_rich_text_is_updated()
+    {
+        $this->freezeTime();
+
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
+        ])->fresh();
+
+        $this->travel(5)->minutes();
+
+        $post->update([
+            'body' => '<h1>New Value</h1>',
+        ]);
+
+        $this->assertFalse($post->created_at->eq($post->updated_at), 'Didnt touch the record timestamps.');
+    }
+
+    /** @test */
+    public function doesnt_touch_record_when_rich_text_isnt_updated()
+    {
+        $this->freezeTime();
+
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
+        ])->fresh();
+
+        $this->travel(5)->minutes();
+
+        $post->update([
+            'body' => '<h1>Old Value</h1>',
+        ]);
+
+        $this->assertTrue($post->created_at->eq($post->updated_at), 'Record timestamps were touched, but it shouldnt.');
+    }
 }
