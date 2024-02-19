@@ -4,7 +4,7 @@ namespace Tonysm\RichTextLaravel\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
 use Tonysm\RichTextLaravel\Exceptions\RichTextException;
@@ -15,12 +15,12 @@ trait HasRichText
     {
         $fields = (new static)->getRichTextFields();
 
-        foreach ($fields as $field) {
-            static::registerRichTextRelationships($field);
+        foreach ($fields as $field => $options) {
+            static::registerRichTextRelationships($field, $options);
         }
 
         static::saved(function (Model $model) {
-            foreach ($model->getRichTextFields() as $field) {
+            foreach ($model->getRichTextFields() as $field => $_options) {
                 $relationship = static::fieldToRichTextRelationship($field);
 
                 if ($model->relationLoaded($relationship) && $model->{$field}->isDirty()) {
@@ -31,27 +31,20 @@ trait HasRichText
         });
     }
 
-    public function unsetRichTextRelationshipsForLivewireDehydration()
-    {
-        $relationships = array_map(fn ($field) => static::fieldToRichTextRelationship($field), $this->getRichTextFields());
-
-        foreach ($relationships as $relationship) {
-            if ($this->relationLoaded($relationship)) {
-                $this->unsetRelation($relationship);
-            }
-        }
-    }
-
-    protected static function registerRichTextRelationships(string $field): void
+    protected static function registerRichTextRelationships(string $field, array $options = []): void
     {
         static::resolveRelationUsing(static::fieldToRichTextRelationship($field), function (Model $model) use ($field) {
-            return $model->morphOne(config('rich-text-laravel.model'), 'record')->where('field', $field);
+            $modelClass = (($model->richTextAttributes[$field] ?? [])['encrypted'] ?? false)
+                ? config('rich-text-laravel.encrypted_model')
+                : config('rich-text-laravel.model');
+
+            return $model->morphOne($modelClass, 'record')->where('field', $field);
         });
     }
 
     protected function initializeHasRichText()
     {
-        foreach ($this->getRichTextFields() as $field) {
+        foreach ($this->getRichTextFields() as $field => $_options) {
             $this->mergeCasts([
                 $field => ForwardsAttributeToRelationship::class,
             ]);
@@ -64,7 +57,20 @@ trait HasRichText
             throw RichTextException::missingRichTextFieldsProperty(static::class);
         }
 
-        return Arr::wrap($this->richTextAttributes);
+        $fields = Collection::wrap($this->richTextAttributes);
+
+        return $fields->mapWithKeys(fn ($value, $key) => is_string($key) ? [$key => $value] : [$value => []])->all();
+    }
+
+    public function unsetRichTextRelationshipsForLivewireDehydration()
+    {
+        $relationships = array_map(fn ($field) => static::fieldToRichTextRelationship($field), array_keys($this->getRichTextFields()));
+
+        foreach ($relationships as $relationship) {
+            if ($this->relationLoaded($relationship)) {
+                $this->unsetRelation($relationship);
+            }
+        }
     }
 
     public static function fieldToRichTextRelationship(string $field): string
@@ -74,9 +80,8 @@ trait HasRichText
 
     public function scopeWithRichText(Builder $query, $fields = []): void
     {
-        $allFields = (new static)->getRichTextFields();
+        $allFields = array_keys((new static)->getRichTextFields());
 
-        $fields = Arr::wrap($fields);
         $fields = empty($fields) ? $allFields : $fields;
 
         // We're converting the attributes to the relationship pattern and

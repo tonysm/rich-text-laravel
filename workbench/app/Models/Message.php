@@ -12,6 +12,8 @@ class Message extends Model
     use HasFactory;
     use HasRichText;
 
+    protected $table = 'messages';
+
     protected $richTextAttributes = ['content'];
 
     protected $guarded = [];

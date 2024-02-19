@@ -15,6 +15,17 @@ return [
 
     /*
      |--------------------------------------------------------------------------
+     | Encrypted Rich Text Model
+     |--------------------------------------------------------------------------
+     |
+     | When setting the `encryption` option to `true` on the attribute, the package
+     | will use this model instead of the base RichText model.
+     |
+     */
+    'encrypted_model' => \Tonysm\RichTextLaravel\Models\EncryptedRichText::class,
+
+    /*
+     |--------------------------------------------------------------------------
      | Supported Files Content-Types
      |--------------------------------------------------------------------------
      |
