@@ -240,7 +240,7 @@ A basic version of attachments uploading would look something like this:
 
 The package contains a demo application with basic image uploading functionality implemented in the Workbench application. Here's some relevant links:
 
-- The Stimulus controller that manages uploading (you should be able to map what's going on there to any JavaScript framework you'd like) can be found at [./workbench/resources/views/components/app-layout.blade.php](), look for the "rich-text-uploader" Stimulus controller;
+- The Stimulus controller that manages uploading (you should be able to map what's going on there to any JavaScript framework you'd like) can be found at [](./workbench/resources/views/components/app-layout.blade.php), look for the "rich-text-uploader" Stimulus controller;
 - The upload route can be found at [./workbench/routes/web.php](), look for the `POST /attachments` route;
 - The Trix Input Blade component at [./workbench/resources/views/components/trix-input.blade.php](). This is copy of the component that ships with the package with some tweaks.
 
