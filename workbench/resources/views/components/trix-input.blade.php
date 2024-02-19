@@ -43,8 +43,8 @@
         'toolbar' => $toolbar ? $id . '_toolbar_' . $toolbar : null,
         'class' => 'trix-content w-full ring-0 outline-none border-0 px-1 py-2 !shadow-none',
         'input' => "{$id}_input",
-        'data-controller' => 'rich-text',
-        'data-rich-text-accept-files-value' => $acceptFiles ? 'true' : 'false',
-        'data-action' => 'tribute-replaced->rich-text#addMention trix-attachment-add->rich-text#upload keydown->rich-text#submitByKeyboard',
+        'data-controller' => 'rich-text rich-text-uploader rich-text-mentions',
+        'data-rich-text-uploader-accept-files-value' => $acceptFiles ? 'true' : 'false',
+        'data-action' => 'tribute-replaced->rich-text-mentions#addMention trix-attachment-add->rich-text-uploader#upload keydown->rich-text#submitByKeyboard',
     ])) }}></trix-editor>
 </div>

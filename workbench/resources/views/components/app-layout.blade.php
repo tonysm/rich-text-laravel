@@ -1,3 +1,4 @@
+@props(['margin' => 'my-10'])
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,6 +34,12 @@
     {{-- Tribute's Styles... --}}
     <link rel="stylesheet" href="https://unpkg.com/tributejs@5.1.3/dist/tribute.css">
 
+    <style>
+        [js-cloak] {
+            display: none !important;
+        }
+    </style>
+
     {{-- Install Stimulus via CDN --}}
     <script type="module">
         import {
@@ -41,6 +48,8 @@
         } from 'https://cdn.skypack.dev/@hotwired/stimulus'
         import Tribute from 'https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js'
         import Trix from 'https://ga.jspm.io/npm:trix@2.0.10/dist/trix.esm.min.js'
+
+        [...document.querySelectorAll('[js-cloak]')].forEach(el => el.removeAttribute('js-cloak'))
 
         window.Stimulus = Application.start()
 
@@ -125,23 +134,13 @@
             }
         }
 
-        Stimulus.register('rich-text', class extends Controller {
+        Stimulus.register("rich-text-uploader", class extends Controller {
             static values = { acceptFiles: Boolean }
 
-            #autocompleter
             #uploader
 
             connect() {
-                this.#autocompleter = new AutoCompleteManager(this.element)
                 this.#uploader = new UploadManager()
-            }
-
-            disconnect() {
-                this.#autocompleter.detach()
-            }
-
-            addMention({ detail: { item: { original: mention }}}) {
-                this.#autocompleter.addMention(mention)
             }
 
             upload(event) {
@@ -152,7 +151,21 @@
 
                 this.#uploader.upload(event)
             }
+        })
 
+        Stimulus.register("rich-text-mentions", class extends Controller {
+            #autocompleter
+
+            connect() {
+                this.#autocompleter = new AutoCompleteManager(this.element)
+            }
+
+            addMention({ detail: { item: { original: mention }}}) {
+                this.#autocompleter.addMention(mention)
+            }
+        })
+
+        Stimulus.register("rich-text", class extends Controller {
             submitByKeyboard(event) {
                 if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
                     this.#submitMessage(event)
@@ -163,16 +176,70 @@
                 event.preventDefault()
 
                 if (this.element.textContent.trim().length > 0) {
-
-                    this.element.closest('form').requestSubmit()
+                    this.element.closest("form").requestSubmit()
                 }
+            }
+        })
+
+        Stimulus.register("composer", class extends Controller {
+            #submitByKeyboardEnabled = true
+
+            static values = {
+                showToolbar: { type: Boolean, default: false },
+            }
+
+            static targets = ["text"]
+
+            rejectFiles(event) {
+                event.preventDefault()
+            }
+
+            disableSubmitByKeyboard() {
+                this.#submitByKeyboardEnabled = false
+            }
+
+            enableSubmitByKeyboard() {
+                this.#submitByKeyboardEnabled = true
+            }
+
+            toggleToolbar() {
+                this.showToolbarValue = ! this.showToolbarValue
+
+                this.textTarget.focus()
+            }
+
+            submitByKeyboard(event) {
+                if (! this.#submitByKeyboardEnabled) return;
+
+                const metaEnter = event.key === "Enter" && (event.metaKey || event.ctrlKey)
+                const plainEnter = event.keyCode == 13 && !event.shiftKey && !event.isComposing
+
+                if (! this.#usingTouchDevice && (metaEnter || (plainEnter && ! this.#isToolbarVisible))) {
+                    this.#submit(event)
+                }
+            }
+
+            #submit(event) {
+                event.preventDefault()
+
+                if (this.textTarget.textContent.trim().length > 0) {
+                    this.element.closest("form").requestSubmit();
+                }
+            }
+
+            get #isToolbarVisible() {
+                return this.showToolbarValue
+            }
+
+            get #usingTouchDevice() {
+                return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
             }
         })
     </script>
 </head>
 
 <body class="bg-gray-100">
-    <main class="max-w-3xl w-full mx-auto my-10" {{ $attributes ?? '' }}>
+    <main {{ $attributes->merge(['class' => "max-w-3xl w-full mx-auto {$margin}"]) }}>
         {{ $slot }}
     </main
 </body>

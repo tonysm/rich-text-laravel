@@ -5,6 +5,7 @@ namespace Workbench\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Js;
 use Workbench\App\Models\User;
+use Workbench\Database\Factories\MessageFactory;
 use Workbench\Database\Factories\PostFactory;
 use Workbench\Database\Factories\UserFactory;
 
@@ -51,6 +52,15 @@ class DatabaseSeeder extends Seeder
             <div>
             How cool is that?<br><br>
             Cheers!
+            </div>
+            HTML,
+        ]);
+
+        MessageFactory::new()->create([
+            'created_at' => now()->subMinute(),
+            'content' => <<<HTML
+            <div>
+            Hello, <strong><em>World!</em></strong>
             </div>
             HTML,
         ]);

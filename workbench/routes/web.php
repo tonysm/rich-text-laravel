@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Workbench\App\Models\Message;
 use Workbench\App\Models\Post;
 use Workbench\App\Models\User;
 
@@ -17,7 +18,28 @@ use Workbench\App\Models\User;
 |
 */
 
-Route::redirect('/', '/posts');
+Route::redirect('/', '/demo');
+
+Route::get('/demo', function () {
+    return view('demo');
+})->name('demo.index');
+
+Route::get('/chat', function () {
+    return view('chat.index', [
+        'messages' => Message::query()
+            ->withRichText('content')
+            ->ordered()
+            ->get(),
+    ]);
+})->name('chat.index');
+
+Route::post('/messages', function () {
+    $message = Message::create(request()->validate([
+        'content' => ['required'],
+    ]));
+
+    return redirect()->back()->withFragment("#message_{$message->id}");
+})->name('messages.store');
 
 Route::get('/posts', function () {
     return view('posts.index', [

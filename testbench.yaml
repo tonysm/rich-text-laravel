@@ -14,7 +14,7 @@ seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
 
 workbench:
-  start: '/posts'
+  start: '/demo'
   install: true
   welcome: true
   discovers:

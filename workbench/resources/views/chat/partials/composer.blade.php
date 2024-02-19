@@ -1,0 +1,37 @@
+<form action="{{ route('messages.store') }}" method="post" class="group" data-controller="composer">
+    @csrf
+
+    <div class="flex text-lg items-center justify-between rounded-full border px-1 border-gray-400 bg-white focus-within:border-transparent focus-within:ring-4 group-data-[composer-show-toolbar-value=true]:rounded-lg group-data-[composer-show-toolbar-value=true]:items-end">
+        <div class="shrink-0 ml-1 group-data-[composer-show-toolbar-value=true]:mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+            </svg>
+        </div>
+
+        <div class="w-full">
+            @include('chat.partials.trix-input')
+        </div>
+
+        <div class="shrink-0 flex flex-row-reverse items-center group-data-[composer-show-toolbar-value=true]:mb-2">
+            <button type="submit" class="ml-1 rounded-full p-2 bg-black text-white focus:ring focus:ring-inset focus:ring-white">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                </svg>
+                <span class="sr-only">{{ __('Send') }}</span>
+            </button>
+
+            <button type="button" data-action="composer#toggleToolbar" class="rounded-full p-2 text-black focus:ring-2 focus:ring-inset focus:ring-yello-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" stroke="currentColor" class="w-5 h-5">
+                    <path d="M3 19V1h8a5 5 0 0 1 3.88 8.16A5.5 5.5 0 0 1 11.5 19H3zm7.5-8H7v5h3.5a2.5 2.5 0 1 0 0-5zM7 4v4h3a2 2 0 1 0 0-4H7z"/>
+                </svg>
+                <span class="sr-only">{{ __('Rich Text') }}</span>
+            </button>
+        </div>
+    </div>
+
+    @error('content')
+        <span class="mt-2 block text-sm text-red-600">{{ $message }}</span>
+    @enderror
+
+    <span class="mt-2 block text-sm text-gray-600">{{ __('You may @-mention users here too.') }}</span>
+</form>

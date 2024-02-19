@@ -22,7 +22,7 @@
         </x-info>
 
         <div class="rounded border shadow p-6 trix-content bg-white">
-            {{-- DON'T DO THIS. YOU MUST SANITIZE IN PRODUTION. --}}
+            {{-- DON'T DO THIS. YOU MUST SANITIZE IN     PRODUTION. --}}
             {!! $post->body !!}
         </div>
 

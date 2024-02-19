@@ -1,6 +1,13 @@
 <x-app-layout>
     <div class="flex items-center justify-between space-x-2">
-        <h1 class="text-4xl font-semibold font-sans">Posts Index</h1>
+        <div class="flex items-center justify-start space-x-2">
+            <x-button-link
+                href="{{ route('demo.index') }}"
+                icon="arrow-uturn-left"
+            >{{ __('Demo') }}</x-button-link>
+
+            <h1 class="text-4xl font-semibold font-sans">Posts Index</h1>
+        </div>
 
         <div class="flex items-center justify-end">
             <x-button-link
