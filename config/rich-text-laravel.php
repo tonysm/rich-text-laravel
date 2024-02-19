@@ -18,7 +18,7 @@ return [
      | Encrypted Rich Text Model
      |--------------------------------------------------------------------------
      |
-     | When setting the `encryption` option to `true` on the attribute, the package
+     | When setting the `encrypted` option to `true` on the attribute, the package
      | will use this model instead of the base RichText model.
      |
      */
