@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
 
         MessageFactory::new()->create([
             'created_at' => now()->subMinute(),
-            'content' => <<<HTML
+            'content' => <<<'HTML'
             <div>
             Hello, <strong><em>World!</em></strong>
             </div>
