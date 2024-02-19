@@ -33,8 +33,8 @@ trait HasRichText
 
     protected static function registerRichTextRelationships(string $field, array $options = []): void
     {
-        static::resolveRelationUsing(static::fieldToRichTextRelationship($field), function (Model $model) use ($field) {
-            $modelClass = (($model->richTextAttributes[$field] ?? [])['encrypted'] ?? false)
+        static::resolveRelationUsing(static::fieldToRichTextRelationship($field), function (Model $model) use ($field, $options) {
+            $modelClass = ($options['encrypted'] ?? false)
                 ? config('rich-text-laravel.encrypted_model')
                 : config('rich-text-laravel.model');
 
