@@ -140,7 +140,7 @@ class PlainTextConversionTest extends TestCase
     public function divs_are_separated_by_one_new_line()
     {
         $this->assertConvertedTo(
-            "Hello world!\nHow are you?",
+            "Hello world!\n\nHow are you?",
             '<div>Hello world!</div><div>How are you?</div>'
         );
     }
@@ -194,7 +194,7 @@ class PlainTextConversionTest extends TestCase
         }
 
         $this->assertConvertedTo(
-            "Hello world!\nHow are you?",
+            "Hello world!\n\nHow are you?",
             "<div>Hello world!</div>{$deeply}",
         );
     }
@@ -203,7 +203,7 @@ class PlainTextConversionTest extends TestCase
     public function converts_horizontal_rule_to_plain_text()
     {
         $this->assertConvertedTo(
-            "Hello\n\n ┄ \nWorld",
+            "Hello\n\n\n ┄ \nWorld",
             trim(<<<'HTML'
             <div>Hello</div>
             <br>

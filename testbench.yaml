@@ -1,2 +1,28 @@
 providers:
   - Tonysm\RichTextLaravel\RichTextLaravelServiceProvider
+  - Tonysm\GlobalId\GlobalIdServiceProvider
+  - Workbench\App\Providers\WorkbenchServiceProvider
+
+migrations:
+  - vendor/orchestra/testbench-core/laravel/migrations/
+  - workbench/database/migrations
+
+components:
+  - workbench/resources/views/components
+
+seeders:
+  - Workbench\Database\Seeders\DatabaseSeeder
+
+workbench:
+  start: '/demo'
+  install: true
+  welcome: true
+  discovers:
+    web: true
+    views: true
+  build:
+    - create-sqlite-db
+    - db:wipe
+    - migrate:fresh
+  assets: []
+  sync: []

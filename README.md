@@ -39,7 +39,7 @@ If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-lara
 If you're using breeze, you may want to pass the `breeze` prop to this styles component:
 
 ```blade
-<x-rich-text::styles breeze />
+<x-rich-text::styles theme="richtextlaravel" />
 ```
 
 If you're using Laravel Mix/Webpack, the `resources/js/trix.js` file has the JS setup and the CSS import as well, so no need to use the the Blade Component.
@@ -230,266 +230,38 @@ Rendering for the editor is a bit different, so it has to be like that.
 ### Image Upload
 <a name="image-upload"></a>
 
-The default image attachment implementation that ships with Trix won't work out of the box with Laravel. It's up to you to implement the image uploading and update the attachment accordingly after that with the image URL. Here's a suggested implementation using Stimulus, but you can do it on any front-end framework of your choice. We won't cover how to setup Stimulus on your project here, check their docs or, if you are already using the [Turbo Laravel](https://github.com/tonysm/turbo-laravel) package, you can see how it [installs Stimulus there](https://github.com/tonysm/turbo-laravel/blob/main/stubs/resources/js/stimulus.js).
+Trix shows the attachment button, but it doesn't work out-of-the-box, we must implement that behavior in our applications.
 
-First, we need to create the Stimulus controller, let's call it `trix_controller.js`:
+A basic version of attachments uploading would look something like this:
 
-```js
-import { Controller } from "stimulus";
+- Listen to the `trix-attachment-add` event on the Trix element (or any parent element, as it bubbles up);
+- Implement the upload request. On this event, you get access to the Trix attachment instance, so you may update the progress on it if you want to, but this is not required;
+- Once the upload is done, you must return the attachmentURL from upload endpoint, which you can use to set `url` and `href` attributes on the attachment itself. That's it.
 
-export default class extends Controller {
-    // ...
-}
-```
+The package contains a demo application with basic image uploading functionality implemented in the Workbench application. Here's some relevant links:
 
-Then, we can listen to the `trix-attachment-add` event that the Trix editor dispatched whenever a new attachment is added, like so:
+- The Stimulus controller that manages uploading (you should be able to map what's going on there to any JavaScript framework you'd like) can be found at [./workbench/resources/views/components/app-layout.blade.php](), look for the "rich-text-uploader" Stimulus controller;
+- The upload route can be found at [./workbench/routes/web.php](), look for the `POST /attachments` route;
+- The Trix Input Blade component at [./workbench/resources/views/components/trix-input.blade.php](). This is copy of the component that ships with the package with some tweaks.
 
-```html
-<x-trix-input
-    id="post_body"
-    name="body"
-    data-controller="trix"
-    data-action="
-        trix-attachment-add->trix#upload
-    "
-/>
-```
-
-Now, let's implement the `upload` method in the `trix_controller.js` we just created:
-
-```js
-import { Controller } from "stimulus";
-
-export default class extends Controller {
-    upload(event) {
-        if (! event?.attachment?.file) {
-            return;
-        }
-
-        this._uploadFile(event.attachment);
-    }
-
-    _uploadFile(attachment) {
-        const form = new FormData();
-        form.append('attachment', attachment.file);
-
-        window.axios.post('/attachments', form, {
-            onUploadProgress: (progressEvent) => {
-                attachment.setUploadProgress(progressEvent.loaded / progressEvent.total * 100);
-            }
-        }).then(resp => {
-            attachment.setAttributes({
-                url: resp.data.image_url,
-                href: resp.data.image_url,
-            });
-        });
-    }
-}
-```
-
-This will send a POST request to `/attachments` with the `attachment` field, which should be a file Blob. The expected response should contain an `image_url` field. Here's what that route in Laravel could look like:
-
-```php
-Route::middleware(['auth:sanctum', 'verified'])->post('attachments', function () {
-    request()->validate([
-        'attachment' => ['required', 'file'],
-    ]);
-
-    $path = request()->file('attachment')->store('trix-attachments', 'uploads');
-
-    return [
-        'image_url' => Storage::disk('uploads')->url($path),
-    ];
-})->name('attachments.store');
-```
-
-In this example, the image will be stored in the `uploads` disk inside the `trix-attachments/` folder, and the URL to that file will be returned in the `image_url` property. That image will be stored in the Trix content as a remote image. This is only a simplified version of doing image uploads. Another way would be to use something like the [Media Library](https://spatie.be/docs/laravel-medialibrary/v9/introduction) package from Spatie and [customizing the Media model](https://spatie.be/docs/laravel-medialibrary/v9/advanced-usage/using-your-own-model) and make it an attachable too. This way, the Media model would have its own SGID and you would set that attribute in the attachment as well, like so:
-
-```php
-attachment.setAttributes({
-    sgid: resp.data.sgid,
-    url: resp.data.image_url,
-    href: resp.data.image_url,
-});
-```
-
-This would allow more advanced things like retrieving all attachments of the `Media` model in the Rich Text content and saving the embedded Media attachments as a relationship on the model that has rich text content, as we did with mentions in the [attachments](#attachments) section. This way, you have a reference of which images are being used on rich text codes (can be useful if you want to prune the images later).
+However, you're not limited to this basic attachment handling in Trix. A more advanced attachment behavior could create its own backend model, then set the `sgid` attribute on the attachment, which would let you have full control over the rendered HTML when the document renders outside the Trix editor.
 
 ### Content Attachments
 <a name="attachments"></a>
 
-With Trix we can have [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature on top of Trix. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The JavaScript portion is the same, so we're recreating that portion here.
+With Trix we can have [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature on top of Trix. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The workflow is pretty much the same in Laravel.
 
-To turn the User model into an _Attachable_, you must implement the `AttachableContract` and use the `Attachable` trait on the User model. Besides that, you must also implement a `richTextRender(array $options): string` where you tell the package how to render that model inside Trix:
-
-```php
-use Tonysm\RichTextLaravel\Attachables\AttachableContract;
-use Tonysm\RichTextLaravel\Attachables\Attachable;
-
-class User extends Model implements AttachableContract
-{
-    use Attachable;
-
-    public function richTextRender(array $options = []): string
-    {
-        return view('users._mention', [
-            'user' => $this,
-        ])->render();
-    }
-}
-```
+To turn _any_ model into an _Attachable_, you must implement the `AttachableContract`. You may use the `Attachable` trait to provide some basic _Attachable_ functionality (it implements most of the basic handling of attachables), except for the `richTextRender(array $options): string` method, which you must implement. This method is used to figure out how to render the content attachment both inside and outside of Trix.
 
 The `$options` array passed to the `richTextRender` is there in case you're rendering multiple models inside a gallery, so you would get a `in_gallery` boolean field (optional) in that case, which is not the case for this user mentions example, so we can ignore it.
 
-Then inside that `users._mention` Blade template you have full control over the HTML for this attachable field. You may want to show the user's avatar and their name in a span tag inside the attachment, so the `users._mention` view would look like this:
+You may use Blade to render an HTML partial for the attachable. For a reference, the Workbench application ships with a User Mentions feature, which may be used as an example of content attachments. Here's some relevant links:
 
-```blade
-<span class="flex items-center space-x-1">
-    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="inline-block object-cover w-4 h-4 rounded-full" />
-    <span>{{ $user->name }}</span>
-</span>
-```
-
-Now, to the dropdown and to trigger opening the dropdown whenever users type the `@` symbol inside the Trix editor, you may use something like [Zurb's Tribute](https://github.com/zurb/tribute), or you could build your own dropbown and listen to keydown events on the editor watching when users type an `@` symbol to open the dropdown. Your choice. Let's first create a new Stimulus controller for mentions called `mentions_controller.js`:
-
-```js
-import { Controller } from "stimulus";
-
-export default class extends Controller {
-    // ...
-}
-```
-
-Next, we're going to import Tribute and initiate it when the controller connects to the DOM element it's attached to - and also detach it when the controller disconnects, as well as which method it will use to look for users (the `fetchUsers`). We need to attach Tribute to the element so it knows where to add the event listeners which trigger the mentions dropdown. We also need to override what Tribute does when an option is picked, that's why we're adding our own implementation of the `range.pasteHtml` method on the instance (see the code below). We also need to :
-
-```js
-import { Controller } from "stimulus";
-import Tribute from 'tributejs';
-import Trix from 'trix';
-
-require('tributejs/tribute.css');
-
-export default class extends Controller {
-    connect() {
-        this.initializeTribute();
-    }
-
-    disconnect() {
-        this.tribute.detach(this.element);
-    }
-
-    initializeTribute() {
-        this.tribute = new Tribute({
-            allowSpaces: true,
-            lookup: 'name',
-            values: this.fetchUsers,
-        })
-
-        this.tribute.attach(this.element);
-        this.tribute.range.pasteHtml = this._pasteHtml.bind(this);
-    }
-
-    fetchUsers(text, callback) {
-        window.axios.get(`/mentions?search=${text}`)
-            .then(resp => callback(resp.data))
-            .catch(error => callback([]))
-    }
-
-    _pasteHtml(html, startPosition, endPosition) {
-        // We need to remove everything the user has typed
-        // while searching for a user. We'll later inject
-        // the mention into Trix as a content attachment.
-
-        let range = this.editor.getSelectedRange();
-        let position = range[0];
-        let length = endPosition - startPosition;
-
-        this.editor.setSelectedRange([position - length, position])
-        this.editor.deleteInDirection('backward');
-    }
-}
-```
-
-Now we need to attach the mentions controller to the Trix editor, just like we did with the image upload example:
-
-```html
-<x-trix-input
-    id="post_body"
-    name="body"
-    data-controller="trix mentions"
-    data-action="
-        trix-attachment-add->trix#upload
-    "
-/>
-```
-
-The `GET /mentions?search=` route could look something like this:
-
-```php
-Route::middleware(['auth:sanctum', 'verified'])->get('mentions', function () {
-    return auth()->user()->currentTeam->allUsers()
-        ->when(request('search'), fn ($users, $search) => (
-            $users->filter(fn (User $user) => (
-                str_starts_with(strtolower($user->name), strtolower($search))
-            ))
-        ))
-        ->sortBy('name')
-        ->take(10)
-        ->map(fn (User $user) => [
-            'sgid' => $user->richTextSgid(),
-            'name' => $user->name,
-            'content' => $user->richTextRender(),
-        ])
-        ->values();
-})->name('mentions.index');
-```
-
-You see we're returning the `sgid`, which is a method from the `Attachable` trait. It basically generates a unique global identifier for this model inside your application. More on that in the [SGDI](#sgid) section. It also returns the user's name, which will be used by Tribute to show the options, and the content, which is the rich text render that we're going to insert into the `Trix.Attachment`. However, if you try to run this code yet, this should not work as you'd expect. After choosing an option, the stuff that you wrote while looking for the option, something like `@Ton`, should be gone but no attachment was placed instead. That's because we haven't implemented this part yet.
-
-When you choose an option in Tribute, you need to listen to the `tribute-replaced` event and call a method inside the `mentions_controller.js`, let's hook it:
-
-```html
-<x-trix-input
-    id="post_body"
-    name="body"
-    data-controller="trix mentions"
-    data-action="
-        trix-attachment-add->trix#upload
-        tribute-replaced->mentions#tributeReplaced
-    "
-/>
-```
-
-Next, let's implement that method inside out mentions controller. The event that we get there should contain the user object (the one with the `sgid`, `name`, and `content` attributes we returned from the Controller) inside the `detail.item.original` path. We can take that and create an instance of the `Trix.Attachment` passing the `sgid` and `content` attributes to it, then inserting that attachment into the editor:
-
-```js
-import { Controller } from "stimulus";
-import Tribute from 'tributejs';
-import Trix from 'trix';
-
-require('tributejs/tribute.css');
-
-export default class extends Controller {
-    // ...
-
-    tributeReplaced(e) {
-        let mention = e.detail.item.original;
-        let attachment = new Trix.Attachment({
-            sgid: mention.sgid,
-            content: mention.content,
-        });
-
-        this.editor.insertAttachment(attachment);
-        this.editor.insertString(" ");
-    }
-
-    get editor() {
-        return this.element.editor;
-    }
-}
-```
-
-Now we're done. The example here is using user mentions, but you could really attach anything into the Trix document. And you have full control over how that document is rendered. When that document is submitted to your backend to be stored, the package will then minimize any content attachments, similar to what was done in the image upload example. But this time, the `sgid` will be used to identify the User attachable that was mentioned and the `users._mention` Blade template will be rendered again later whenever you're displaying that document. This is useful because you can tweak how user mentions look like inside your app without having to worry about the documents at-rest in the database.
+- The User model which implements the `AttachmentContract` can be found at [./workbench/app/Models/User.php]();
+- The model uses a custom Trait called `Mentionee` which uses the `Attachable` trait under the hood, so take a look at the [./workbench/app/Models/User/Mentionee.php]() trait;
+- In the frontend, we're using [Zurb's Tribute](https://github.com/zurb/tribute) lib to detect mentions whenever the user types the `@` symbol in Trix. The Simulus controller that sets it up can be found at [./workbench/resources/views/components/app-layout.blade.php](). Look for the "rich-text-mentions" controller. This is the same implement covered in the RailsConf talk mentioned earlier, so check that out if you need some help understanding what's going on. There are two Trix components in the workbench app, one used for posts and comments which may be found at [./workbench/resources/views/components/trix-input.blade.php]() and one for the Chat composer, which may be found at [./workbench/resources/views/chat/partials/trix-input.blade.php]. In both components you will find a `data-action` entry listening for the `tribute-replaced` event, that's the event Tribute will dispatch for us to create the Trix attachment, providing us the selected option the user has picked from the dropdown;
+- The mentioner class will look for mentions in the `GET /mentions?search=` route, which you may find at [./workbench/routes/web.php](). Note that we're turning the `sgid` and the `content` field, those are used for the Trix attachment. The `name` field is also returning, which is used by Tribute itself to compose the mentions feature.
+- The Blade view that will render the user attachment can be found at [./workbench/resources/views/mentions/partials/user.blade.php]()
 
 You can later retrieve all attachments from that rich text content. See [The Content Object](#content-object) section for more.
 

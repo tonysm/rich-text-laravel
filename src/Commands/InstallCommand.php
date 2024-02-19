@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
-use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
@@ -69,7 +68,7 @@ class InstallCommand extends Command
     private function jsDependencies(): array
     {
         return [
-            'trix' => '^2.0.8',
+            'trix' => '^2.0.10',
         ];
     }
 
@@ -239,30 +238,5 @@ class InstallCommand extends Command
             base_path('package.json'),
             json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
         );
-    }
-
-    private function displayTask($description, $task)
-    {
-        $width = (new Terminal())->getWidth();
-        $dots = str_repeat('<fg=gray>.</>', max($width - strlen($description) - 13, 0));
-        $this->output->write(sprintf('    <fg=white>%s</> %s ', $description, $dots));
-        $output = $task();
-
-        if ($output === self::SUCCESS) {
-            $this->output->write('<info>DONE</info>');
-        } elseif ($output === self::FAILURE) {
-            $this->output->write('<error>FAIL</error>');
-        } elseif ($output === self::INVALID) {
-            $this->output->write('<fg=yellow>WARN</>');
-        }
-
-        $this->newLine();
-    }
-
-    private function displayHeader($text, $prefix)
-    {
-        $this->newLine();
-        $this->line(sprintf(' %s <fg=white>%s</>  ', $prefix, $text));
-        $this->newLine();
     }
 }

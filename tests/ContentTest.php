@@ -6,7 +6,8 @@ use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\Content;
-use Tonysm\RichTextLaravel\Tests\Stubs\User;
+use Workbench\App\Models\User;
+use Workbench\Database\Factories\UserFactory;
 
 class ContentTest extends TestCase
 {
@@ -56,7 +57,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_attachments()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
 
         $html = <<<HTML
@@ -76,7 +77,7 @@ class ContentTest extends TestCase
     /** @test */
     public function extracts_attachables()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
 
         $html = <<<HTML
@@ -116,7 +117,7 @@ class ContentTest extends TestCase
     /** @test */
     public function handles_destryed_attachables_as_missing()
     {
-        $attachable = User::create(['name' => 'Jon Doe']);
+        $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
         $html = <<<HTML
         <rich-text-attachment sgid="$sgid" caption="User mention"></rich-text-attachment>
@@ -249,7 +250,7 @@ class ContentTest extends TestCase
     /** @test */
     public function renders_to_trix_hmtl_with_model_attachments()
     {
-        $user = UserWithCustomRenderContent::create(['name' => 'Hey There']);
+        $user = UserWithCustomRenderContent::create(UserFactory::new()->raw(['name' => 'Hey There']));
         $sgid = $user->richTextSgid();
         $attachmentHtml = <<<HTML
         <div>Hey, <rich-text-attachment sgid="$sgid" content-type="application/octet-stream"></rich-text-attachment></div>
@@ -421,14 +422,14 @@ class ContentTest extends TestCase
             <rich-text-attachment content-type="image/png" width="200" height="100" url="http://example.com/red-1.png" filename="red-1.png" filesize="100" presentation="gallery" caption="Captioned"></rich-text-attachment>
 
             <div class="attachment-gallery attachment-gallery--2">
-            <figure class="attachment attachment--preview attachment--png">
+            <figure class="not-prose attachment attachment--preview attachment--png">
             <img src="http://example.com/red-1.png" width="200" height="100">
             <figcaption class="attachment__caption">
                 Captioned
             </figcaption>
         </figure>
 
-            <figure class="attachment attachment--preview attachment--png">
+            <figure class="not-prose attachment attachment--preview attachment--png">
             <img src="http://example.com/blue-1.png" width="200" height="100">
             <figcaption class="attachment__caption">
                 Captioned
