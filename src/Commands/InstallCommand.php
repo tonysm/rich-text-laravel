@@ -68,7 +68,7 @@ class InstallCommand extends Command
     private function jsDependencies(): array
     {
         return [
-            'trix' => '^2.0.8',
+            'trix' => '^2.0.10',
         ];
     }
 
