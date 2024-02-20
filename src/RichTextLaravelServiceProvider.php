@@ -26,8 +26,6 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        LivewireSupportsRichText::init();
-
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade) {
             $blade->anonymousComponentPath(dirname(__DIR__).implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
         });

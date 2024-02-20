@@ -2,7 +2,10 @@
 
 namespace Workbench\App\Providers;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Livewire\LivewireManager;
+use Workbench\App\Livewire\Posts;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,13 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerComponents();
+    }
+
+    public function registerComponents(): void
+    {
+        $this->callAfterResolving('livewire', function (LivewireManager $livewire, Application $app) {
+            $livewire->component('posts.index', Posts::class);
+        });
     }
 }

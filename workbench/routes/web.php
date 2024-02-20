@@ -91,6 +91,10 @@ Route::post('/posts/{post}/comments', function (Post $post) {
     return back()->withFragment(sprintf('#comment_%s', $comment->id));
 })->name('posts.comments.store');
 
+Route::get('/livewire', function () {
+    return view('livewire.index');
+})->name('livewire');
+
 Route::get('/mentions', function (Request $request) {
     return User::query()
         ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))

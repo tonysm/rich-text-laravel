@@ -395,66 +395,11 @@ In case you want to rotate your key, you would need to loop-through all the rich
 
 ### Livewire
 
-If you're binding a model that has rich text fields to a Livewire component, you may add the `WithRichTexts` trait to your component. Also, it's recommended that you keep the rich text in raw form until the moment you want to save that to the Rich Text field, something like this:
+If you want to use Livewire with Trix and Rich Text Laravel, the best way to integrate would be using Livewire's `@entangle()` feature. The Workbench app ships with an example app. Some interesting points:
 
-```php
-<?php
-
-namespace App\Http\Livewire;
-
-use App\Models\User;
-use Livewire\Component;
-use Tonysm\RichTextLaravel\Livewire\WithRichTexts;
-
-class UserProfileForm extends Component
-{
-    use WithRichTexts;
-
-    public User $user;
-    public $bio = '';
-
-    protected $rules = [
-        'bio' => ['required'],
-    ];
-
-    public function mount(User $user)
-    {
-        $this->user = $user;
-        $this->bio = $user->bio->toTrixHtml();
-    }
-
-    public function save()
-    {
-        $this->validate();
-
-        $this->user->update([
-            'bio' => $this->bio,
-        ]);
-    }
-}
-```
-
-In this example, the User model has a `bio` rich text field.
-
-<details>
-<summary>See the contents of the User model in the example</summary>
-
-```php
-<?php
-
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
-
-class User extends Model
-{
-    use HasRichText;
-
-    protected $fillable = ['bio'];
-    protected $richTextAttributes = ['bio'];
-}
-```
-
-</details>
+- There's a custom [components/trix-input-livewire.blade.php](workbench/resources/views/components/trix-input-livewire.blade.php) just to show how to use it with Livewire;
+- As you can see, it relies on entangle. This is the recommended way;
+- See the [`Livewire\Posts`](workbench/app/Livewire/Posts.php) component. When the user clicks on "edit", it sets the currently editing Post into state and fills the `PostForm` with the data from the Post model, including the Trix HTML;
 
 ## Testing
 
