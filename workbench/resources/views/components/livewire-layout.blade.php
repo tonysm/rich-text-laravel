@@ -236,8 +236,6 @@
             }
         })
     </script>
-
-    {{ $head ?? '' }}
 </head>
 
 <body class="bg-gray-100">
