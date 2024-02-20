@@ -164,6 +164,34 @@ Rendering the rich text content back to the Trix editor is a bit differently tha
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
 
+### Encrypted Rich Text Attributes
+
+If you want to encrypt the HTML content at-rest, you may specify the `encrypted` option to `true` in the `richTextAttributes` property:
+
+```php
+use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
+
+class Post extends Model
+{
+    use HasRichText;
+
+    protected $guarded = [];
+
+    protected $richTextAttributes = [
+        'body' => ['encrypted' => true], // This will be encrypted...
+        'notes', // Not encrypted...
+    ];
+}
+```
+
+This uses [Laravel's Encryption](https://laravel.com/docs/10.x/encryption#introduction) feature.
+
+#### Key Rotation
+
+Laravel's Encryption component relies on the `APP_KEY` master key. If you need to rotate this key, you'll need to manually re-encrypt your encrypted Rich Text Attributes using the new key.
+
+Additionally, the stored content attachments rely on the [Globalid Laravel](https://github.com/tonysm/globalid-laravel) package. That package generates a derived key based on your `APP_KEY`. When rotating the `APP_KEY`, you'll also need to update all stored content attachments's `sgid` attributes.
+
 ### The AsRichTextContent Trait
 <a name="asrichtextcontent-trait"></a>
 

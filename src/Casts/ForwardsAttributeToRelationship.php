@@ -40,6 +40,9 @@ class ForwardsAttributeToRelationship implements CastsAttributes
         return $this->firstOrNewRelationship($model, $key);
     }
 
+    /**
+     * @return \Tonysm\RichTextLaravel\Models\RichText
+     */
     public function firstOrNewRelationship(Model $model, string $field)
     {
         $relationship = $model::fieldToRichTextRelationship($field);
