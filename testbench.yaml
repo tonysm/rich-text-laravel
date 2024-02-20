@@ -1,6 +1,7 @@
 providers:
   - Tonysm\RichTextLaravel\RichTextLaravelServiceProvider
   - Tonysm\GlobalId\GlobalIdServiceProvider
+  - Livewire\LivewireServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:

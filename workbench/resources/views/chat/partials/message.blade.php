@@ -6,7 +6,7 @@
         ])
     >
         <div class="prose prose-pre:text-gray-900 break-words prose-pre:text-sm prose-blockquote:my-0">
-            {!! $message->content !!}
+            {{ clean($message->content) }}
         </div>
 
         <div class="flex justify-end">
