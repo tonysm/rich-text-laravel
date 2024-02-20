@@ -20,7 +20,7 @@ trait HasRichText
         }
 
         static::saving(function (Model $model) {
-            foreach ($model->getRichTextFields() as $field) {
+            foreach ($model->getRichTextFields() as $field => $_options) {
                 $relationship = static::fieldToRichTextRelationship($field);
 
                 if ($model->relationLoaded($relationship) && $model->{$field}->isDirty() && $model->timestamps) {
