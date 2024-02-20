@@ -17,6 +17,6 @@ trait Mentionee
 
     public function richTextAsPlainText()
     {
-        return __($this->name);
+        return e($this->name);
     }
 }
