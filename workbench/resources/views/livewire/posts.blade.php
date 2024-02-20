@@ -18,9 +18,8 @@
             @enderror
         </div>
 
-
         <div class="mt-4 flex items-center space-x-4 justify-end">
-            <x-button wire:click="cancel" type="button">{{ __('Cancel') }}</x-button>
+            <x-button wire:click="cancel" variant="secondary" type="button">{{ __('Cancel') }}</x-button>
             <x-button type="submit">{{ __('Save') }}</x-button>
         </div>
     </form>
