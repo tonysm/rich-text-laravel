@@ -25,10 +25,14 @@
         </div>
     </form>
     @else
-    <ul class="rounded-lg bg-white shadow divide-y">
+    <ul class="rounded bg-white shadow divide-y">
         @foreach (Workbench\App\Models\Post::all() as $post)
         <li class="p-4 flex items-center justify-between space-x-2">
-            <span>{{ $post->title }}</span>
+            <div>
+                <div class="text-lg font-medium">{{ $post->title }}</div>
+                <div class="text-gray-600 text-sm">{{ Str::limit($post->body->toPlainText(), 80) }}</div>
+            </div>
+
             <button class="text-gray-500 text-sm" type="button" wire:click="edit({{ $post->id }})">Edit</button>
         </li>
         @endforeach
