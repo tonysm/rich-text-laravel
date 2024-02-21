@@ -1,7 +1,6 @@
 <input type="hidden" id="create_message_input" name="content" value="{{ old('content', '') }}" />
 
 <trix-editor
-    autofocus
     placeholder="Say something nice..."
     data-composer-target="text"
     data-controller="rich-text-mentions"
@@ -10,11 +9,11 @@
     name="content"
     toolbar="create_message_toolbar"
     input="create_message_input"
-    class="trix-content rounded-0 p-0 [&_pre]:text-sm min-h-0 max-h-[12vh] overflow-auto border-0 group-data-[composer-show-toolbar-value=true]:py-2 group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
+    class="trix-content overflow-auto rounded-0 p-0 [&_pre]:text-sm min-h-0 max-h-[12vh] border-0 sm:group-data-[composer-show-toolbar-value=true]:py-2 sm:group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
 ></trix-editor>
 
-<trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 group-data-[composer-show-toolbar-value=true]:mt-2">
-    <div class="trix-button-row !hidden group-data-[composer-show-toolbar-value=true]:!inline-block">
+<trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 sm:group-data-[composer-show-toolbar-value=true]:mt-2">
+    <div class="trix-button-row !hidden sm:group-data-[composer-show-toolbar-value=true]:!inline-block">
         <span class="trix-button-group trix-button-group--text-tools" data-trix-button-group="text-tools">
             <button type="button" class="trix-button trix-button--icon trix-button--icon-bold" data-trix-attribute="bold" data-trix-key="b" title="Bold" tabindex="-1">Bold</button>
             <button type="button" class="trix-button trix-button--icon trix-button--icon-italic" data-trix-attribute="italic" data-trix-key="i" title="Italic" tabindex="-1">Italic</button>
