@@ -200,7 +200,7 @@ class InstallCommand extends Command
                     return;
                 }
 
-                File::put($file, preg_replace('/(\s*)(<\/head>)/', "\\1    <x-rich-text::styles theme=\"richtextlaravel\" data-turbo-track=\"false\" />\\1\\2", $contents));
+                File::put($file, preg_replace('/(\s*)(<\/head>)/', '\\1    <x-rich-text::styles theme="richtextlaravel" data-turbo-track="false" />\\1\\2', $contents));
             });
     }
 
