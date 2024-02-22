@@ -112,7 +112,7 @@ class InstallCommand extends Command
     {
         $this->components->info('Installing JS dependencies (Importmaps).');
 
-        $this->callSilent('importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
+        $this->callSilent('php artisan importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
     }
 
     private function ensureTrixLibIsImported(): void
