@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
 use Symfony\Component\Process\Process;
@@ -112,7 +113,7 @@ class InstallCommand extends Command
     {
         $this->components->info('Installing JS dependencies (Importmaps).');
 
-        $this->callSilent('php artisan importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
+        Artisan::call('importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
     }
 
     private function ensureTrixLibIsImported(): void
