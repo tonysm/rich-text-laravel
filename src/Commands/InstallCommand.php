@@ -149,6 +149,7 @@ class InstallCommand extends Command
 
         File::prepend($entrypoint, str_replace('%path%', $this->usingImportmaps() ? '' : './', <<<'JS'
         import "%path%libs/trix";
+
         JS));
     }
 
