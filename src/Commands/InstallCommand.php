@@ -139,7 +139,6 @@ class InstallCommand extends Command
             return;
         }
 
-
         if (preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
             $this->components->info('Trix module was already imported.');
 
