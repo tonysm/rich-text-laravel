@@ -1,7 +1,7 @@
 @props(['theme' => 'default'])
 
-@if ($theme === 'richtextlaravel')
 <style {{ $attributes }}>
+@if ($theme === 'richtextlaravel')
     trix-editor {
         border: 1px solid #bbb;
         border-radius: 3px;
@@ -585,9 +585,7 @@
         flex-basis: 50%;
         max-width: 50%;
     }
-</style>
 @else
-<style {{ $attributes }}>
     trix-editor {
     border: 1px solid #bbb;
     border-radius: 3px;
@@ -998,5 +996,29 @@
         .trix-content .attachment-gallery.attachment-gallery--2 .attachment, .trix-content .attachment-gallery.attachment-gallery--4 .attachment {
         flex-basis: 50%;
         max-width: 50%; }
-</style>
 @endif
+
+    /*
+     * We need to override trix.css’s image gallery styles to accommodate the
+     * <rich-text-attachment> element we wrap around attachments. Otherwise,
+     * images in galleries will be squished by the max-width: 33%; rule.
+    */
+    .trix-content .attachment-gallery > rich-text-attachment,
+    .trix-content .attachment-gallery > .attachment {
+      flex: 1 0 33%;
+      padding: 0 0.5em;
+      max-width: 33%;
+    }
+
+    .trix-content .attachment-gallery.attachment-gallery--2 > rich-text-attachment,
+    .trix-content .attachment-gallery.attachment-gallery--2 > .attachment, .trix-content .attachment-gallery.attachment-gallery--4 > rich-text-attachment,
+    .trix-content .attachment-gallery.attachment-gallery--4 > .attachment {
+      flex-basis: 50%;
+      max-width: 50%;
+    }
+
+    .trix-content rich-text-attachment .attachment {
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
+</style>

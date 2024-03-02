@@ -12,8 +12,6 @@ use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class InstallCommand extends Command
 {
-    const JS_BOOTSTRAP_IMPORT_PATTERN = '/(.*[\'\"](?:\.\/)?bootstrap[\'\"].*)/';
-
     const JS_TRIX_LIBS_IMPORT_PATTERN = '/import [\'\"](?:\.\/)?libs\/trix[\'\"];?/';
 
     public $signature = 'richtext:install
@@ -31,7 +29,6 @@ class InstallCommand extends Command
         }
 
         $this->ensureTrixLibIsImported();
-        $this->ensureTrixOverridesStylesIsPublished();
         $this->ensureTrixFieldComponentIsCopied();
         $this->updateAppLayoutFiles();
         $this->updateJsDependencies();
@@ -136,45 +133,24 @@ class InstallCommand extends Command
             resource_path('js/app.js'),
         ], fn ($file) => file_exists($file));
 
-        if (! File::exists($entrypoint)) {
+        if (! $entrypoint) {
             $this->components->warn(sprintf('Add `%s` your main JS file.', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './')));
 
             return;
         }
 
-        $this->components->info(sprintf('Importing the `libs/trix.js` module in `%s`', str($entrypoint)->after(resource_path())));
+        if (preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
+            $this->components->info('Trix module was already imported.');
 
-        // If the import line doesn't exist on the js/app.js file, add it after the import
-        // of the bootstrap.js file that ships with Laravel's default scaffolding.
-
-        if (! preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
-            File::put($entrypoint, preg_replace(
-                self::JS_BOOTSTRAP_IMPORT_PATTERN,
-                str_replace(
-                    '%path%',
-                    $this->usingImportmaps() ? '' : './',
-                    <<<'JS'
-                    \1
-                    import '%path%libs/trix';
-                    JS,
-                ),
-                File::get($entrypoint),
-            ));
+            return;
         }
-    }
 
-    private function ensureTrixOverridesStylesIsPublished(): void
-    {
-        $this->components->info('Publishing styles.');
-        File::copy(__DIR__.'/../../stubs/resources/css/trix.css', resource_path('css/_trix.css'));
+        $this->components->info(sprintf('Importing the Trix module in %s', str_replace(resource_path('/'), '', $entrypoint)));
 
-        if (File::exists($mainCssFile = resource_path('css/app.css')) && ! str_contains(File::get($mainCssFile), '_trix.css')) {
-            $this->components->info('Importing the `resources/css/_trix.css` styles file.');
+        File::prepend($entrypoint, str_replace('%path%', $this->usingImportmaps() ? '' : './', <<<'JS'
+        import "%path%libs/trix";
 
-            File::prepend($mainCssFile, "@import './_trix.css';\n");
-        } else {
-            $this->components->warn('Import the `resources/css/_trix.css` in your main CSS file.');
-        }
+        JS));
     }
 
     private function ensureTrixFieldComponentIsCopied(): void
@@ -191,18 +167,25 @@ class InstallCommand extends Command
 
     private function updateAppLayoutFiles(): void
     {
+        $layouts = $this->existingLayoutFiles();
+
+        if ($layouts->isEmpty()) {
+            $this->components->warn('Add the `<x-rich-text::styles />` component to your layouts.');
+
+            return;
+        }
+
         $this->components->info('Updating layouts.');
 
-        $this->existingLayoutFiles()
-            ->each(function ($file) {
-                $contents = File::get($file);
+        $layouts->each(function ($file) {
+            $contents = File::get($file);
 
-                if (str_contains($contents, '<x-rich-text::styles />')) {
-                    return;
-                }
+            if (str_contains($contents, '<x-rich-text::styles />')) {
+                return;
+            }
 
-                File::put($file, preg_replace('/(\s*)(<\/head>)/', '\\1    <x-rich-text::styles theme="richtextlaravel" data-turbo-track="false" />\\1\\2', $contents));
-            });
+            File::put($file, preg_replace('/(\s*)(<\/head>)/', '\\1    <x-rich-text::styles theme="richtextlaravel" data-turbo-track="false" />\\1\\2', $contents));
+        });
     }
 
     private function existingLayoutFiles()
