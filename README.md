@@ -28,6 +28,14 @@ Then, you may install it running:
 php artisan richtext:install
 ```
 
+Next, you may run the migration:
+
+```bash
+php artisan migrate
+```
+
+That's it.
+
 ### Blade Components
 
 If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-laravel) package, make sure you add the Trix core styles Blade Component to the `head` tag on your layout file(s):
