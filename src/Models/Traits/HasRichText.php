@@ -20,11 +20,13 @@ trait HasRichText
         }
 
         static::saving(function (Model $model) {
-            foreach ($model->getRichTextFields() as $field => $_options) {
-                $relationship = static::fieldToRichTextRelationship($field);
+            if (! $model::isIgnoringTouch()) {
+                foreach ($model->getRichTextFields() as $field => $_options) {
+                    $relationship = static::fieldToRichTextRelationship($field);
 
-                if ($model->relationLoaded($relationship) && $model->{$field}->isDirty() && $model->timestamps) {
-                    $model->updateTimestamps();
+                    if ($model->relationLoaded($relationship) && $model->{$field}->isDirty() && $model->timestamps) {
+                        $model->updateTimestamps();
+                    }
                 }
             }
         });
