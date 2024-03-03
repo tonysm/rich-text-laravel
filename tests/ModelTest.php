@@ -2,6 +2,8 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Database\Eloquent\Model;
+use Workbench\App\Models\Post;
 use Workbench\Database\Factories\PostFactory;
 
 class ModelTest extends TestCase
@@ -116,5 +118,41 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertTrue($post->created_at->eq($post->updated_at), 'Record timestamps were touched, but it shouldnt.');
+    }
+
+    /** @test */
+    public function doesnt_touch_record_when_touching_is_disabled_on_the_specific_model()
+    {
+        $this->freezeTime();
+
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
+        ])->fresh();
+
+        $this->travel(5)->minutes();
+
+        Post::withoutTouching(fn () => $post->update([
+            'body' => '<h1>New Value</h1>',
+        ]));
+
+        $this->assertTrue($post->refresh()->created_at->eq($post->refresh()->updated_at), 'Record timestamps were touched, but it shouldnt.');
+    }
+
+    /** @test */
+    public function doesnt_touch_record_when_touching_is_disabled_globally()
+    {
+        $this->freezeTime();
+
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
+        ])->fresh();
+
+        $this->travel(5)->minutes();
+
+        Model::withoutTouching(fn () => $post->update([
+            'body' => '<h1>New Value</h1>',
+        ]));
+
+        $this->assertTrue($post->refresh()->created_at->eq($post->refresh()->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
 }
