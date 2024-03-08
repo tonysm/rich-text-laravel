@@ -6,7 +6,7 @@ use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 
 class RemoteFileTest extends TestCase
 {
-    public function filesizesProvider()
+    public static function filesizesProvider()
     {
         return [
             'gigabytes' => [
