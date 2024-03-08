@@ -42,7 +42,7 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    public function headings()
+    public static function headings()
     {
         return [
             'h1' => [

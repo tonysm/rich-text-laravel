@@ -18,15 +18,15 @@
         "php": "^8.2",
         "illuminate/contracts": "^10.0|^11.0",
         "spatie/laravel-package-tools": "^1.9.2",
-        "tonysm/globalid-laravel": "^1.1"
+        "tonysm/globalid-laravel": "dev-main as 1.2"
     },
     "require-dev": {
         "laravel/pint": "^1.10",
         "livewire/livewire": "^3.4",
         "nunomaduro/collision": "^6.0|^8.0",
         "orchestra/testbench": "^8.21|^9.0",
-        "orchestra/workbench": "^1.0",
-        "phpunit/phpunit": "^9.6|^10.5",
+        "orchestra/workbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.5",
         "symfony/html-sanitizer": "^7.0"
     },
     "autoload": {

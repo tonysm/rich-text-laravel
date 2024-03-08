@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process as FacadesProcess;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
@@ -22,8 +23,6 @@ class InstallCommand extends Command
 
     public function handle()
     {
-        $this->components->info('Installing Rich Text Laravel.');
-
         if (! $this->option('no-model')) {
             $this->publishMigration();
         }
@@ -33,20 +32,21 @@ class InstallCommand extends Command
         $this->updateAppLayoutFiles();
         $this->updateJsDependencies();
 
-        $this->line('');
-        $this->components->info('Rich Text Laravel installed successfully.');
+        $this->newLine();
+        $this->components->info('Rich Text Laravel was installed successfully.');
 
         return self::SUCCESS;
     }
 
     private function publishMigration()
     {
-        $this->components->info('Publishing migrations.');
-
-        $this->callSilently('vendor:publish', [
-            '--tag' => 'rich-text-laravel-migrations',
-            '--provider' => RichTextLaravelServiceProvider::class,
-        ]);
+        FacadesProcess::forever()->run([
+            $this->phpBinary(),
+            'artisan',
+            'vendor:publish',
+            '--tag', 'rich-text-laravel-migrations',
+            '--provider', RichTextLaravelServiceProvider::class,
+        ], fn ($_type, $output) => $this->output->write($output));
     }
 
     private function updateJsDependencies()
@@ -72,13 +72,9 @@ class InstallCommand extends Command
 
     private function updateJsDependenciesWithNpm(): void
     {
-        $this->components->info('Installing JS dependencies (Node).');
-
         $this->updateNodePackages(function ($packages) {
             return $this->jsDependencies() + $packages;
         });
-
-        $this->components->info('Installing and building Node dependencies.');
 
         if (file_exists(base_path('pnpm-lock.yaml'))) {
             $this->runCommands(['pnpm install', 'pnpm run build']);
@@ -108,15 +104,15 @@ class InstallCommand extends Command
 
     private function installJsDependenciesWithImportmaps(): void
     {
-        $this->components->info('Installing JS dependencies (Importmaps).');
-
-        Artisan::call('importmap:pin '.implode(' ', array_keys($this->jsDependencies())));
+        FacadesProcess::forever()->run(array_merge([
+            $this->phpBinary(),
+            'artisan',
+            'importmap:pin',
+        ], array_keys($this->jsDependencies())), fn ($_type, $output) => $this->output->write($output));
     }
 
     private function ensureTrixLibIsImported(): void
     {
-        $this->components->info('Publishing resources/js/libs/trix.js module.');
-
         $trixRelativeDestinationPath = 'resources/js/libs/trix.js';
 
         $trixAbsoluteDestinationPath = base_path($trixRelativeDestinationPath);
@@ -134,18 +130,12 @@ class InstallCommand extends Command
         ], fn ($file) => file_exists($file));
 
         if (! $entrypoint) {
-            $this->components->warn(sprintf('Add `%s` your main JS file.', sprintf("\nimport '%slibs/trix';\n", $this->usingImportmaps() ? '' : './')));
-
             return;
         }
 
         if (preg_match(self::JS_TRIX_LIBS_IMPORT_PATTERN, File::get($entrypoint))) {
-            $this->components->info('Trix module was already imported.');
-
             return;
         }
-
-        $this->components->info(sprintf('Importing the Trix module in %s', str_replace(resource_path('/'), '', $entrypoint)));
 
         File::prepend($entrypoint, str_replace('%path%', $this->usingImportmaps() ? '' : './', <<<'JS'
         import "%path%libs/trix";
@@ -155,8 +145,6 @@ class InstallCommand extends Command
 
     private function ensureTrixFieldComponentIsCopied(): void
     {
-        $this->components->info('Publishing the `<x-trix-input />` Blade component.');
-
         File::ensureDirectoryExists(resource_path('views/components'));
 
         File::copy(
@@ -170,12 +158,8 @@ class InstallCommand extends Command
         $layouts = $this->existingLayoutFiles();
 
         if ($layouts->isEmpty()) {
-            $this->components->warn('Add the `<x-rich-text::styles />` component to your layouts.');
-
             return;
         }
-
-        $this->components->info('Updating layouts.');
 
         $layouts->each(function ($file) {
             $contents = File::get($file);
