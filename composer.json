@@ -18,7 +18,7 @@
         "php": "^8.2",
         "illuminate/contracts": "^10.0|^11.0",
         "spatie/laravel-package-tools": "^1.9.2",
-        "tonysm/globalid-laravel": "dev-main as 1.2"
+        "tonysm/globalid-laravel": "^1.1"
     },
     "require-dev": {
         "laravel/pint": "^1.10",
