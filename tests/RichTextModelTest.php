@@ -80,6 +80,8 @@ class RichTextModelTest extends TestCase
     /** @test */
     public function can_eager_load_rich_text_fields()
     {
+        PostWithNotes::truncate();
+
         $this->createPost(
             body: '<p>this is the body</p>',
             notes: '<p>this is the notes</p>',
