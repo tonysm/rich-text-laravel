@@ -31,6 +31,7 @@ class InstallCommand extends Command
         $this->ensureTrixFieldComponentIsCopied();
         $this->updateAppLayoutFiles();
         $this->updateJsDependencies();
+        $this->runDatabaseMigrations();
 
         $this->newLine();
         $this->components->info('Rich Text Laravel was installed successfully.');
@@ -56,6 +57,32 @@ class InstallCommand extends Command
         } else {
             $this->updateJsDependenciesWithNpm();
         }
+    }
+
+    private function runDatabaseMigrations()
+    {
+        if (! $this->confirm('A new migration was published to your app. Do you want to run it now?', true)) {
+            return;
+        }
+
+        if ($this->runningSail() && ! env('LARAVEL_SAIL')) {
+            FacadesProcess::forever()->run([
+                './vendor/bin/sail',
+                'artisan',
+                'migrate',
+            ], fn ($_type, $output) => $this->output->write($output));
+        } else {
+            FacadesProcess::forever()->run([
+                $this->phpBinary(),
+                'artisan',
+                'migrate',
+            ], fn ($_type, $output) => $this->output->write($output));
+        }
+    }
+
+    private function runningSail(): bool
+    {
+        return file_exists(base_path('docker-compose.yml')) && str_contains(file_get_contents(base_path('composer.json')), 'laravel/sail');
     }
 
     private function usingImportmaps(): bool
