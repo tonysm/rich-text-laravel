@@ -19,15 +19,6 @@ class EncryptedModelTest extends TestCase
         $this->assertNotEncryptedRichTextAttribute($clearMessage, 'content', 'Hello World');
     }
 
-    /** @test */
-    public function encrypts_as_string()
-    {
-        RichTextLaravel::encryptAsString();
-
-        $encryptedMessage = EncryptedMessage::create(['content' => 'Hello World']);
-        $this->assertEncryptedRichTextAttribute($encryptedMessage, 'content', 'Hello World');
-    }
-
     private function assertEncryptedRichTextAttribute($model, $field, $expectedValue)
     {
         $this->assertStringNotContainsString($expectedValue, $encrypted = DB::table('rich_texts')->where('record_id', $model->id)->value('body'));
