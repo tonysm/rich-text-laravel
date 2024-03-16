@@ -30,14 +30,11 @@ class RichTextLaravel
     }
 
     /**
-     * Configures the Rich Text Laravel package to store encrypted data as string,
-     * instead of using Laravel's default encryption mode, which serializes the
-     * content before encrypting it.
+     * This will be the default.
      */
     public static function encryptAsString(): void
     {
-        static::$encryptHandler = fn ($value) => Crypt::encryptString($value);
-        static::$decryptHandler = fn ($value) => ($value ? Crypt::decryptString($value) : $value);
+        static::encryptUsing(null, null);
     }
 
     public static function clearEncryptionHandlers(): void
@@ -47,14 +44,14 @@ class RichTextLaravel
 
     public static function encrypt($value, $model, $key): string
     {
-        $encrypt = static::$encryptHandler ??= fn ($value) => Crypt::encrypt($value);
+        $encrypt = static::$encryptHandler ??= fn ($value) => Crypt::encryptString($value);
 
         return call_user_func($encrypt, $value, $model, $key);
     }
 
     public static function decrypt($value, $model, $key): ?string
     {
-        $decrypt = static::$decryptHandler ??= fn ($value) => Crypt::decrypt($value);
+        $decrypt = static::$decryptHandler ??= fn ($value) => Crypt::decryptString($value);
 
         return $value ? call_user_func($decrypt, $value, $model, $key) : $value;
     }

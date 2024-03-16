@@ -192,11 +192,14 @@ class Post extends Model
 }
 ```
 
-This uses [Laravel's Encryption](https://laravel.com/docs/encryption#introduction) feature. By default, it will encrypt using the default encryption handler in Laravel, which serializes the value before encrypting it. However you can opt-in skip the serialization step and only encrypt as string by calling the following method in the `AppServiceProvider`:
+This uses [Laravel's Encryption](https://laravel.com/docs/encryption#introduction) feature. By default, we'll encrypt using Laravel's `Crypt::encryptString()` and decrypt with `Crypt::decryptString()`. If you're coming from version 2 of the Rich Text Laravel package, which would default to `Crypt::encrypt()` and `Crypt::decrypt()`, you must migrate your data manually (see instructions in the [2.2.0](https://github.com/tonysm/rich-text-laravel/releases/tag/2.2.0) release). This is the recommended way to upgrade to 3.x.
+
+With that being said, you may configure how the package handles encryption however you want to by calling the `RichTextLaravel::encryptUsing()` method on your `AppServiceProvider::boot` method. This method takes an encryption and decryption handler. The handler will receive the value, the model and key (field) that is being encrypted, like so:
 
 ```php
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\ServiceProvider;
 use Tonysm\RichTextLaravel\RichTextLaravel;
 
@@ -205,12 +208,15 @@ class AppServiceProvider extends ServiceProvider
     // ...
     public function boot(): void
     {
-        RichTextLaravel::encryptAsString();
+        RichTextLaravel::encryptUsing(
+            encryption: fn ($value, $model, $key) => Crypt::encrypt($value),
+            decryption: fn ($value, $model, $key) => Crypt::decrypt($value),
+        );
     }
 }
 ```
 
-In the next major version of the package, this will be the default, so it's recommended that you do that.
+Again, it's recommended that you migrate your existing encrypted data and use the default encryption handler (see instructions [here](https://github.com/tonysm/rich-text-laravel/releases/tag/2.2.0)).
 
 #### Key Rotation
 
