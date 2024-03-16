@@ -192,7 +192,25 @@ class Post extends Model
 }
 ```
 
-This uses [Laravel's Encryption](https://laravel.com/docs/10.x/encryption#introduction) feature.
+This uses [Laravel's Encryption](https://laravel.com/docs/encryption#introduction) feature. By default, it will encrypt using the default encryption handler in Laravel, which serializes the value before encrypting it. However you can opt-in skip the serialization step and only encrypt as string by calling the following method in the `AppServiceProvider`:
+
+```php
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Tonysm\RichTextLaravel\RichTextLaravel;
+
+class AppServiceProvider extends ServiceProvider
+{
+    // ...
+    public function boot(): void
+    {
+        RichTextLaravel::encryptAsString();
+    }
+}
+```
+
+In the next major version of the package, this will be the default, so it's recommended that you do that.
 
 #### Key Rotation
 

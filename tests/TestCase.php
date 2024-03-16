@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Tonysm\RichTextLaravel\RichTextLaravel;
 
 class TestCase extends Orchestra
 {
@@ -19,6 +20,8 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Tonysm\\RichTextLaravel\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        RichTextLaravel::clearEncryptionHandlers();
     }
 
     public function getEnvironmentSetUp($app)
