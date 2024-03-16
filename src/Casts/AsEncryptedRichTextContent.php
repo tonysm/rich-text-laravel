@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Tonysm\RichTextLaravel\Content;
+use Tonysm\RichTextLaravel\RichTextLaravel;
 
 class AsEncryptedRichTextContent implements CastsAttributes
 {
@@ -18,7 +19,7 @@ class AsEncryptedRichTextContent implements CastsAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        return encrypt(Content::toStorage($value));
+        return RichTextLaravel::encrypt(Content::toStorage($value), $model, $key);
     }
 
     /**
@@ -32,6 +33,6 @@ class AsEncryptedRichTextContent implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
-        return Content::fromStorage($value ? decrypt($value) : null);
+        return Content::fromStorage(RichTextLaravel::decrypt($value, $model, $key));
     }
 }

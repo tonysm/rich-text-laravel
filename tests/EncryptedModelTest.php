@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
+use Tonysm\RichTextLaravel\RichTextLaravel;
 use Workbench\App\Models\EncryptedMessage;
 use Workbench\App\Models\Message;
 
@@ -18,10 +19,19 @@ class EncryptedModelTest extends TestCase
         $this->assertNotEncryptedRichTextAttribute($clearMessage, 'content', 'Hello World');
     }
 
+    /** @test */
+    public function encrypts_as_string()
+    {
+        RichTextLaravel::encryptAsString();
+
+        $encryptedMessage = EncryptedMessage::create(['content' => 'Hello World']);
+        $this->assertEncryptedRichTextAttribute($encryptedMessage, 'content', 'Hello World');
+    }
+
     private function assertEncryptedRichTextAttribute($model, $field, $expectedValue)
     {
         $this->assertStringNotContainsString($expectedValue, $encrypted = DB::table('rich_texts')->where('record_id', $model->id)->value('body'));
-        $this->assertEquals($expectedValue, decrypt($encrypted));
+        $this->assertEquals($expectedValue, RichTextLaravel::decrypt($encrypted, $model, $field));
         $this->assertStringContainsString($expectedValue, $model->refresh()->{$field}->body->toHtml());
     }
 
