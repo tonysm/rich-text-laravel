@@ -191,7 +191,7 @@ class InstallCommand extends Command
         $layouts->each(function ($file) {
             $contents = File::get($file);
 
-            if (str_contains($contents, '<x-rich-text::styles />')) {
+            if (str_contains($contents, '<x-rich-text::styles')) {
                 return;
             }
 

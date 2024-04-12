@@ -34,29 +34,25 @@ Next, you may run the migration:
 php artisan migrate
 ```
 
-That's it.
-
-### Blade Components
-
-If you're using the [Importmap Laravel](https://github.com/tonysm/importmap-laravel) package, make sure you add the Trix core styles Blade Component to the `head` tag on your layout file(s):
+Ensure the styles Blade component were added to your layouts:
 
 ```blade
 <x-rich-text::styles />
 ```
 
-If you're using breeze, you might want to set `theme=richtextlaravel` prop to this styles component:
+Alternatively, if you're using Breeze (or TailwindCSS), you may prefer the tweaked theme:
 
 ```blade
 <x-rich-text::styles theme="richtextlaravel" />
 ```
 
-If you're using Laravel Mix/Webpack, the `resources/js/trix.js` file has the JS setup and the CSS import as well, so no need to use the the Blade Component.
-
-The package also publishes a Blade Component for you which can be used inside your forms, like so:
+Finally, you may now use the published input Blade component on your forms like so:
 
 ```blade
 <x-trix-input id="bio" name="bio" />
 ```
+
+That's it!
 
 ## Overview
 
