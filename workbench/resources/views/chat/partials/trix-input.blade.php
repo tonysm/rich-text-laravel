@@ -2,14 +2,15 @@
 
 <trix-editor
     placeholder="Say something nice..."
+    data-controller="rich-text-mentions oembed"
+    data-oembed-target="text"
     data-composer-target="text"
-    data-controller="rich-text-mentions"
-    data-action="keydown->composer#submitByKeyboard tribute-replaced->rich-text-mentions#addMention tribute-active-true->composer#disableSubmitByKeyboard tribute-active-false->composer#enableSubmitByKeyboard trix-attachment-add->composer#rejectFiles"
+    data-action="trix-paste->oembed#pasted keydown->composer#submitByKeyboard tribute-replaced->rich-text-mentions#addMention tribute-active-true->composer#disableSubmitByKeyboard tribute-active-false->composer#enableSubmitByKeyboard trix-attachment-add->composer#rejectFiles"
     id="create_message"
     name="content"
     toolbar="create_message_toolbar"
     input="create_message_input"
-    class="trix-content overflow-auto rounded-0 p-0 [&_pre]:text-sm min-h-0 max-h-[12vh] border-0 sm:group-data-[composer-show-toolbar-value=true]:py-2 sm:group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
+    class="trix-content rounded-0 p-0 [&_pre]:text-sm min-h-0 max-h-[90vh] border-0 sm:group-data-[composer-show-toolbar-value=true]:py-2 sm:group-data-[composer-show-toolbar-value=true]:min-h-[4em]"
 ></trix-editor>
 
 <trix-toolbar js-cloak id="create_message_toolbar" class="[&_.trix-button-group]:!mb-0 sm:group-data-[composer-show-toolbar-value=true]:mt-2">

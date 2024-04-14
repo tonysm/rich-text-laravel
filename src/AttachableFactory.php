@@ -12,6 +12,10 @@ class AttachableFactory
 {
     public static function fromNode(DOMElement $node): Attachables\AttachableContract
     {
+        if ($attachable = RichTextLaravel::attachableFromCustomResolver($node)) {
+            return $attachable;
+        }
+
         if ($node->hasAttribute('sgid') && $attachable = static::attachableFromSgid($node->getAttribute('sgid'))) {
             return $attachable;
         }

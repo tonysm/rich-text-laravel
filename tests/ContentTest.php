@@ -6,6 +6,7 @@ use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
 use Tonysm\RichTextLaravel\Content;
+use Workbench\App\Models\Opengraph\OpengraphEmbed;
 use Workbench\App\Models\User;
 use Workbench\Database\Factories\UserFactory;
 
@@ -542,6 +543,30 @@ class ContentTest extends TestCase
             <figure data-trix-attachment='{"contentType":"vnd.richtextlaravel.horizontal-rule.html","content":"&lt;hr&gt;\n"}'></figure>
         </div>
         HTML, $content->toTrixHtml());
+    }
+
+    /** @test */
+    public function supports_custom_content_attachments_without_sgid()
+    {
+        $contentType = OpengraphEmbed::CONTENT_TYPE;
+
+        $content = $this->fromHtml(<<<HTML
+        <div>
+            Testing out with cards: <a href="https://github.com/tonysm/rich-text-laravel">https://github.com/tonysm/rich-text-laravel</a>
+            <rich-text-attachment
+                caption="Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails. - tonysm/rich-text-laravel"
+                content-type="{$contentType}"
+                filename="GitHub - tonysm/rich-text-laravel: Integrates the Trix Editor with Laravel. Inspired by the Action Text gem from Rails."
+                href="https://github.com/tonysm/rich-text-laravel"
+                url="https://opengraph.githubassets.com/7e956bd233205f222790d8cdbdadfc401886aabdc88a8fd0cfb3c7dcca44d635/tonysm/rich-text-laravel"
+            ></rich-text-attachment>
+        </div>
+        HTML);
+
+        $this->assertCount(1, $content->attachments());
+        $this->assertCount(1, $content->attachables());
+        $this->assertInstanceOf(OpengraphEmbed::class, $content->attachables()->first());
+        $this->assertEquals('https://github.com/tonysm/rich-text-laravel', $content->attachables()->first()->href);
     }
 
     private function withAttachmentTagName(string $tagName, callable $callback)
