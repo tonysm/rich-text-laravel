@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel;
 
+use Closure;
 use DOMElement;
 use Illuminate\Support\Facades\Crypt;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
@@ -65,7 +66,7 @@ class RichTextLaravel
         return $value ? call_user_func($decrypt, $value, $model, $key) : $value;
     }
 
-    public static function withCustomAttachables($customAttachablesResolver): void
+    public static function withCustomAttachables(Closure|callable|null $customAttachablesResolver): void
     {
         static::$customAttachablesResolver = $customAttachablesResolver;
     }
