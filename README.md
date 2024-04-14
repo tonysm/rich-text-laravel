@@ -382,6 +382,7 @@ $post->body->galleryAttachments()
 You may want to attach resources that don't need to be stored in the database. One example of this is perhaps storing the OpenGraph Embed of links in a chat message. You probably don't want to store each OpenGraph Embed as its own database record. For cases like this, where the integraty of the data isn't necessarily key, you may register a custom attachment resolver:
 
 ```php
+use App\Models\Opengraph\OpengraphEmbed;
 use Illuminate\Support\ServiceProvider;
 use Tonysm\RichTextLaravel\RichTextLaravel;
 
@@ -401,6 +402,8 @@ class AppServiceProvider extends ServiceProvider
 This resolver must either return an instance of an `AttachableContract` implementation or `null` if the node doesn't match your attachment. In this case of an `OpengraphEmbed`, this would look something like this:
 
 ```php
+namespace App\Models\Opengraph;
+
 use DOMElement;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 
