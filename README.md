@@ -377,6 +377,56 @@ $post->body->galleryAttachments()
     ->map(fn (Attachment $attachment) => $attachment->attachable)
 ```
 
+#### Custom Content Attachments Without SGIDs
+
+You may want to attach resources that don't need to be stored in the database. One example of this is perhaps storing the OpenGraph Embed of links in a chat message. You probably don't want to store each OpenGraph Embed as its own database record. For cases like this, where the integraty of the data isn't necessarily key, you may register a custom attachment resolver:
+
+```php
+use Illuminate\Support\ServiceProvider;
+use Tonysm\RichTextLaravel\RichTextLaravel;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        RichTextLaravel::withCustomAttachables(function (DOMElement $node) {
+            if ($attachable = OpengraphEmbed::fromNode($node)) {
+                return $attachable;
+            }
+        });
+    }
+}
+```
+
+This resolver must either return an instance of an `AttachableContract` implementation or `null` if the node doesn't match your attachment. In this case of an `OpengraphEmbed`, this would look something like this:
+
+```php
+<?php
+
+namespace Workbench\App\Models\Opengraph;
+
+use DOMElement;
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+
+class OpengraphEmbed implements AttachableContract
+{
+    const CONTENT_TYPE = 'application/vnd.rich-text-laravel.opengraph-embed';
+
+    public static function fromNode(DOMElement $node): ?OpengraphEmbed
+    {
+        if ($node->hasAttribute('content-type') && $node->getAttribute('content-type') === static::CONTENT_TYPE) {
+            return new OpengraphEmbed(...static::attributesFromNode($node));
+        }
+
+        return null;
+    }
+
+    // ...
+}
+```
+
+You can see a full working implementation of this OpenGraph example in the Chat workbench demo (or in [this PR](https://github.com/tonysm/rich-text-laravel/pull/56)).
+
 ### Plain Text Rendering
 <a name="plain-text"></a>
 
