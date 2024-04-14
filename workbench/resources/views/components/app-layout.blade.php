@@ -260,6 +260,10 @@
 
             #abortController
 
+            disconnect() {
+                this.#abortController?.abort()
+            }
+
             pasted(event) {
                 const { range } = event.paste
 
