@@ -401,10 +401,6 @@ class AppServiceProvider extends ServiceProvider
 This resolver must either return an instance of an `AttachableContract` implementation or `null` if the node doesn't match your attachment. In this case of an `OpengraphEmbed`, this would look something like this:
 
 ```php
-<?php
-
-namespace Workbench\App\Models\Opengraph;
-
 use DOMElement;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 
@@ -425,7 +421,7 @@ class OpengraphEmbed implements AttachableContract
 }
 ```
 
-You can see a full working implementation of this OpenGraph example in the Chat workbench demo (or in [this PR](https://github.com/tonysm/rich-text-laravel/pull/56)).
+You can see a full working implementation of this OpenGraph example in the Chat Workbench demo (or in [this PR](https://github.com/tonysm/rich-text-laravel/pull/56)).
 
 ### Plain Text Rendering
 <a name="plain-text"></a>
