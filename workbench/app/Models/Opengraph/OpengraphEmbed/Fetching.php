@@ -47,15 +47,19 @@ trait Fetching
     private static function extractAttributesFromDocument(DOMDocument $document): array
     {
         $xpath = new DOMXPath($document);
-        $openGraphTags = $xpath->query("//meta[starts-with(@property, \"og:\") or starts-with(@name, \"og:\")]");
+        $openGraphTags = $xpath->query('//meta[starts-with(@property, "og:") or starts-with(@name, "og:")]');
         $attributes = [];
 
         foreach ($openGraphTags as $tag) {
-            if (! $tag->hasAttribute('content')) continue;
+            if (! $tag->hasAttribute('content')) {
+                continue;
+            }
 
             $key = str_replace('og:', '', $tag->hasAttribute('property') ? $tag->getAttribute('property') : $tag->getAttribute('name'));
 
-            if (! in_array($key, OpengraphEmbed::ATTRIBUTES, true)) continue;
+            if (! in_array($key, OpengraphEmbed::ATTRIBUTES, true)) {
+                continue;
+            }
 
             $attributes[$key] = $tag->getAttribute('content');
         }

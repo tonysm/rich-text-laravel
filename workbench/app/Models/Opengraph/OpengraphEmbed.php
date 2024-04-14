@@ -10,6 +10,7 @@ class OpengraphEmbed implements AttachableContract
     use OpengraphEmbed\Fetching;
 
     const ATTRIBUTES = ['title', 'url', 'image', 'description'];
+
     const CONTENT_TYPE = 'application/vnd.rich-text-laravel.opengraph-embed';
 
     public static function fromNode(DOMElement $node): ?OpengraphEmbed
@@ -55,7 +56,8 @@ class OpengraphEmbed implements AttachableContract
         public $url,
         public $filename,
         public $description,
-    ) {}
+    ) {
+    }
 
     public function toRichTextAttributes(array $attributes): array
     {
@@ -76,7 +78,7 @@ class OpengraphEmbed implements AttachableContract
     public function richTextRender(array $options = []): string
     {
         return view('rich-text-laravel.attachables.opengraph_embed', [
-            'attachable' => $this
+            'attachable' => $this,
         ])->render();
     }
 

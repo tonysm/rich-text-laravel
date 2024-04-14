@@ -137,7 +137,7 @@ Route::get('/attachments/{path}', function (string $path) {
 
 Route::post('/opengraph-embeds', function (Request $request) {
     $request->validate(['url' => [
-        'bail', 'required', 'url', function (string $attribute, mixed $value,  Closure $fail) {
+        'bail', 'required', 'url', function (string $attribute, mixed $value, Closure $fail) {
             $ip = gethostbyname($host = parse_url($value)['host']);
 
             // Prevent sniffing domains resolved to private IP ranges...
