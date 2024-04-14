@@ -29,6 +29,25 @@
         }
     </script>
 
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        @layer base {
+            .trix-content figure[data-trix-mutable=true] > :first-child {
+                @apply ring-2 ring-offset-2;
+            }
+
+            .trix-content figure[data-trix-mutable=true]:where(:has(.oembed)) > :first-child {
+                @apply rounded;
+            }
+
+            .trix-content figure[data-trix-mutable=true] img {
+                @apply ring-0 outline-none;
+            }
+        }
+    </style>
+
     <x-rich-text::styles theme="richtextlaravel" />
 
     {{-- Tribute's Styles... --}}
@@ -47,7 +66,7 @@
             Controller
         } from 'https://cdn.skypack.dev/@hotwired/stimulus'
         import Tribute from 'https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js'
-        import Trix from 'https://ga.jspm.io/npm:trix@2.0.10/dist/trix.esm.min.js'
+        import Trix from 'https://ga.jspm.io/npm:trix@2.1.0/dist/trix.esm.min.js'
 
         [...document.querySelectorAll('[js-cloak]')].forEach(el => el.removeAttribute('js-cloak'))
 
@@ -233,6 +252,105 @@
 
             get #usingTouchDevice() {
                 return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+            }
+        })
+
+        Stimulus.register("oembed", class extends Controller {
+            static targets = ["text"]
+
+            #abortController
+
+            disconnect() {
+                this.#abortController?.abort()
+            }
+
+            pasted(event) {
+                const { range } = event.paste
+
+                if (! range) return
+
+                const url = this.#urlFromRange(range)
+
+                if (! url) return
+
+                this.#convertToLink(url, range)
+                this.#processOembed(url)
+            }
+
+            #urlFromRange(range) {
+                const document = this.#editor.getDocument()
+
+                const string = document.getStringAtRange(range)
+                const trimmed = string.trim()
+
+                const startOffset = range[0] + string.indexOf(trimmed)
+                const endOffset = startOffset + trimmed.length
+
+                const url = document.getStringAtRange([startOffset, endOffset])
+
+                if (! this.#isValidUrl(url)) {
+                    return null;
+                }
+
+                return url;
+            }
+
+            #isValidUrl(url) {
+                return /^(?:[a-z0-9]+:\/\/|www\.)[^\s]+$/.test(url)
+            }
+
+            #convertToLink(url, range) {
+                const currentRange = this.#editor.getSelectedRange()
+
+                this.#editor.setSelectedRange(range)
+                this.#editor.recordUndoEntry("Convert Pasted URL to Link")
+                this.#editor.activateAttribute('href', url)
+                this.#editor.setSelectedRange(currentRange)
+            }
+
+            #processOembed(url) {
+                this.#fetchOpengraphMetadata(url)
+                    .then((response) => response.json())
+                    .then(this.#insertOpengraphAttachment.bind(this))
+                    .catch(() => null)
+            }
+
+            #fetchOpengraphMetadata(url) {
+                this.#abortController?.abort()
+                this.#abortController = new AbortController()
+
+                return fetch('/opengraph-embeds', {
+                    method: 'POST',
+                    body: JSON.stringify({ url }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.head.querySelector('[name=csrf-token]').content,
+                    },
+                    signal: this.#abortController.signal,
+                })
+            }
+
+            #insertOpengraphAttachment(attributes) {
+                if (! this.#shouldInsertOpengraphAttachment(attributes.href)) return;
+
+                const currentRange = this.#editor.getSelectedRange()
+
+                this.#editor.setSelectedRange(this.#editor.getSelectedRange())
+                this.#editor.recordUndoEntry("Insert Opengraph preview for Pasted URL")
+                this.#editor.insertAttachment(new Trix.Attachment({
+                    ...attributes,
+                    caption: attributes.description,
+                }))
+                this.#editor.setSelectedRange(currentRange)
+            }
+
+            #shouldInsertOpengraphAttachment(url) {
+                return this.#editor.getDocument().toString().includes(url)
+            }
+
+            get #editor() {
+                return this.textTarget.editor
             }
         })
     </script>

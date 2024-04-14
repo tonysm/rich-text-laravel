@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Workbench\App\Models\Message;
+use Workbench\App\Models\Opengraph\OpengraphEmbed;
 use Workbench\App\Models\Post;
 use Workbench\App\Models\User;
 
@@ -133,3 +134,22 @@ Route::get('/attachments/{path}', function (string $path) {
 
     return response()->stream(fn () => fpassthru($stream), 200, $headers);
 })->name('attachments.show')->where('path', '.*');
+
+Route::post('/opengraph-embeds', function (Request $request) {
+    $request->validate(['url' => [
+        'bail', 'required', 'url', function (string $attribute, mixed $value, Closure $fail) {
+            $ip = gethostbyname($host = parse_url($value)['host']);
+
+            // Prevent sniffing domains resolved to private IP ranges...
+            if ($ip === $host || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+                $fail(__('URL is invalid.'));
+            }
+        },
+    ]]);
+
+    if ($opengraph = OpengraphEmbed::createFromUrl($request->url)) {
+        return $opengraph->toArray();
+    }
+
+    return response()->noContent();
+});

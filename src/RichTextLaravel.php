@@ -2,7 +2,10 @@
 
 namespace Tonysm\RichTextLaravel;
 
+use Closure;
+use DOMElement;
 use Illuminate\Support\Facades\Crypt;
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 
 class RichTextLaravel
 {
@@ -19,6 +22,13 @@ class RichTextLaravel
      * @var callable
      */
     protected static $decryptHandler;
+
+    /**
+     * The custom content attachment resolver (if any).
+     *
+     * @var callable
+     */
+    protected static $customAttachablesResolver;
 
     /**
      * Override the way the package handles encryption.
@@ -54,5 +64,22 @@ class RichTextLaravel
         $decrypt = static::$decryptHandler ??= fn ($value) => Crypt::decryptString($value);
 
         return $value ? call_user_func($decrypt, $value, $model, $key) : $value;
+    }
+
+    public static function withCustomAttachables(Closure|callable|null $customAttachablesResolver): void
+    {
+        static::$customAttachablesResolver = $customAttachablesResolver;
+    }
+
+    public static function clearCustomAttachables(): void
+    {
+        static::withCustomAttachables(null);
+    }
+
+    public static function attachableFromCustomResolver(DOMElement $node): ?AttachableContract
+    {
+        $resolver = static::$customAttachablesResolver ?? fn () => null;
+
+        return $resolver($node);
     }
 }
