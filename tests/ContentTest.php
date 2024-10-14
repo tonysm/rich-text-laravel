@@ -2,6 +2,8 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Support\Facades\Log;
+use Tonysm\RichTextLaravel\Attachables\ContentAttachment;
 use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 use Tonysm\RichTextLaravel\Attachment;
@@ -208,6 +210,8 @@ class ContentTest extends TestCase
     /** @test */
     public function ignores_trix_formatteed_attachments_with_bad_json()
     {
+        Log::shouldReceive('notice')->once();
+
         $html = <<<'HTML'
         <div data-trix-attachment='{"sgid": "pure garbate...}'></div>
         HTML;
@@ -505,44 +509,28 @@ class ContentTest extends TestCase
     }
 
     /** @test */
-    public function renders_horizontal_rules_as_content_attachment()
+    public function renders_html_content_attachment()
     {
-        $content = $this->fromHtml(<<<'HTML'
-        <div>
-            <figure
-                data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
-            >
-                <hr>
-            </figure>
-        </div>
-        HTML);
+        $attachment = $this->attachmentFromHtml('<rich-text-attachment content-type="text/html" content="abc"></rich-text-attachment>');
+        $attachable = $attachment->attachable;
 
-        $this->assertEquals(<<<'HTML'
-        <div>
-            <hr>
+        $this->assertInstanceOf(ContentAttachment::class, $attachable);
+        $this->assertEquals('text/html', $attachable->contentType);
+        $this->assertEquals('abc', $attachable->content);
 
-        </div>
-        HTML, $content->renderWithAttachments());
+        $trixAttachment = $attachment->toTrixAttachment();
+        $this->assertEquals('text/html', $trixAttachment->attributes()['contentType']);
+        $this->assertEquals('abc', $trixAttachment->attributes()['content']);
     }
 
     /** @test */
-    public function renders_horizontal_rules_for_trix()
+    public function renders_content_attachment()
     {
-        $content = $this->fromHtml(<<<'HTML'
-        <div>
-            <figure
-                data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'
-            >
-                <hr>
-            </figure>
-        </div>
-        HTML);
+        $attachment = $this->attachmentFromHtml('<rich-text-attachment content-type="text/html" content="&lt;p&gt;abc&lt;/p&gt;"></rich-text-attachment>');
+        /** @var ContentAttachment $attachable */
+        $attachable = $attachment->attachable;
 
-        $this->assertEquals(<<<'HTML'
-        <div>
-            <figure data-trix-attachment='{"contentType":"vnd.richtextlaravel.horizontal-rule.html","content":"&lt;hr&gt;\n"}'></figure>
-        </div>
-        HTML, $content->toTrixHtml());
+        $this->assertEquals('<p>abc</p>', $attachable->renderTrixContentAttachment());
     }
 
     /** @test */
@@ -583,6 +571,11 @@ class ContentTest extends TestCase
     private function fromHtml(string $html): Content
     {
         return tap(new Content($html), fn (Content $content) => $this->assertNotEmpty($content->toHtml()));
+    }
+
+    private function attachmentFromHtml(string $html): Attachment
+    {
+        return $this->fromHtml($html)->attachments()->first();
     }
 }
 

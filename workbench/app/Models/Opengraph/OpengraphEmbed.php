@@ -56,8 +56,7 @@ class OpengraphEmbed implements AttachableContract
         public $url,
         public $filename,
         public $description,
-    ) {
-    }
+    ) {}
 
     public function toRichTextAttributes(array $attributes): array
     {

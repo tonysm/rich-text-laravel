@@ -32,7 +32,7 @@ class AttachableFactory
             return $attachable;
         }
 
-        return new Attachables\MissingAttachable();
+        return new Attachables\MissingAttachable;
     }
 
     private static function attachableFromSgid(string $sgid)

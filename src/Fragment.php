@@ -31,9 +31,7 @@ class Fragment
         return HtmlConversion::fragmentForHtml($html);
     }
 
-    public function __construct(public DOMDocument $source)
-    {
-    }
+    public function __construct(public DOMDocument $source) {}
 
     public function findAll(string $selector): Collection
     {

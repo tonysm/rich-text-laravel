@@ -200,14 +200,25 @@ class PlainTextConversionTest extends TestCase
     }
 
     /** @test */
-    public function converts_horizontal_rule_to_plain_text()
+    public function converts_html_content()
     {
         $this->assertConvertedTo(
-            "Hello\n\n\n ┄ \nWorld",
+            "Hello\n\n\n\nWorld",
             trim(<<<'HTML'
             <div>Hello</div>
             <br>
-            <figure data-trix-attachment='{"contentType": "vnd.richtextlaravel.horizontal-rule.html", "content": "<hr>"}'></figure>
+            <figure data-trix-attachment='{"contentType": "text/html", "content": "<hr>"}'></figure>
+            <br>
+            <div>World</div>
+            HTML)
+        );
+
+        $this->assertConvertedTo(
+            "Hello\n\n\nhello\nWorld",
+            trim(<<<'HTML'
+            <div>Hello</div>
+            <br>
+            <figure data-trix-attachment='{"contentType": "text/html", "content": "<p>hello</p>"}'></figure>
             <br>
             <div>World</div>
             HTML)

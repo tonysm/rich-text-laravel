@@ -24,14 +24,14 @@ class SanitizerFactory
 
     private static function defaultConfig(): HtmlSanitizerConfig
     {
-        return (new HtmlSanitizerConfig())
+        return (new HtmlSanitizerConfig)
             ->allowSafeElements()
             ->allowAttribute('class', '*');
     }
 
     private static function minimalConfig(): HtmlSanitizerConfig
     {
-        return (new HtmlSanitizerConfig())
+        return (new HtmlSanitizerConfig)
             ->allowElement('br')
             ->allowElement('div')
             ->allowElement('p')
