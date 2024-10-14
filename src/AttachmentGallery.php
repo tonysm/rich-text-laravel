@@ -34,9 +34,7 @@ class AttachmentGallery
         );
     }
 
-    public function __construct(public DOMElement $node)
-    {
-    }
+    public function __construct(public DOMElement $node) {}
 
     public function attachments(): Collection
     {
