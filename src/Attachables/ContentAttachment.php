@@ -3,67 +3,56 @@
 namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMElement;
-use Illuminate\Support\Str;
+use Tonysm\RichTextLaravel\Content;
 
 class ContentAttachment implements AttachableContract
 {
-    const NAME_PATTERN = '/vnd\.richtextlaravel\.(.+)\.html/';
+    private Content $contentInstance;
 
-    public static $validNames = ['horizontal-rule'];
+    private string $renderedHtml;
 
     public static function fromNode(DOMElement $node): ?static
     {
-        if (! $node->hasAttribute('content-type')) {
+        if (! $node->hasAttribute('content-type') || ! $node->hasAttribute('content')) {
             return null;
         }
 
-        if (! preg_match(static::NAME_PATTERN, $node->getAttribute('content-type'), $matches)) {
-            return null;
+        $contentType = $node->getAttribute('content-type');
+        $content = trim($node->getAttribute('content'));
+
+        if (str_contains($contentType, 'html') && ! empty($content)) {
+            return new static($contentType, $content);
         }
-
-        $name = $matches[1];
-
-        if (! $name || ! static::validName($name)) {
-            return null;
-        }
-
-        return new static($name);
     }
 
-    private static function validName(string $name): bool
-    {
-        return in_array($name, static::$validNames);
-    }
-
-    public function __construct(public $name)
-    {
-    }
+    public function __construct(
+        public string $contentType,
+        public string $content,
+    ) {}
 
     public function toRichTextAttributes(array $attributes): array
     {
         return [
-            'content' => $this->renderTrixContentAttachment(),
+            'contentType' => $this->contentType,
+            'content' => $this->content,
         ];
     }
 
     public function equalsToAttachable(AttachableContract $attachable): bool
     {
         return $attachable instanceof static
-            && $attachable->name === $this->name;
+            && $attachable->contentType === $this->contentType
+            && $attachable->content === $this->content;
     }
 
     public function richTextAsPlainText(): string
     {
-        if ($this->name === 'horizontal-rule') {
-            return ' ┄ ';
-        }
-
-        return ' ';
+        return $this->contentInstance()->fragment->source->textContent;
     }
 
     public function richTextRender(array $options = []): string
     {
-        return view('rich-text-laravel::contents._content', [
+        return view('rich-text-laravel::attachables._content', [
             'content' => $this,
             'options' => $options,
         ])->render();
@@ -71,9 +60,11 @@ class ContentAttachment implements AttachableContract
 
     public function renderTrixContentAttachment(array $options = []): string
     {
-        return view('rich-text-laravel::contents._'.Str::of($this->name)->studly()->snake('_'), [
-            'content' => $this,
-            'options' => $options,
-        ])->render();
+        return $this->renderedHtml ??= $this->contentInstance()->fragment->toHtml();
+    }
+
+    private function contentInstance(): Content
+    {
+        return $this->contentInstance ??= new Content($this->content);
     }
 }

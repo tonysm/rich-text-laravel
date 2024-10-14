@@ -18,7 +18,7 @@ class Attachment
 
     public static $SELECTOR = '//rich-text-attachment';
 
-    const ATTRIBUTES = ['sgid', 'content-type', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'presentation', 'caption'];
+    const ATTRIBUTES = ['sgid', 'content-type', 'url', 'href', 'filename', 'filesize', 'width', 'height', 'previewable', 'presentation', 'caption', 'content'];
 
     private $cachedAttributes;
 
@@ -79,9 +79,7 @@ class Attachment
             ->all();
     }
 
-    public function __construct(public DOMElement $node, public AttachableContract $attachable)
-    {
-    }
+    public function __construct(public DOMElement $node, public AttachableContract $attachable) {}
 
     public function withFullAttributes(): static
     {
