@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TrixAttachment
@@ -56,9 +57,7 @@ class TrixAttachment
         };
     }
 
-    public function __construct(public DOMElement $node)
-    {
-    }
+    public function __construct(public DOMElement $node) {}
 
     public function attributes(): array
     {
@@ -93,7 +92,7 @@ class TrixAttachment
         $data = json_decode($value ?: '[]', true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            logger(sprintf(
+            Log::notice(sprintf(
                 '[%s] Couldnt parse JSON %s from NODE %s',
                 static::class,
                 $value,

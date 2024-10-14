@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Support\Facades\Log;
 use Tonysm\RichTextLaravel\Attachables\ContentAttachment;
 use Tonysm\RichTextLaravel\Attachables\MissingAttachable;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
@@ -209,6 +210,8 @@ class ContentTest extends TestCase
     /** @test */
     public function ignores_trix_formatteed_attachments_with_bad_json()
     {
+        Log::shouldReceive('notice')->once();
+
         $html = <<<'HTML'
         <div data-trix-attachment='{"sgid": "pure garbate...}'></div>
         HTML;
