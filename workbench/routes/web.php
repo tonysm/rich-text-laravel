@@ -34,8 +34,8 @@ Route::get('/chat', function () {
     ]);
 })->name('chat.index');
 
-Route::post('/messages', function () {
-    $message = Message::create(request()->validate([
+Route::post('/messages', function (Request $request) {
+    $message = Message::create($request->validate([
         'content' => ['required'],
     ]));
 
@@ -54,8 +54,8 @@ Route::get('/posts/create', function () {
     return view('posts.create');
 })->name('posts.create');
 
-Route::post('/posts', function () {
-    $post = Post::create(request()->validate([
+Route::post('/posts', function (Request $request) {
+    $post = Post::create($request->validate([
         'title' => ['required'],
         'body' => ['required'],
     ]));
@@ -75,8 +75,8 @@ Route::get('/posts/{post}/edit', function (Post $post) {
     ]);
 })->name('posts.edit');
 
-Route::put('/posts/{post}', function (Post $post) {
-    $post->update(request()->validate([
+Route::put('/posts/{post}', function (Request $request, Post $post) {
+    $post->update($request->validate([
         'title' => ['required'],
         'body' => ['required'],
     ]));
@@ -84,8 +84,8 @@ Route::put('/posts/{post}', function (Post $post) {
     return to_route('posts.show', $post);
 })->name('posts.update');
 
-Route::post('/posts/{post}/comments', function (Post $post) {
-    $comment = $post->comments()->create(request()->validate([
+Route::post('/posts/{post}/comments', function (Request $request, Post $post) {
+    $comment = $post->comments()->create($request->validate([
         'content' => ['required'],
     ]));
 
@@ -107,12 +107,12 @@ Route::get('/mentions', function (Request $request) {
         ]);
 })->name('mentions.index');
 
-Route::post('attachments', function () {
-    request()->validate([
+Route::post('attachments', function (Request $request) {
+    $request->validate([
         'attachment' => ['required', 'file'],
     ]);
 
-    $path = request()->file('attachment')->store('trix-attachments', 'public');
+    $path = $request->file('attachment')->store('trix-attachments', 'public');
 
     return [
         'image_url' => route('attachments.show', $path),
@@ -136,16 +136,21 @@ Route::get('/attachments/{path}', function (string $path) {
 })->name('attachments.show')->where('path', '.*');
 
 Route::post('/opengraph-embeds', function (Request $request) {
-    $request->validate(['url' => [
-        'bail', 'required', 'url', function (string $attribute, mixed $value, Closure $fail) {
-            $ip = gethostbyname($host = parse_url($value)['host']);
+    $request->validate([
+        'url' => [
+            'bail',
+            'required',
+            'url',
+            function (string $attribute, mixed $value, Closure $fail): void {
+                $ip = gethostbyname($host = parse_url($value)['host']);
 
-            // Prevent sniffing domains resolved to private IP ranges...
-            if ($ip === $host || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
-                $fail(__('URL is invalid.'));
-            }
-        },
-    ]]);
+                // Prevent sniffing domains resolved to private IP ranges...
+                if ($ip === $host || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+                    $fail(__('URL is invalid.'));
+                }
+            },
+        ],
+    ]);
 
     if ($opengraph = OpengraphEmbed::createFromUrl($request->url)) {
         return $opengraph->toArray();
