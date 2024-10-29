@@ -17,4 +17,9 @@ return new class extends Migration {
             $table->unique(['field', 'record_type', 'record_id']);
         });
     }
+
+    public function down()
+    {
+        Schema::dropIfExists('rich_texts');
+    }
 };
