@@ -33,7 +33,7 @@ class RemoteFileTest extends TestCase
      *
      * @dataProvider filesizesProvider
      */
-    public function converts_file_size_to_human_readable($bytes, $humanReadable)
+    public function converts_file_size_to_human_readable($bytes, $human)
     {
         $file = new RemoteFile([
             'url' => 'not-relevant',
@@ -43,6 +43,6 @@ class RemoteFileTest extends TestCase
             'filesize' => $bytes,
         ]);
 
-        $this->assertEquals($humanReadable, $file->filesizeForHumans());
+        $this->assertEquals($human, $file->filesizeForHumans());
     }
 }
