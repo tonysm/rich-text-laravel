@@ -8,8 +8,8 @@ use Workbench\Database\Factories\PostFactory;
 
 class ModelTest extends TestCase
 {
-    /** @test */
-    public function converts_html()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_html(): void
     {
         $post = PostFactory::new()->create([
             'body' => '<h1>Hello World</h1>',
@@ -23,8 +23,8 @@ class ModelTest extends TestCase
         HTML, "{$post->refresh()->body}");
     }
 
-    /** @test */
-    public function plain_text()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function plain_text(): void
     {
         $post = PostFactory::new()->create([
             'body' => '<h1>Hello World</h1>',
@@ -33,8 +33,8 @@ class ModelTest extends TestCase
         $this->assertEquals('Hello World', $post->refresh()->body->toPlainText());
     }
 
-    /** @test */
-    public function without_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function without_content(): void
     {
         $post = PostFactory::new()->create();
         $post->richTextBody->delete();
@@ -49,8 +49,8 @@ class ModelTest extends TestCase
         $this->assertTrue($post->body->isEmpty());
     }
 
-    /** @test */
-    public function with_blank_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function with_blank_content(): void
     {
         $post = PostFactory::new()->create([
             'body' => '',
@@ -65,8 +65,8 @@ class ModelTest extends TestCase
         $this->assertTrue($post->body->isEmpty());
     }
 
-    /** @test */
-    public function updates_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function updates_content(): void
     {
         $post = PostFactory::new()->create([
             'body' => '<h1>Old Value</h1>',
@@ -84,8 +84,8 @@ class ModelTest extends TestCase
         HTML, "{$post->refresh()->body}");
     }
 
-    /** @test */
-    public function touches_record_when_rich_text_is_updated()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function touches_record_when_rich_text_is_updated(): void
     {
         $this->freezeTime();
 
@@ -102,8 +102,8 @@ class ModelTest extends TestCase
         $this->assertFalse($post->created_at->eq($post->updated_at), 'Didnt touch the record timestamps.');
     }
 
-    /** @test */
-    public function doesnt_touch_record_when_rich_text_isnt_updated()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function doesnt_touch_record_when_rich_text_isnt_updated(): void
     {
         $this->freezeTime();
 
@@ -120,8 +120,8 @@ class ModelTest extends TestCase
         $this->assertTrue($post->created_at->eq($post->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
 
-    /** @test */
-    public function doesnt_touch_record_when_touching_is_disabled_on_the_specific_model()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function doesnt_touch_record_when_touching_is_disabled_on_the_specific_model(): void
     {
         $this->freezeTime();
 
@@ -138,8 +138,8 @@ class ModelTest extends TestCase
         $this->assertTrue($post->refresh()->created_at->eq($post->refresh()->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
 
-    /** @test */
-    public function doesnt_touch_record_when_touching_is_disabled_globally()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function doesnt_touch_record_when_touching_is_disabled_globally(): void
     {
         $this->freezeTime();
 

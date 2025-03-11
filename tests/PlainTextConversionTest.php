@@ -6,8 +6,8 @@ use Tonysm\RichTextLaravel\Content;
 
 class PlainTextConversionTest extends TestCase
 {
-    /** @test */
-    public function p_tags_are_separated_by_two_new_lines()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function p_tags_are_separated_by_two_new_lines(): void
     {
         $this->assertConvertedTo(
             "Hello World!\n\nHow are you?",
@@ -15,8 +15,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function blockquote_tags_are_separated_by_two_new_lines()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function blockquote_tags_are_separated_by_two_new_lines(): void
     {
         $this->assertConvertedTo(
             "“Hello world!”\n\n“How are you?”",
@@ -24,8 +24,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function ol_tags_are_separated_by_two_new_lines()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function ol_tags_are_separated_by_two_new_lines(): void
     {
         $this->assertConvertedTo(
             "Hello world!\n\n1. list1\n\n1. list2\n\nHow are you?",
@@ -33,8 +33,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function ul_tags_are_separated_by_two_new_lines()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function ul_tags_are_separated_by_two_new_lines(): void
     {
         $this->assertConvertedTo(
             "Hello world!\n\n• list1\n\n• list2\n\nHow are you?",
@@ -42,7 +42,7 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    public static function headings()
+    public static function headings(): array
     {
         return [
             'h1' => [
@@ -72,18 +72,15 @@ class PlainTextConversionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider headings
-     *
-     * @test
-     */
-    public function heading_tags_are_separated_by_two_new_lines($expected, $content)
+    #[\PHPUnit\Framework\Attributes\Test]
+    #[\PHPUnit\Framework\Attributes\DataProvider('headings')]
+    public function heading_tags_are_separated_by_two_new_lines(string $expected, string $content): void
     {
         $this->assertConvertedTo($expected, $content);
     }
 
-    /** @test */
-    public function li_tags_are_separated_by_one_new_line()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function li_tags_are_separated_by_one_new_line(): void
     {
         $this->assertConvertedTo(
             "• one\n• two\n• three",
@@ -91,8 +88,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function li_tags_without_parent_list()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function li_tags_without_parent_list(): void
     {
         $this->assertConvertedTo(
             "• one\n• two\n• three",
@@ -100,8 +97,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function basic_nested_ul_tags_are_indented()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function basic_nested_ul_tags_are_indented(): void
     {
         $this->assertConvertedTo(
             "• Item 1\n  • Item 2",
@@ -109,8 +106,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function basic_nested_ol_tags_are_indented()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function basic_nested_ol_tags_are_indented(): void
     {
         $this->assertConvertedTo(
             "1. Item 1\n  1. Item 2",
@@ -118,8 +115,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function complex_nested_and_mixed_list_tags_are_indented()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function complex_nested_and_mixed_list_tags_are_indented(): void
     {
         $this->assertConvertedTo(
             "• Item 0\n• Item 1\n  • Item A\n    1. Item i\n    2. Item ii\n  • Item B\n    • Item i\n• Item 2",
@@ -127,8 +124,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function br_are_separated_by_one_new_line()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function br_are_separated_by_one_new_line(): void
     {
         $this->assertConvertedTo(
             "Hello world!\none\ntwo\nthree",
@@ -136,8 +133,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function divs_are_separated_by_one_new_line()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function divs_are_separated_by_one_new_line(): void
     {
         $this->assertConvertedTo(
             "Hello world!\n\nHow are you?",
@@ -145,8 +142,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function figcaptions_are_converted_to_plain_text()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function figcaptions_are_converted_to_plain_text(): void
     {
         $this->assertConvertedTo(
             'Hello world! [A condor in the mountain]',
@@ -154,8 +151,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function rich_text_attachments_are_converted_to_plain_text()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function rich_text_attachments_are_converted_to_plain_text(): void
     {
         $this->assertConvertedTo(
             'Hello world! [Cat]',
@@ -163,8 +160,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function preserves_non_linebreaks_white_spaces()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function preserves_non_linebreaks_white_spaces(): void
     {
         $this->assertConvertedTo(
             'Hello world!',
@@ -172,8 +169,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function preserves_trailing_linebreaks()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function preserves_trailing_linebreaks(): void
     {
         $this->assertConvertedTo(
             "Hello\nHow are you?",
@@ -181,8 +178,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function handles_deeply_nested()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function handles_deeply_nested(): void
     {
         // @TODO: refactor this for big documents. We should use while loops instead of recursively looping through the document.
         ini_set('xdebug.max_nesting_level', 1000);
@@ -199,8 +196,8 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    /** @test */
-    public function converts_html_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_html_content(): void
     {
         $this->assertConvertedTo(
             "Hello\n\n\n\nWorld",
@@ -225,7 +222,7 @@ class PlainTextConversionTest extends TestCase
         );
     }
 
-    private function assertConvertedTo($expected, $content): void
+    private function assertConvertedTo(string $expected, string $content): void
     {
         $actual = (new Content($content))->toPlainText();
 

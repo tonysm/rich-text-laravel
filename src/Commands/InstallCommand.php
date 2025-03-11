@@ -21,7 +21,7 @@ class InstallCommand extends Command
 
     public $description = 'Installs the package.';
 
-    public function handle()
+    public function handle(): int
     {
         if (! $this->option('no-model')) {
             $this->publishMigration();
@@ -39,7 +39,7 @@ class InstallCommand extends Command
         return self::SUCCESS;
     }
 
-    private function publishMigration()
+    private function publishMigration(): void
     {
         FacadesProcess::forever()->run([
             $this->phpBinary(),
@@ -50,7 +50,7 @@ class InstallCommand extends Command
         ], fn ($_type, $output) => $this->output->write($output));
     }
 
-    private function updateJsDependencies()
+    private function updateJsDependencies(): void
     {
         if ($this->usingImportmaps()) {
             $this->installJsDependenciesWithImportmaps();
@@ -59,7 +59,7 @@ class InstallCommand extends Command
         }
     }
 
-    private function runDatabaseMigrations()
+    private function runDatabaseMigrations(): void
     {
         if (! $this->confirm('A new migration was published to your app. Do you want to run it now?', true)) {
             return;
@@ -99,9 +99,7 @@ class InstallCommand extends Command
 
     private function updateJsDependenciesWithNpm(): void
     {
-        $this->updateNodePackages(function ($packages) {
-            return $this->jsDependencies() + $packages;
-        });
+        static::updateNodePackages(fn($packages): array => $this->jsDependencies() + $packages);
 
         if (file_exists(base_path('pnpm-lock.yaml'))) {
             $this->runCommands(['pnpm install', 'pnpm run build']);
@@ -112,7 +110,7 @@ class InstallCommand extends Command
         }
     }
 
-    private function runCommands($commands)
+    private function runCommands(array $commands): void
     {
         $process = Process::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
 
@@ -124,7 +122,7 @@ class InstallCommand extends Command
             }
         }
 
-        $process->run(function ($type, $line) {
+        $process->run(function ($type, string $line): void {
             $this->output->write('    '.$line);
         });
     }
@@ -154,7 +152,7 @@ class InstallCommand extends Command
         $entrypoint = Arr::first([
             resource_path('js/libs/index.js'),
             resource_path('js/app.js'),
-        ], fn ($file) => file_exists($file));
+        ], fn ($file): bool => file_exists($file));
 
         if (! $entrypoint) {
             return;
@@ -188,7 +186,7 @@ class InstallCommand extends Command
             return;
         }
 
-        $layouts->each(function ($file) {
+        $layouts->each(function ($file): void {
             $contents = File::get($file);
 
             if (str_contains($contents, '<x-rich-text::styles')) {
@@ -235,7 +233,7 @@ class InstallCommand extends Command
         );
     }
 
-    private function phpBinary()
+    private function phpBinary(): string
     {
         return (new PhpExecutableFinder)->find(false) ?: 'php';
     }

@@ -20,7 +20,7 @@ class ContentAttachment implements AttachableContract
         $contentType = $node->getAttribute('content-type');
         $content = trim($node->getAttribute('content'));
 
-        if (str_contains($contentType, 'html') && ! empty($content)) {
+        if (str_contains($contentType, 'html') && ($content !== '' && $content !== '0')) {
             return new static($contentType, $content);
         }
     }

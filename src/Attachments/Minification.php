@@ -10,8 +10,6 @@ trait Minification
 {
     public static function fragmentByMinifyingAttachments($content)
     {
-        return Fragment::wrap($content)->replace(Attachment::$TAG_NAME, function (DOMElement $node) {
-            return $node->cloneNode(deep: false);
-        });
+        return Fragment::wrap($content)->replace(Attachment::$TAG_NAME, fn(DOMElement $node): \DOMElement => $node->cloneNode(deep: false));
     }
 }

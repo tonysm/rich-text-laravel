@@ -8,8 +8,8 @@ use Tonysm\RichTextLaravel\HtmlConversion;
 
 class FragmentTest extends TestCase
 {
-    /** @test */
-    public function creates_from_fragment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function creates_from_fragment(): void
     {
         $existing = new Fragment(
             HtmlConversion::fragmentForHtml('<h1>Hey there</h1>')->source
@@ -20,8 +20,8 @@ class FragmentTest extends TestCase
         $this->assertSame($existing, $fragment);
     }
 
-    /** @test */
-    public function creates_from_dom_fragment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function creates_from_dom_fragment(): void
     {
         $source = HtmlConversion::fragmentForHtml('<h1>Hey there</h1>')->source;
 
@@ -31,8 +31,8 @@ class FragmentTest extends TestCase
         $this->assertSame($source, $fragment->source);
     }
 
-    /** @test */
-    public function creates_from_html()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function creates_from_html(): void
     {
         $source = '<h1>hey there</h1>';
 
@@ -42,8 +42,8 @@ class FragmentTest extends TestCase
         $this->assertStringContainsString($source, $fragment->toHtml());
     }
 
-    /** @test */
-    public function finds_all()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function finds_all(): void
     {
         $source = '<div>content</div><a href="http://example.com">link one</a><a href="http:://example.com">second link</a>';
 
@@ -55,24 +55,22 @@ class FragmentTest extends TestCase
         $this->assertCount(2, $links);
     }
 
-    /** @test */
-    public function replaces_fragments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function replaces_fragments(): void
     {
         $source = '<div>something that wont change</div><h1>old title</h1>';
 
         $fragment = Fragment::wrap($source);
 
-        $newFragment = $fragment->replace('//h1', function (DOMNode $node) {
-            return HtmlConversion::fragmentForHtml('<h1>new title</h1>');
-        });
+        $newFragment = $fragment->replace('//h1', fn(DOMNode $node): \Tonysm\RichTextLaravel\Fragment => HtmlConversion::fragmentForHtml('<h1>new title</h1>'));
 
         $this->assertNotSame($fragment, $newFragment);
         $this->assertStringNotContainsString('<h1>old title</h1>', $newFragment->toHtml());
         $this->assertStringContainsString('<div>something that wont change</div><h1>new title</h1>', $newFragment->toHtml());
     }
 
-    /** @test */
-    public function update_gives_us_a_new_instance()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function update_gives_us_a_new_instance(): void
     {
         $source = '<div>something that wont change</div><h1>old title</h1>';
 
@@ -84,14 +82,14 @@ class FragmentTest extends TestCase
         $this->assertEquals($source, $newFragment->toHtml());
     }
 
-    /** @test */
-    public function update_allows_passing_closure_to_tweak_the_source()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function update_allows_passing_closure_to_tweak_the_source(): void
     {
         $source = '<div>something that wont change</div><h1>old title</h1>';
 
         $fragment = Fragment::wrap($source);
 
-        $newFragment = $fragment->update(function ($passedSource) use ($fragment, $source) {
+        $newFragment = $fragment->update(function ($passedSource) use ($fragment, $source): \DOMDocument {
             $this->assertNotSame($fragment->source, $passedSource);
             $this->assertStringContainsString($source, $passedSource->saveHtml());
 

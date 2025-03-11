@@ -21,8 +21,8 @@ class ContentTest extends TestCase
         $this->travelTo(now()->parse('2021-08-23T02:05:59+00:00'));
     }
 
-    /** @test */
-    public function equality()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function equality(): void
     {
         $html = '<div>test</div>';
         $content = $this->fromHtml($html);
@@ -30,8 +30,8 @@ class ContentTest extends TestCase
         $this->assertStringContainsString($html, $content->toHtml());
     }
 
-    /** @test */
-    public function keeps_newlines_consistent()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function keeps_newlines_consistent(): void
     {
         $html = '<div>a<br></div>';
         $content = $this->fromHtml($html);
@@ -39,8 +39,8 @@ class ContentTest extends TestCase
         $this->assertStringContainsString($html, $content->toHtml());
     }
 
-    /** @test */
-    public function handles_emojis()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function handles_emojis(): void
     {
         $html = '<div>Emojis 🎉🎉🎉</div>';
         $content = $this->fromHtml($html);
@@ -48,8 +48,8 @@ class ContentTest extends TestCase
         $this->assertStringContainsString($html, $content->toHtml());
     }
 
-    /** @test */
-    public function extracts_links()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function extracts_links(): void
     {
         $html = '<a href="http://example.com/1">first link</a><br><a href="http://example.com/1">second link</a>';
         $content = $this->fromHtml($html);
@@ -57,8 +57,8 @@ class ContentTest extends TestCase
         $this->assertEquals(['http://example.com/1'], $content->links()->all());
     }
 
-    /** @test */
-    public function extracts_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function extracts_attachments(): void
     {
         $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
@@ -77,8 +77,8 @@ class ContentTest extends TestCase
         $this->assertTrue($attachment->attachable->is($attachable));
     }
 
-    /** @test */
-    public function extracts_attachables()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function extracts_attachables(): void
     {
         $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
@@ -97,8 +97,8 @@ class ContentTest extends TestCase
         $this->assertTrue($extractedAttachable->is($attachable));
     }
 
-    /** @test */
-    public function extracts_remote_image_attachables()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function extracts_remote_image_attachables(): void
     {
         $html = <<<'HTML'
         <rich-text-attachment content-type="image" url="http://example.com/cat.jpg" width="200" height="100" caption="Captioned"></rich-text-attachment>
@@ -117,8 +117,8 @@ class ContentTest extends TestCase
         $this->assertEquals('100', $attachable->height);
     }
 
-    /** @test */
-    public function handles_destryed_attachables_as_missing()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function handles_destryed_attachables_as_missing(): void
     {
         $attachable = UserFactory::new()->create(['name' => 'Jon Doe']);
         $sgid = $attachable->richTextSgid();
@@ -134,8 +134,8 @@ class ContentTest extends TestCase
         $this->assertInstanceOf(MissingAttachable::class, $content->attachments()->first()->attachable);
     }
 
-    /** @test */
-    public function extracts_missing_attachables()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function extracts_missing_attachables(): void
     {
         $html = <<<'HTML'
         <rich-text-attachment sgid="missing" caption="Captioned"></rich-text-attachment>
@@ -147,8 +147,8 @@ class ContentTest extends TestCase
         $this->assertInstanceOf(MissingAttachable::class, $content->attachments()->first()->attachable);
     }
 
-    /** @test */
-    public function converts_trix_formatted_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_trix_formatted_attachments(): void
     {
         $html = <<<'HTML'
         <figure
@@ -164,8 +164,8 @@ class ContentTest extends TestCase
         $this->assertStringContainsString('<rich-text-attachment sgid="123" content-type="text/plain" width="200" height="100" caption="Captioned"></rich-text-attachment>', $content->toHtml());
     }
 
-    /** @test */
-    public function converts_non_image_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_non_image_attachments(): void
     {
         $html = <<<'HTML'
         <div>
@@ -188,10 +188,10 @@ class ContentTest extends TestCase
         $this->assertStringContainsString('<rich-text-attachment content-type="text/csv" filename="Test.csv" filesize="65"></rich-text-attachment>', $content->toHtml());
     }
 
-    /** @test */
-    public function converts_trix_formatetd_attachments_with_custom_tag_name()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_trix_formatetd_attachments_with_custom_tag_name(): void
     {
-        $this->withAttachmentTagName('arbitrary-tag', function () {
+        $this->withAttachmentTagName('arbitrary-tag', function (): void {
             $html = <<<'HTML'
             <figure
                 data-trix-attachment='{"sgid": "123", "contentType": "text/plain", "width": 200, "height": 100}'
@@ -207,8 +207,8 @@ class ContentTest extends TestCase
         });
     }
 
-    /** @test */
-    public function ignores_trix_formatteed_attachments_with_bad_json()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function ignores_trix_formatteed_attachments_with_bad_json(): void
     {
         Log::shouldReceive('notice')->once();
 
@@ -221,39 +221,39 @@ class ContentTest extends TestCase
         $this->assertCount(0, $content->attachments());
     }
 
-    /** @test */
-    public function minifies_attachment_markup()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function minifies_attachment_markup(): void
     {
         $attachmentHtml = '<rich-text-attachment sgid="1"><div>HTML</div></rich-text-attachment>';
         $this->assertStringContainsString('<div>HTML</div>', $this->fromHtml($attachmentHtml)->toHtml());
     }
 
-    /** @test */
-    public function canonicalizes_attachment_gallery_markup()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function canonicalizes_attachment_gallery_markup(): void
     {
         $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
         $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
         $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->toHtml());
     }
 
-    /** @test */
-    public function canonicalizes_attachment_gallery_markup_with_whitespaces()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function canonicalizes_attachment_gallery_markup_with_whitespaces(): void
     {
         $attachmentHtml = '<action-text-attachment sgid="1" presentation="gallery"></action-text-attachment><action-text-attachment sgid="2" presentation="gallery"></action-text-attachment>';
         $html = sprintf('<blockquote><div class="attachment-gallery attachment-gallery--2">%s</div></blockquote>', $attachmentHtml);
         $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->toHtml());
     }
 
-    /** @test */
-    public function canonicalizes_with_layout()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function canonicalizes_with_layout(): void
     {
         $attachmentHtml = '<rich-text-attachment sgid="1" presentation="gallery"></rich-text-attachment><rich-text-attachment sgid="2" presentation="galerry"></rich-text-attachment>';
         $html = sprintf('<div class="attachment-gallery attachment-gallery--2">%s</div>', $attachmentHtml);
         $this->assertStringContainsString($attachmentHtml, $this->fromHtml($html)->toHtml());
     }
 
-    /** @test */
-    public function renders_to_trix_hmtl_with_model_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_to_trix_hmtl_with_model_attachments(): void
     {
         $user = UserWithCustomRenderContent::create(UserFactory::new()->raw(['name' => 'Hey There']));
         $sgid = $user->richTextSgid();
@@ -271,8 +271,8 @@ class ContentTest extends TestCase
         );
     }
 
-    /** @test */
-    public function renders_to_trix_html_with_image_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_to_trix_html_with_image_attachments(): void
     {
         $attachmentHtml = <<<'HTML'
         <div>Hey, <rich-text-attachment content-type="image/png" url="http://localhost/blue.png" filename="blue.png" filesize="1168" width="300" height="300" previewable="true" presentation="gallery"></rich-text-attachment></div>
@@ -288,8 +288,8 @@ class ContentTest extends TestCase
         );
     }
 
-    /** @test */
-    public function gets_gallery_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function gets_gallery_attachments(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -322,8 +322,8 @@ class ContentTest extends TestCase
         $this->assertEquals('green-2.png', $attachmentGalleries->last()->attachments()->last()->attachable->filename);
     }
 
-    /** @test */
-    public function gets_only_attachments_of_galleries()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function gets_only_attachments_of_galleries(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -352,8 +352,8 @@ class ContentTest extends TestCase
         $this->assertEquals('green-2.png', $galleryAttachments[4]->attachable->filename);
     }
 
-    /** @test */
-    public function canonicalizes_attachment_galleries()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function canonicalizes_attachment_galleries(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -395,8 +395,8 @@ class ContentTest extends TestCase
         $this->assertCount(5, $content->galleryAttachments());
     }
 
-    /** @test */
-    public function renders_galleries()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_galleries(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -446,8 +446,8 @@ class ContentTest extends TestCase
         HTML, $content->renderWithAttachments());
     }
 
-    /** @test */
-    public function renders_galleries_to_trix_html()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_galleries_to_trix_html(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -485,8 +485,8 @@ class ContentTest extends TestCase
         HTML, $content->toTrixHtml());
     }
 
-    /** @test */
-    public function renders_file_attachments()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_file_attachments(): void
     {
         $content = $this->fromHtml(<<<'HTML'
         <div>
@@ -508,8 +508,8 @@ class ContentTest extends TestCase
         HTML, $content->toTrixHtml());
     }
 
-    /** @test */
-    public function renders_html_content_attachment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_html_content_attachment(): void
     {
         $attachment = $this->attachmentFromHtml('<rich-text-attachment content-type="text/html" content="abc"></rich-text-attachment>');
         $attachable = $attachment->attachable;
@@ -523,8 +523,8 @@ class ContentTest extends TestCase
         $this->assertEquals('abc', $trixAttachment->attributes()['content']);
     }
 
-    /** @test */
-    public function renders_content_attachment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_content_attachment(): void
     {
         $attachment = $this->attachmentFromHtml('<rich-text-attachment content-type="text/html" content="&lt;p&gt;abc&lt;/p&gt;"></rich-text-attachment>');
         /** @var ContentAttachment $attachable */
@@ -533,8 +533,8 @@ class ContentTest extends TestCase
         $this->assertEquals('<p>abc</p>', $attachable->renderTrixContentAttachment());
     }
 
-    /** @test */
-    public function supports_custom_content_attachments_without_sgid()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function supports_custom_content_attachments_without_sgid(): void
     {
         $contentType = OpengraphEmbed::CONTENT_TYPE;
 
@@ -557,7 +557,7 @@ class ContentTest extends TestCase
         $this->assertEquals('https://github.com/tonysm/rich-text-laravel', $content->attachables()->first()->href);
     }
 
-    private function withAttachmentTagName(string $tagName, callable $callback)
+    private function withAttachmentTagName(string $tagName, callable $callback): void
     {
         try {
             $oldTagName = Attachment::$TAG_NAME;

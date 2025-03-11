@@ -12,7 +12,7 @@ class AttachableFactory
 {
     public static function fromNode(DOMElement $node): Attachables\AttachableContract
     {
-        if ($attachable = RichTextLaravel::attachableFromCustomResolver($node)) {
+        if (($attachable = RichTextLaravel::attachableFromCustomResolver($node)) instanceof \Tonysm\RichTextLaravel\Attachables\AttachableContract) {
             return $attachable;
         }
 
@@ -20,15 +20,15 @@ class AttachableFactory
             return $attachable;
         }
 
-        if ($attachable = ContentAttachment::fromNode($node)) {
+        if (($attachable = ContentAttachment::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\ContentAttachment) {
             return $attachable;
         }
 
-        if ($attachable = RemoteImage::fromNode($node)) {
+        if (($attachable = RemoteImage::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\RemoteImage) {
             return $attachable;
         }
 
-        if ($attachable = RemoteFile::fromNode($node)) {
+        if (($attachable = RemoteFile::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\RemoteFile) {
             return $attachable;
         }
 

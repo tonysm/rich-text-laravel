@@ -14,7 +14,7 @@ class PlainTextConversion
         return static::removeTrailingNewLines(static::plainTextForNode($node));
     }
 
-    private static function plainTextForNode(DOMNode $node, $index = 0)
+    private static function plainTextForNode(DOMNode $node, int $index = 0)
     {
         $method = static::plainTextMethodForNode($node);
 
@@ -52,47 +52,47 @@ class PlainTextConversion
         return sprintf("%s\n\n", static::removeTrailingNewLines(static::plainTextForNodeChildren($node)));
     }
 
-    private static function plainTextForH1Node(DOMNode $node)
+    private static function plainTextForH1Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForH2Node(DOMNode $node)
+    private static function plainTextForH2Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForH3Node(DOMNode $node)
+    private static function plainTextForH3Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForH4Node(DOMNode $node)
+    private static function plainTextForH4Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForH5Node(DOMNode $node)
+    private static function plainTextForH5Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForH6Node(DOMNode $node)
+    private static function plainTextForH6Node(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForPNode(DOMNode $node)
+    private static function plainTextForPNode(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
 
-    private static function plainTextForUlNode(DOMNode $node)
+    private static function plainTextForUlNode(DOMNode $node): string
     {
         return static::plainTextForList($node);
     }
 
-    private static function plainTextForOlNode(DOMNode $node)
+    private static function plainTextForOlNode(DOMNode $node): string
     {
         return static::plainTextForList($node);
     }
@@ -138,7 +138,7 @@ class PlainTextConversion
         return sprintf("%s%s %s\n", $indentation, $bullet, $text);
     }
 
-    private static function plainTextForPreNode(DOMNode $node, $index = 0): string
+    private static function plainTextForPreNode(DOMNode $node): string
     {
         return static::plainTextForBlock($node);
     }
@@ -174,7 +174,7 @@ class PlainTextConversion
 
     private static function listNodeDepthForNode(DOMNode $node): int
     {
-        preg_match_all('#/[uo]l/#', $node->getNodePath(), $matches);
+        preg_match_all('#/[uo]l/#', (string) $node->getNodePath(), $matches);
 
         if (! isset($matches[0])) {
             return 1;

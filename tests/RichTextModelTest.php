@@ -11,8 +11,8 @@ use Workbench\Database\Factories\PostFactory;
 
 class RichTextModelTest extends TestCase
 {
-    /** @test */
-    public function traits_sets_up_relationship()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function traits_sets_up_relationship(): void
     {
         $model = PostFactory::new()->create();
 
@@ -24,8 +24,8 @@ class RichTextModelTest extends TestCase
         $this->assertTrue($model->richTextBody->record->is($model));
     }
 
-    /** @test */
-    public function forwards_attribute_mutators_and_accessors_to_relationship()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function forwards_attribute_mutators_and_accessors_to_relationship(): void
     {
         $post = $this->createPost();
 
@@ -40,8 +40,8 @@ class RichTextModelTest extends TestCase
         $this->assertNotEmpty($post->body->raw());
     }
 
-    /** @test */
-    public function fowards_calls_to_relationship()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function fowards_calls_to_relationship(): void
     {
         $post = $this->createPost();
 
@@ -49,8 +49,8 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($this->content(), $post->body->toTrixHtml());
     }
 
-    /** @test */
-    public function renders_to_text()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_to_text(): void
     {
         $post = $this->createPost();
 
@@ -77,8 +77,8 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($expectedRender, "$post->richTextBody");
     }
 
-    /** @test */
-    public function can_eager_load_rich_text_fields()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function can_eager_load_rich_text_fields(): void
     {
         PostWithNotes::truncate();
 
@@ -100,7 +100,7 @@ class RichTextModelTest extends TestCase
 
         $queryCounts = 0;
 
-        DB::listen(function () use (&$queryCounts) {
+        DB::listen(function () use (&$queryCounts): void {
             $queryCounts++;
         });
 
@@ -116,7 +116,7 @@ class RichTextModelTest extends TestCase
         // loading all fields will result in one query for each relationship. Which,
         // for us, it means 1 query for the posts, and 1 for each relationship.
 
-        PostWithNotes::withRichText()->get()->each(fn ($post) => $post->body && $post->notes);
+        PostWithNotes::withRichText()->get()->each(fn ($post): bool => $post->body && $post->notes);
         $this->assertEquals(3, $queryCounts);
 
         $queryCounts = 0;
@@ -126,16 +126,16 @@ class RichTextModelTest extends TestCase
         $this->assertEquals(2, $queryCounts);
     }
 
-    /** @test */
-    public function throws_exception_when_eager_loading_unkown_rich_text_field()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function throws_exception_when_eager_loading_unkown_rich_text_field(): void
     {
         $this->expectException(RichTextException::class);
 
         PostWithNotes::withRichText(['unknown'])->get();
     }
 
-    /** @test */
-    public function can_have_different_fields_on_the_same_model()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function can_have_different_fields_on_the_same_model(): void
     {
         $post = PostWithNotes::create(PostFactory::new()->raw([
             'body' => '<h1>hello from body</h1>',
@@ -169,8 +169,8 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
     }
 
-    /** @test */
-    public function can_update_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function can_update_content(): void
     {
         $post = $this->createPost(
             body: '<p>this is the old body</p>',
