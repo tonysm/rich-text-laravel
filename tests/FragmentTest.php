@@ -62,7 +62,7 @@ class FragmentTest extends TestCase
 
         $fragment = Fragment::wrap($source);
 
-        $newFragment = $fragment->replace('//h1', fn(DOMNode $node): \Tonysm\RichTextLaravel\Fragment => HtmlConversion::fragmentForHtml('<h1>new title</h1>'));
+        $newFragment = $fragment->replace('//h1', fn (DOMNode $node): \Tonysm\RichTextLaravel\Fragment => HtmlConversion::fragmentForHtml('<h1>new title</h1>'));
 
         $this->assertNotSame($fragment, $newFragment);
         $this->assertStringNotContainsString('<h1>old title</h1>', $newFragment->toHtml());

@@ -15,7 +15,7 @@ class FragmentByCanonicalizingAttachmentGalleries
 {
     public function __invoke($content, callable $next)
     {
-        return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, fn(DOMElement $node): \DOMDocument => HtmlConversion::document(sprintf(
+        return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, fn (DOMElement $node): \DOMDocument => HtmlConversion::document(sprintf(
             '<%s>%s</%s>',
             AttachmentGallery::TAG_NAME,
             $this->getInnerHtmlOfNode($node),

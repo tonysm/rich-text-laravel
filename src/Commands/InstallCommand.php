@@ -99,7 +99,7 @@ class InstallCommand extends Command
 
     private function updateJsDependenciesWithNpm(): void
     {
-        static::updateNodePackages(fn($packages): array => $this->jsDependencies() + $packages);
+        static::updateNodePackages(fn ($packages): array => $this->jsDependencies() + $packages);
 
         if (file_exists(base_path('pnpm-lock.yaml'))) {
             $this->runCommands(['pnpm install', 'pnpm run build']);

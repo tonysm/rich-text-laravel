@@ -10,12 +10,12 @@ trait TrixConvertion
 {
     public static function fragmentByConvertingTrixAttachments($content)
     {
-        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn(DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
+        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn (DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
     }
 
     public static function fragmentByConvertingTrixContent($content)
     {
-        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn(DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
+        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn (DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
     }
 
     public static function fromTrixAttachment(TrixAttachment $attachment)

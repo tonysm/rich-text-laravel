@@ -54,6 +54,7 @@ class Attachment implements \Stringable
         if (($node = static::nodeFromAttributes($attributes)) instanceof \DOMElement) {
             return static::fromNode($node, $attachable);
         }
+
         return null;
     }
 

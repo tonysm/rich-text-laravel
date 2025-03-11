@@ -89,7 +89,7 @@ class Content implements \Stringable
 
     public function renderAttachments(array $options, callable $callback): static
     {
-        $content = $this->fragment->replace(Attachment::$SELECTOR, fn(DOMNode $node) => $callback($this->attachmentForNode($node, $options)));
+        $content = $this->fragment->replace(Attachment::$SELECTOR, fn (DOMNode $node) => $callback($this->attachmentForNode($node, $options)));
 
         return new static($content, ['canonicalize' => false]);
     }
@@ -135,7 +135,7 @@ class Content implements \Stringable
 
     public function renderAttachmentGalleries(callable $renderer): static
     {
-        $content = (new FragmentByCanonicalizingAttachmentGalleries)->fragmentByReplacingAttachmentGalleryNodes($this->fragment, fn(DOMElement $node): \DOMDocument => HtmlConversion::document($renderer($this->attachmentGalleryForNode($node))));
+        $content = (new FragmentByCanonicalizingAttachmentGalleries)->fragmentByReplacingAttachmentGalleryNodes($this->fragment, fn (DOMElement $node): \DOMDocument => HtmlConversion::document($renderer($this->attachmentGalleryForNode($node))));
 
         return new static($content, ['canonicalize' => false]);
     }
