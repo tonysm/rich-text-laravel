@@ -13,7 +13,7 @@ class TestCase extends Orchestra
     use RefreshDatabase;
     use WithWorkbench;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

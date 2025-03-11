@@ -14,7 +14,7 @@ use Workbench\Database\Factories\UserFactory;
 
 class ContentTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
