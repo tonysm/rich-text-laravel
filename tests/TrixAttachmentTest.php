@@ -6,8 +6,8 @@ use Tonysm\RichTextLaravel\TrixAttachment;
 
 class TrixAttachmentTest extends TestCase
 {
-    /** @test */
-    public function from_attributes()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function from_attributes(): void
     {
         $attributes = [
             'data-trix-attachment' => [
@@ -36,8 +36,8 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttributesJsonEqualsTo($attachment, $attributes);
     }
 
-    /** @test */
-    public function filter_out_empty_attributes()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function filter_out_empty_attributes(): void
     {
         $attachment = $this->attachment([
             'sgid' => '123',
@@ -51,8 +51,8 @@ class TrixAttachmentTest extends TestCase
         $this->assertArrayNotHasKey('previewable', $attachment->attributes());
     }
 
-    /** @test */
-    public function previewable_is_typecast()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function previewable_is_typecast(): void
     {
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => '']), ['previewable' => false]);
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => false]), ['previewable' => false]);
@@ -62,8 +62,8 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'true']), ['previewable' => true]);
     }
 
-    /** @test */
-    public function filesize_is_typecast_when_integerish()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function filesize_is_typecast_when_integerish(): void
     {
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['filesize' => 123]), ['filesize' => 123]);
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['filesize' => '123']), ['filesize' => 123]);
@@ -72,8 +72,8 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['filesize' => '']), ['filesize' => '']);
     }
 
-    /** @test */
-    public function attributes_strips_unmappable_attributes()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function attributes_strips_unmappable_attributes(): void
     {
         $attachment = $this->attachment([
             'sgid' => '123',

@@ -24,9 +24,9 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    public function packageBooted()
+    public function packageBooted(): void
     {
-        $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade) {
+        $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade): void {
             $blade->anonymousComponentPath(dirname(__DIR__).implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
         });
     }

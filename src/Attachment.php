@@ -9,7 +9,7 @@ use Illuminate\Support\Traits\ForwardsCalls;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
-class Attachment
+class Attachment implements \Stringable
 {
     use ForwardsCalls;
     use TrixConvertion;
@@ -34,7 +34,7 @@ class Attachment
 
     public static function fromAttachable(AttachableContract $attachable, array $attributes = []): ?static
     {
-        if ($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) {
+        if (($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) instanceof \DOMElement) {
             return new static($node, $attachable);
         }
 
@@ -49,18 +49,20 @@ class Attachment
     /**
      * @return null|static
      */
-    public static function fromAttributes(array $attributes = [], ?AttachableContract $attachable = null)
+    public static function fromAttributes(array $attributes = [], ?AttachableContract $attachable = null): ?self
     {
-        if ($node = static::nodeFromAttributes($attributes)) {
+        if (($node = static::nodeFromAttributes($attributes)) instanceof \DOMElement) {
             return static::fromNode($node, $attachable);
         }
+
+        return null;
     }
 
     public static function nodeFromAttributes(array $attributes = []): ?DOMElement
     {
         $attributes = static::processAttributes($attributes);
 
-        if (empty($attributes)) {
+        if ($attributes === []) {
             return null;
         }
 
@@ -141,7 +143,7 @@ class Attachment
         return $this->attachable->equalsToAttachable($attachment->attachable);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toHtml();
     }

@@ -34,6 +34,6 @@ class RichText extends Model
 
     public function __toString(): string
     {
-        return $this->body->render();
+        return (string) $this->body->render();
     }
 }

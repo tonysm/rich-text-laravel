@@ -7,13 +7,13 @@ use DOMNode;
 use DOMXPath;
 use Illuminate\Support\Collection;
 
-class Fragment
+class Fragment implements \Stringable
 {
     private $cachedPlainText;
 
     private $cachedHtml;
 
-    public static function wrap(string|Fragment|DOMDocument $fragmentOrHtml)
+    public static function wrap(string|Fragment|DOMDocument $fragmentOrHtml): self
     {
         if ($fragmentOrHtml instanceof Fragment) {
             return $fragmentOrHtml;
@@ -64,7 +64,7 @@ class Fragment
         $fragment = $this->update();
 
         $fragment->findAll($selector)
-            ->each(function (DOMNode $node) use ($callback) {
+            ->each(function (DOMNode $node) use ($callback): void {
                 $value = $callback($node);
 
                 if ($value instanceof Fragment) {

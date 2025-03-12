@@ -10,16 +10,12 @@ trait TrixConvertion
 {
     public static function fragmentByConvertingTrixAttachments($content)
     {
-        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, function (DOMElement $node) {
-            return static::fromTrixAttachment(new TrixAttachment($node));
-        });
+        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn (DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
     }
 
     public static function fragmentByConvertingTrixContent($content)
     {
-        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, function (DOMElement $node) {
-            return static::fromTrixAttachment(new TrixAttachment($node));
-        });
+        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn (DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
     }
 
     public static function fromTrixAttachment(TrixAttachment $attachment)
@@ -27,7 +23,7 @@ trait TrixConvertion
         return static::fromAttributes($attachment->attributes());
     }
 
-    public function toTrixAttachment($content = null)
+    public function toTrixAttachment($content = null): \Tonysm\RichTextLaravel\TrixAttachment
     {
         /** @psalm-suppress UndefinedThisPropertyFetch */
         if (! $content && method_exists($this->attachable, 'toTrixContent')) {

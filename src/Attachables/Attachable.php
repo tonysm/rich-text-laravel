@@ -20,12 +20,12 @@ trait Attachable
         return null;
     }
 
-    public function richTextFilesize()
+    public function richTextFilesize(): null
     {
         return null;
     }
 
-    public function richTextMetadata(?string $key = null)
+    public function richTextMetadata(?string $key = null): null
     {
         return null;
     }

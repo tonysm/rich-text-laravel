@@ -8,8 +8,8 @@ class TrixCoreStylesComponentTest extends TestCase
 {
     use InteractsWithViews;
 
-    /** @test */
-    public function renders_core_styles_component()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_core_styles_component(): void
     {
         $this->blade('<x-rich-text::styles />')
             ->assertSee('<style ', escape: false)
@@ -17,8 +17,8 @@ class TrixCoreStylesComponentTest extends TestCase
             ->assertSee('trix-editor {', escape: false);
     }
 
-    /** @test */
-    public function renders_core_styles_component_with_attributes()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function renders_core_styles_component_with_attributes(): void
     {
         $this->blade('<x-rich-text::styles nonce="lorem" />')
             ->assertSee('<style nonce="lorem">', escape: false)

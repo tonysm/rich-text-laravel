@@ -97,7 +97,7 @@ class RemoteFile implements AttachableContract
 
     public function richTextAsPlainText($caption = null): string
     {
-        return __(sprintf('[%s]', $caption ?: $this->filename ?: 'File'));
+        return __(sprintf('[%s]', ($caption ?: $this->filename) ?: 'File'));
     }
 
     public function extension(): string

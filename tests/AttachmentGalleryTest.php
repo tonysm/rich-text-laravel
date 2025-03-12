@@ -7,8 +7,8 @@ use Tonysm\RichTextLaravel\HtmlConversion;
 
 class AttachmentGalleryTest extends TestCase
 {
-    /** @test */
-    public function gets_attachment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function gets_attachment(): void
     {
         $document = HtmlConversion::document(<<<'HTML'
         <rich-text-attachment presentation="gallery" url="http://example.com/blue.png" content-type="image/png" width="300" height="300" filename="blue.png" filesize="200"></rich-text-attachment>

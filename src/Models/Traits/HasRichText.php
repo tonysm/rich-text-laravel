@@ -19,7 +19,7 @@ trait HasRichText
             static::registerRichTextRelationships($field, $options);
         }
 
-        static::saving(function (Model $model) {
+        static::saving(function (Model $model): void {
             if (! $model::isIgnoringTouch()) {
                 foreach ($model->getRichTextFields() as $field => $_options) {
                     $relationship = static::fieldToRichTextRelationship($field);
@@ -31,7 +31,7 @@ trait HasRichText
             }
         });
 
-        static::saved(function (Model $model) {
+        static::saved(function (Model $model): void {
             foreach ($model->getRichTextFields() as $field => $_options) {
                 $relationship = static::fieldToRichTextRelationship($field);
 
@@ -74,9 +74,9 @@ trait HasRichText
         return $fields->mapWithKeys(fn ($value, $key) => is_string($key) ? [$key => $value] : [$value => []])->all();
     }
 
-    public function unsetRichTextRelationshipsForLivewireDehydration()
+    public function unsetRichTextRelationshipsForLivewireDehydration(): void
     {
-        $relationships = array_map(fn ($field) => static::fieldToRichTextRelationship($field), array_keys($this->getRichTextFields()));
+        $relationships = array_map(fn ($field): string => static::fieldToRichTextRelationship($field), array_keys($this->getRichTextFields()));
 
         foreach ($relationships as $relationship) {
             if ($this->relationLoaded($relationship)) {
@@ -102,7 +102,7 @@ trait HasRichText
 
         $fields = collect($fields)
             ->each(fn ($field) => throw_unless(in_array($field, $allFields), RichTextException::unknownRichTextFieldOnEagerLoading($field)))
-            ->map(fn ($field) => static::fieldToRichTextRelationship($field))
+            ->map(fn ($field): string => static::fieldToRichTextRelationship($field))
             ->all();
 
         $query->with($fields);

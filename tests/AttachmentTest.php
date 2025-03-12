@@ -15,8 +15,8 @@ use Workbench\Database\Factories\UserFactory;
 
 class AttachmentTest extends TestCase
 {
-    /** @test */
-    public function from_attachable()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function from_attachable(): void
     {
         $attachment = Attachment::fromAttachable($attachable = $this->attachable(), ['caption' => 'Hey, there']);
 
@@ -24,16 +24,16 @@ class AttachmentTest extends TestCase
         $this->assertEquals('Hey, there', $attachment->caption());
     }
 
-    /** @test */
-    public function proxies_missing_methods_to_attachable()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function proxies_missing_methods_to_attachable(): void
     {
         $attachment = Attachment::fromAttachable($attachable = $this->attachable());
 
         $this->assertEquals($attachable->getKey(), $attachment->getKey());
     }
 
-    /** @test */
-    public function converts_to_trix_attachment()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_to_trix_attachment(): void
     {
         $attachable = $this->attachable();
 
@@ -54,8 +54,8 @@ class AttachmentTest extends TestCase
         $this->assertEquals($attachable->richTextRender(), $trixAttachment->attributes()['content']);
     }
 
-    /** @test */
-    public function converts_to_trix_attachment_with_content()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converts_to_trix_attachment_with_content(): void
     {
         $attachable = $this->attachable();
 
@@ -73,8 +73,8 @@ class AttachmentTest extends TestCase
         $this->assertEquals('trix content', $trixAttachment->attributes()['content']);
     }
 
-    /** @test */
-    public function converst_to_html()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converst_to_html(): void
     {
         $attachment = Attachment::fromAttachable($this->attachable(), ['caption' => 'hey, there']);
         $sgid = $attachment->attachable->richTextSgid();
@@ -87,8 +87,8 @@ class AttachmentTest extends TestCase
         $this->assertEquals('<rich-text-attachment sgid="'.$sgid.'" content-type="application/octet-stream"></rich-text-attachment>', (string) $attachment);
     }
 
-    /** @test */
-    public function converst_to_plain_text()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function converst_to_plain_text(): void
     {
         $attachment = Attachment::fromAttachable(UserWithNoPlainTextConversion::create(UserFactory::new()->raw()), ['caption' => 'hey, there']);
         $this->assertEquals('hey, there', $attachment->toPlainText());
@@ -97,8 +97,8 @@ class AttachmentTest extends TestCase
         $this->assertEquals('custom plain text render', $attachment->toPlainText());
     }
 
-    /** @test */
-    public function equality()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function equality(): void
     {
         $userAttachment = Attachment::fromAttachable($user = $this->attachable());
         $sameUserAttachment = Attachment::fromAttachable($user);

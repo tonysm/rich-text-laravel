@@ -78,7 +78,7 @@ class RichTextLaravel
 
     public static function attachableFromCustomResolver(DOMElement $node): ?AttachableContract
     {
-        $resolver = static::$customAttachablesResolver ?? fn () => null;
+        $resolver = static::$customAttachablesResolver ?? fn (): null => null;
 
         return $resolver($node);
     }

@@ -6,7 +6,7 @@ use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 
 class RemoteFileTest extends TestCase
 {
-    public static function filesizesProvider()
+    public static function filesizesProvider(): array
     {
         return [
             'gigabytes' => [
@@ -28,12 +28,9 @@ class RemoteFileTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider filesizesProvider
-     */
-    public function converts_file_size_to_human_readable($bytes, $human)
+    #[\PHPUnit\Framework\Attributes\Test]
+    #[\PHPUnit\Framework\Attributes\DataProvider('filesizesProvider')]
+    public function converts_file_size_to_human_readable(int $bytes, string $human): void
     {
         $file = new RemoteFile([
             'url' => 'not-relevant',
