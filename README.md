@@ -1,15 +1,9 @@
 <p align="center" style="margin-top: 2rem; margin-bottom: 2rem;"><img src="/art/rich-text-laravel-logo.svg" alt="Logo Rich Text Laravel" /></p>
 
 <p align="center">
-    <a href="https://github.com/tonysm/rich-text-laravel/workflows/run-tests/badge.svg">
-        <img src="https://img.shields.io/github/actions/workflow/status/tonysm/rich-text-laravel/run-tests.yml?branch=main" />
-    </a>
-    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
-        <img src="https://img.shields.io/packagist/dt/tonysm/rich-text-laravel" alt="Total Downloads">
-    </a>
-    <a href="https://packagist.org/packages/tonysm/rich-text-laravel">
-        <img src="https://img.shields.io/github/license/tonysm/rich-text-laravel" alt="License">
-    </a>
+    <a href="https://github.com/tonysm/rich-text-laravel/workflows/run-tests/badge.svg"><img src="https://img.shields.io/github/actions/workflow/status/tonysm/rich-text-laravel/run-tests.yml?branch=main" /></a>
+    <a href="https://packagist.org/packages/tonysm/rich-text-laravel"><img src="https://img.shields.io/packagist/dt/tonysm/rich-text-laravel" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/tonysm/rich-text-laravel"><img src="https://img.shields.io/github/license/tonysm/rich-text-laravel" alt="License"></a>
 </p>
 
 Integrates the [Trix Editor](https://trix-editor.org/) with Laravel. Inspired by the Action Text gem from Rails.
@@ -68,6 +62,7 @@ There are two ways of using the package:
 Below, we cover each usage way. It's recommended that you at least read the [Trix documentation](https://github.com/basecamp/trix) at some point to get an overview of the client-side of it.
 
 ### The RichText Model
+
 <a name="rich-text-model"></a>
 
 The recommended way is to keep the rich text content outside of the model itself. This will keep the models lean when you're manipulating them, and you can (eagerly or lazily) load the rich text fields only where you need the rich text content.
@@ -122,7 +117,7 @@ Similarly to the Content class, the RichText model will implement the `__toStrin
 {!! $post->body !!}
 ```
 
-*Note*: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
+_Note_: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
 
 The `HasRichText` trait will also add an scope which you can use to eager load the rich text fields (remember, each field will have its own relationship), which you can use like so:
 
@@ -221,6 +216,7 @@ Laravel's Encryption component relies on the `APP_KEY` master key. If you need t
 Additionally, the stored content attachments rely on the [Globalid Laravel](https://github.com/tonysm/globalid-laravel) package. That package generates a derived key based on your `APP_KEY`. When rotating the `APP_KEY`, you'll also need to update all stored content attachments's `sgid` attributes.
 
 ### The AsRichTextContent Trait
+
 <a name="asrichtextcontent-trait"></a>
 
 In case you don't want to use the recommended structure (either because you have strong opinions here or you want to rule your own database structure), you may skip the entire recommended database structure and use the `AsRichTextContent` custom cast on your rich text content field. For instance, if you're storing the `body` field on the `posts` table, you may do it like so:
@@ -267,13 +263,13 @@ To this minified version:
 <rich-text-attachment content-type="image/jpeg" filename="blue.png" filesize="1168" height="300" href="http://example.com/blue.jpg" url="http://example.com/blue.jpg" width="300" caption="testing this caption" presentation="gallery"></rich-text-attachment>
 ```
 
-And when it renders it again, it will re-render the remote image again inside the `rich-text-attachment` tag. You can render the content for *viewing* by simply echoing out the output, something like this:
+And when it renders it again, it will re-render the remote image again inside the `rich-text-attachment` tag. You can render the content for _viewing_ by simply echoing out the output, something like this:
 
 ```blade
 {!! $post->content !!}
 ```
 
-*Note*: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
+_Note_: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
 
 When feeding the Trix editor again, you need to do it differently:
 
@@ -284,6 +280,7 @@ When feeding the Trix editor again, you need to do it differently:
 Rendering for the editor is a bit different, so it has to be like that.
 
 ### Image Upload
+
 <a name="image-upload"></a>
 
 Trix shows the attachment button, but it doesn't work out-of-the-box, we must implement that behavior in our applications.
@@ -303,6 +300,7 @@ The package contains a demo application with basic image uploading functionality
 However, you're not limited to this basic attachment handling in Trix. A more advanced attachment behavior could create its own backend model, then set the `sgid` attribute on the attachment, which would let you have full control over the rendered HTML when the document renders outside the Trix editor.
 
 ### Content Attachments
+
 <a name="attachments"></a>
 
 With Trix we can have [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature on top of Trix. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The workflow is pretty much the same in Laravel.
@@ -322,6 +320,7 @@ You may use Blade to render an HTML partial for the attachable. For a reference,
 You can later retrieve all attachments from that rich text content. See [The Content Object](#content-object) section for more.
 
 ### The Content Object
+
 <a name="content-object"></a>
 
 You may want to retrieve all the attachables in that rich text content at a later point and do something fancy with it, say _actually_ storing the User's mentions associated with the Post model, for example. Or you can fetch all the links inside that rich text content and do something with it.
@@ -427,6 +426,7 @@ class OpengraphEmbed implements AttachableContract
 You can see a full working implementation of this OpenGraph example in the Chat Workbench demo (or in [this PR](https://github.com/tonysm/rich-text-laravel/pull/56)).
 
 ### Plain Text Rendering
+
 <a name="plain-text"></a>
 
 Trix content can be converted to anything. This essentially means `HTML > something`. The package ships with a `HTML > Plain Text` implementation, so you can convert any Trix content to plain text by calling the `toPlainText()` method on it:
@@ -479,6 +479,7 @@ If you're attaching models, you can implement the `richTextAsPlainText(?string $
 |------------------------|
 
 ### Sanitization
+
 <a name="sanitization"></a>
 
 Since we're rendering user-generated HTML, you must sanitize it to avoid any security issues. Even though we control the input element, malicious users may tamper with HTML in the browser and swap it for something else that allows them to inject their own HTML.
