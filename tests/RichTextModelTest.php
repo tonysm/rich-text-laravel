@@ -2,6 +2,7 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tonysm\RichTextLaravel\Content;
@@ -252,6 +253,35 @@ class RichTextModelTest extends TestCase
         Storage::disk('public')->assertMissing($secondImage);
     }
 
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function can_delete_via_observers(): void
+    {
+        Storage::fake('public');
+
+        $firstImage = '/images/attachments/post-01.png';
+        $secondImage = '/images/attachments/post-02.png';
+
+        Storage::disk('public')->put($firstImage, '');
+        Storage::disk('public')->put($secondImage, '');
+
+        $encodeImage = fn (string $imageUrl) => e($imageUrl);
+
+        $post = PostForDeletingViaObserver::create([
+            'title' => 'Has attachments',
+            'body' => <<<HTML
+            <div>
+                <figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage($firstImage)}","href":"{$encodeImage($firstImage)}","filename":"first-image.jpg","filesize":47665,"width":880,"height":660}' data-trix-attributes='{"presentation":"gallery","caption":"First Image"}'></figure>
+                <figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage($secondImage)}","href":"{$encodeImage($secondImage)}","filename":"first-image.jpg","filesize":47665,"width":880,"height":660}' data-trix-attributes='{"presentation":"gallery","caption":"First Image"}'></figure>
+            </div>
+            HTML,
+        ]);
+
+        $post->delete();
+
+        Storage::disk('public')->assertMissing($firstImage);
+        Storage::disk('public')->assertMissing($secondImage);
+    }
+
     private function createPost(?string $body = null, ?string $notes = null): PostWithNotes
     {
         return PostWithNotes::create(PostFactory::new()->raw([
@@ -294,5 +324,25 @@ class PostForDeleting extends Post
                 Storage::disk('public')->delete($attachment->attachable->url);
             }
         });
+    }
+}
+
+#[ObservedBy([DeleteAttachmentsObserver::class])]
+class PostForDeletingViaObserver extends Post
+{
+    protected $table = 'posts';
+
+    protected $richTextAttributes = [
+        'body',
+    ];
+}
+
+class DeleteAttachmentsObserver
+{
+    public function deleted($model): void
+    {
+        foreach ($model->body->attachments() as $attachment) {
+            Storage::disk('public')->delete($attachment->attachable->url);
+        }
     }
 }
