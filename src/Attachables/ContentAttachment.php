@@ -23,6 +23,8 @@ class ContentAttachment implements AttachableContract
         if (str_contains($contentType, 'html') && ($content !== '' && $content !== '0')) {
             return new static($contentType, $content);
         }
+
+        return null;
     }
 
     public function __construct(

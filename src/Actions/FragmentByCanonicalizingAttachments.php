@@ -9,6 +9,7 @@ class FragmentByCanonicalizingAttachments
 {
     use Attachments\Minification;
     use Attachments\TrixConvertion;
+    use Attachments\Conversion;
 
     public function __invoke($content, callable $next)
     {
@@ -18,7 +19,7 @@ class FragmentByCanonicalizingAttachments
     public function parse($content)
     {
         return $this->fragmentByMinifyingAttachments(
-            $this->fragmentByConvertingTrixAttachments($content)
+            $this->fragmentByConvertingEditorAttachments($content)
         );
     }
 

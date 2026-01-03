@@ -56,6 +56,11 @@ trait Attachable
         return $this->richTextRender();
     }
 
+    public function toEditorContent(): ?string
+    {
+        return $this->richTextRender();
+    }
+
     public function richTextSgid(): string
     {
         return SignedGlobalId::create($this, [

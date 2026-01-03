@@ -7,12 +7,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+use Tonysm\RichTextLaravel\Attachments\Conversion;
 use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
 class Attachment implements \Stringable
 {
     use ForwardsCalls;
     use TrixConvertion;
+    use Conversion;
 
     public static $TAG_NAME = 'rich-text-attachment';
 

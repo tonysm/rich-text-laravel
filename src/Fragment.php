@@ -81,6 +81,12 @@ class Fragment implements \Stringable
                 } elseif (is_string($value)) {
                     $newNode = $node->ownerDocument->createTextNode($value);
                     $node->parentNode->replaceChild($newNode, $node);
+                } elseif ($value instanceof TrixAttachment) {
+                    if ($importedNode = $node->ownerDocument->importNode($value->node, deep: true)) {
+                        $node->parentNode->insertBefore($importedNode, $node);
+                    }
+
+                    $node->parentNode->removeChild($node);
                 } elseif ($value instanceof Attachment) {
                     if ($importedNode = $node->ownerDocument->importNode($value->node, deep: true)) {
                         $node->parentNode->insertBefore($importedNode, $node);

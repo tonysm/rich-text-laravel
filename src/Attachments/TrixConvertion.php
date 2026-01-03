@@ -2,26 +2,35 @@
 
 namespace Tonysm\RichTextLaravel\Attachments;
 
-use DOMElement;
-use Tonysm\RichTextLaravel\Fragment;
 use Tonysm\RichTextLaravel\TrixAttachment;
 
 trait TrixConvertion
 {
+    /**
+     * @deprecated Use fragmentByConvertingEditorAttachments instead.
+     */
     public static function fragmentByConvertingTrixAttachments($content)
     {
-        return Fragment::wrap($content)->replace(TrixAttachment::$SELECTOR, fn (DOMElement $node) => static::fromTrixAttachment(new TrixAttachment($node)));
+        return static::fragmentByConvertingEditorAttachments($content);
     }
 
+    /**
+     * @deprecated Use Attachment::fromAttributes instead.
+     */
     public static function fromTrixAttachment(TrixAttachment $attachment)
     {
         return static::fromAttributes($attachment->attributes());
     }
 
-    public function toTrixAttachment($content = null): \Tonysm\RichTextLaravel\TrixAttachment
+    /**
+     * @deprecated Use TrixAttachment::fromAttributes instead.
+     */
+    public function toTrixAttachment($content = null): TrixAttachment
     {
         /** @psalm-suppress UndefinedThisPropertyFetch */
-        if (! $content && method_exists($this->attachable, 'toTrixContent')) {
+        if (! $content && method_exists($this->attachable, 'toEditorContent')) {
+            $content = $this->attachable->toEditorContent();
+        } elseif (! $content && method_exists($this->attachable, 'toTrixContent')) {
             $content = $this->attachable->toTrixContent();
         }
 
