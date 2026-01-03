@@ -86,6 +86,18 @@ class RichTextLaravel
 
     public static function editor(): Editor
     {
-        return resolve(config('rich-text-laravel.editor'));
+        $editorName = static::editorName();
+        $editorClass = config("rich-text-laravel.editors.{$editorName}");
+
+        if (! $editorClass || ! class_exists($editorClass)) {
+            throw new \InvalidArgumentException("Editor '{$editorName}' is not registered in config/rich-text-laravel.php");
+        }
+
+        return resolve($editorClass);
+    }
+
+    public static function editorName(): string
+    {
+        return config('rich-text-laravel.editor', 'trix');
     }
 }

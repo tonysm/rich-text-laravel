@@ -49,10 +49,24 @@ return [
      | Default Editor
      |--------------------------------------------------------------------------
      |
-     | Here you may specify the default rich text editor that will be used
-     | to transform the content for storage and editing. The default
-     | editor provided by the package is TrixEditor.
+     | Here you may specify the default rich text editor. Use the editor name
+     | (e.g., 'trix') which will be used to resolve the editor class and
+     | install the corresponding frontend assets during installation.
      |
      */
-    'editor' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
+    'editor' => env('RICH_TEXT_EDITOR', 'trix'),
+
+    /*
+     |--------------------------------------------------------------------------
+     | Registered Editors
+     |--------------------------------------------------------------------------
+     |
+     | Here you may register the available editors for your application.
+     | The key is the editor name used above, and the value is the
+     | fully qualified class name of the editor implementation.
+     |
+     */
+    'editors' => [
+        'trix' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
+    ],
 ];

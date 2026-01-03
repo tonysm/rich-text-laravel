@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Process as FacadesProcess;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+use Tonysm\RichTextLaravel\RichTextLaravel;
 use Tonysm\RichTextLaravel\RichTextLaravelServiceProvider;
 
 class InstallCommand extends Command
@@ -27,10 +28,7 @@ class InstallCommand extends Command
             $this->publishMigration();
         }
 
-        $this->ensureTrixLibIsImported();
-        $this->ensureTrixFieldComponentIsCopied();
-        $this->updateAppLayoutFiles();
-        $this->updateJsDependencies();
+        $this->installEditorFrontend();
         $this->runDatabaseMigrations();
 
         $this->newLine();
@@ -45,8 +43,10 @@ class InstallCommand extends Command
             $this->phpBinary(),
             'artisan',
             'vendor:publish',
-            '--tag', 'rich-text-laravel-migrations',
-            '--provider', RichTextLaravelServiceProvider::class,
+            '--tag',
+            'rich-text-laravel-migrations',
+            '--provider',
+            RichTextLaravelServiceProvider::class,
         ], fn ($_type, $output) => $this->output->write($output));
     }
 
@@ -134,6 +134,33 @@ class InstallCommand extends Command
             'artisan',
             'importmap:pin',
         ], array_keys($this->jsDependencies())), fn ($_type, $output) => $this->output->write($output));
+    }
+
+    private function installEditorFrontend(): void
+    {
+        $editorName = RichTextLaravel::editorName();
+
+        match ($editorName) {
+            'trix' => $this->installTrixFrontend(),
+            default => $this->warnAboutMissingFrontendInstaller($editorName),
+        };
+    }
+
+    private function warnAboutMissingFrontendInstaller(string $editorName): void
+    {
+        $this->newLine();
+        $this->components->warn("No automatic frontend installer available for the '{$editorName}' editor.");
+        $this->components->info("You must install the {$editorName} frontend library and components separately.");
+        $this->components->info("See the {$editorName} editor documentation for installation instructions.");
+        $this->newLine();
+    }
+
+    private function installTrixFrontend(): void
+    {
+        $this->ensureTrixLibIsImported();
+        $this->ensureTrixFieldComponentIsCopied();
+        $this->updateAppLayoutFiles();
+        $this->updateJsDependencies();
     }
 
     private function ensureTrixLibIsImported(): void
