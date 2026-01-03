@@ -43,4 +43,16 @@ return [
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Default Editor
+     |--------------------------------------------------------------------------
+     |
+     | Here you may specify the default rich text editor that will be used
+     | to transform the content for storage and editing. The default
+     | editor provided by the package is TrixEditor.
+     |
+     */
+    'editor' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
 ];

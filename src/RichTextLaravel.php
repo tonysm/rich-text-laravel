@@ -6,6 +6,7 @@ use Closure;
 use DOMElement;
 use Illuminate\Support\Facades\Crypt;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
+use Tonysm\RichTextLaravel\Editor\Editor;
 
 class RichTextLaravel
 {
@@ -81,5 +82,10 @@ class RichTextLaravel
         $resolver = static::$customAttachablesResolver ?? fn (): null => null;
 
         return $resolver($node);
+    }
+
+    public static function editor(): Editor
+    {
+        return resolve(config('rich-text-laravel.editor'));
     }
 }
