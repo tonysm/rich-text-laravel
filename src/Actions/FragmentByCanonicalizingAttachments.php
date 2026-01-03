@@ -7,9 +7,9 @@ use Tonysm\RichTextLaravel\Attachments;
 
 class FragmentByCanonicalizingAttachments
 {
+    use Attachments\Conversion;
     use Attachments\Minification;
     use Attachments\TrixConvertion;
-    use Attachments\Conversion;
 
     public function __invoke($content, callable $next)
     {

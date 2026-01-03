@@ -15,7 +15,7 @@ class FragmentByCanonicalizingAttachmentGalleries
 {
     public function __invoke($content, callable $next)
     {
-        return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, fn (DOMElement $node): \DOMDocument => HtmlConversion::document(sprintf(
+        return $next($this->fragmentByReplacingAttachmentGalleryNodes($content, fn (DOMElement $node): DOMDocument => HtmlConversion::document(sprintf(
             '<%s>%s</%s>',
             AttachmentGallery::TAG_NAME,
             $this->getInnerHtmlOfNode($node),
@@ -23,9 +23,9 @@ class FragmentByCanonicalizingAttachmentGalleries
         ))));
     }
 
-    public function fragmentByReplacingAttachmentGalleryNodes(string|\Tonysm\RichTextLaravel\Fragment|\DOMDocument $content, callable $callback): Fragment
+    public function fragmentByReplacingAttachmentGalleryNodes(string|Fragment|DOMDocument $content, callable $callback): Fragment
     {
-        return Fragment::wrap($content)->update(function (DOMDocument $source) use ($callback): \DOMDocument {
+        return Fragment::wrap($content)->update(function (DOMDocument $source) use ($callback): DOMDocument {
             $this->findAttachmentGalleryNodes($source)->each(function (DOMElement $node) use ($source, $callback): void {
                 // The fragment is wrapped with a rich-text-root tag, so we need
                 // to dig a bit deeper to get to the attachment gallery.
@@ -41,7 +41,7 @@ class FragmentByCanonicalizingAttachmentGalleries
         });
     }
 
-    public function findAttachmentGalleryNodes(string|\Tonysm\RichTextLaravel\Fragment|\DOMDocument $content): Collection
+    public function findAttachmentGalleryNodes(string|Fragment|DOMDocument $content): Collection
     {
         return Fragment::wrap($content)
             ->findAll(AttachmentGallery::selector())

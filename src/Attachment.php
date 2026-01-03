@@ -12,9 +12,9 @@ use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
 class Attachment implements \Stringable
 {
+    use Conversion;
     use ForwardsCalls;
     use TrixConvertion;
-    use Conversion;
 
     public static $TAG_NAME = 'rich-text-attachment';
 

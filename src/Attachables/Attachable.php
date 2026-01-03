@@ -51,6 +51,9 @@ trait Attachable
             ->all();
     }
 
+    /**
+     * @deprecated Use toEditorContent instead.
+     */
     public function toTrixContent(): ?string
     {
         return $this->richTextRender();
