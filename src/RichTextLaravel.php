@@ -5,6 +5,7 @@ namespace Tonysm\RichTextLaravel;
 use Closure;
 use DOMElement;
 use Illuminate\Support\Facades\Crypt;
+use InvalidArgumentException;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Editor\Editor;
 
@@ -90,7 +91,7 @@ class RichTextLaravel
         $editorClass = config("rich-text-laravel.editors.{$editorName}");
 
         if (! $editorClass || ! class_exists($editorClass)) {
-            throw new \InvalidArgumentException("Editor '{$editorName}' is not registered in config/rich-text-laravel.php");
+            throw new InvalidArgumentException("Editor '{$editorName}' is not registered in config/rich-text-laravel.php");
         }
 
         return resolve($editorClass);
