@@ -158,7 +158,7 @@ We store a back-reference to the field name in the `rich_texts` table because a 
 Rendering the rich text content back to the Trix editor is a bit differently than rendering for the end users, so you may do that using the `toTrixHtml` method on the field, like so:
 
 ```blade
-<x-trix-input id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
+<x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
 ```
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
@@ -274,7 +274,7 @@ _Note_: since the HTML output is NOT escaped, make sure you sanitize it before r
 When feeding the Trix editor again, you need to do it differently:
 
 ```blade
-<x-trix-input id="post_body" name="body" value="{!! $post->body->toTrixHtml() !!}" />
+<x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.

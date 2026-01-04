@@ -7,6 +7,7 @@ use Tonysm\RichTextLaravel\Attachments;
 
 class FragmentByCanonicalizingAttachments
 {
+    use Attachments\Conversion;
     use Attachments\Minification;
     use Attachments\TrixConvertion;
 
@@ -18,7 +19,7 @@ class FragmentByCanonicalizingAttachments
     public function parse($content)
     {
         return $this->fragmentByMinifyingAttachments(
-            $this->fragmentByConvertingTrixAttachments($content)
+            $this->fragmentByConvertingEditorAttachments($content)
         );
     }
 

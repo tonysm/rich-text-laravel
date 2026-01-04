@@ -102,18 +102,27 @@ class Content implements \Stringable
         )->fragment->toPlainText();
     }
 
+    /**
+     * @deprecated Use toEditorHtml instead.
+     */
     public function toTrixHtml(): string
     {
-        return $this->renderAttachments(
+        return $this->toEditorHtml();
+    }
+
+    public function toEditorHtml(): string
+    {
+        $canonicalContent = $this->renderAttachments(
             [],
-            fn (Attachment $attachment): \Tonysm\RichTextLaravel\Fragment => (HtmlConversion::fragmentForHtml($attachment->toTrixAttachment()->toHtml()))
-        )->toHtml();
+            fn (Attachment $attachment): Attachment => $attachment->toEditorAttachment()
+        );
+
+        return RichTextLaravel::editor()->asEditable($canonicalContent->fragment)->toHtml();
     }
 
     public function toHtml(): string
     {
-        return $this->renderAttachments([], fn (Attachment $attachment) => $attachment->toTrixAttachment())
-            ->fragment->toHtml();
+        return $this->fragment->toHtml();
     }
 
     public function renderWithAttachments(): string
