@@ -5,15 +5,17 @@ namespace Tonysm\RichTextLaravel;
 use DOMDocument;
 use DOMNode;
 use DOMXPath;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
+use Stringable;
 
-class Fragment implements \Stringable
+class Fragment implements Htmlable, Stringable
 {
     private $cachedPlainText;
 
     private $cachedHtml;
 
-    public static function wrap(string|Fragment|DOMDocument $fragmentOrHtml): self
+    public static function wrap(string|Fragment|DOMDocument|Htmlable $fragmentOrHtml): self
     {
         if ($fragmentOrHtml instanceof Fragment) {
             return $fragmentOrHtml;
@@ -21,6 +23,10 @@ class Fragment implements \Stringable
 
         if ($fragmentOrHtml instanceof DOMDocument) {
             return new static($fragmentOrHtml);
+        }
+
+        if ($fragmentOrHtml instanceof Htmlable) {
+            return static::fromHtml($fragmentOrHtml->toHtml());
         }
 
         return static::fromHtml($fragmentOrHtml);
@@ -67,8 +73,8 @@ class Fragment implements \Stringable
             ->each(function (DOMNode $node) use ($callback): void {
                 $value = $callback($node);
 
-                if ($value instanceof Fragment || (is_object($value) && method_exists($value, 'toHtml'))) {
-                    $value = Fragment::wrap($value instanceof Fragment ? $value : $value->toHtml());
+                if ($value instanceof Htmlable) {
+                    $value = Fragment::wrap($value);
 
                     // Each fragment source is wrapped in a div, so we can ignore it when appending.
                     $newNode = $value->source;

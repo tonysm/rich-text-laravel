@@ -3,11 +3,12 @@
 namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class TrixAttachment
+class TrixAttachment implements Htmlable
 {
     public static $TAG_NAME = 'figure';
 

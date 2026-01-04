@@ -3,14 +3,16 @@
 namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
+use Stringable;
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachments\Conversion;
 use Tonysm\RichTextLaravel\Attachments\TrixConvertion;
 
-class Attachment implements \Stringable
+class Attachment implements Htmlable, Stringable
 {
     use Conversion;
     use ForwardsCalls;
