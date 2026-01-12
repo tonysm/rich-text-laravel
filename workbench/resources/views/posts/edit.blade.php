@@ -12,7 +12,7 @@
 
     <div class="mt-6 space-y-6">
        <div class="rounded border shadow p-6 space-y-2 bg-white">
-            @include('posts.partials.form', ['post' => $post])
+            @include('posts.partials.form', ['post' => $post, 'editor' => $editor])
         </div>
     </div>
 </x-app-layout>

@@ -51,10 +51,26 @@ Route::get('/posts', function () {
 })->name('posts.index');
 
 Route::get('/posts/create', function () {
-    return view('posts.create');
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
+    return view('posts.create', [
+        'editor' => $editor,
+    ]);
 })->name('posts.create');
 
 Route::post('/posts', function (Request $request) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     $post = Post::create($request->validate([
         'title' => ['required'],
         'body' => ['required'],
@@ -70,12 +86,27 @@ Route::get('/posts/{post}', function (Post $post) {
 })->name('posts.show');
 
 Route::get('/posts/{post}/edit', function (Post $post) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     return view('posts.edit', [
         'post' => $post,
+        'editor' => $editor,
     ]);
 })->name('posts.edit');
 
 Route::put('/posts/{post}', function (Request $request, Post $post) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     $post->update($request->validate([
         'title' => ['required'],
         'body' => ['required'],
@@ -98,9 +129,9 @@ Route::get('/livewire', function () {
 
 Route::get('/mentions', function (Request $request) {
     return User::query()
-        ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
+        ->when($request->query('search'), fn($query, $search) => $query->where('name', 'like', "%{$search}%"))
         ->get()
-        ->map(fn (User $user) => [
+        ->map(fn(User $user) => [
             'sgid' => $user->richTextSgid(),
             'name' => $user->name,
             'content' => $user->richTextRender(),
@@ -132,7 +163,7 @@ Route::get('/attachments/{path}', function (string $path) {
         'Content-Length' => $disk->size($path),
     ];
 
-    return response()->stream(fn () => fpassthru($stream), 200, $headers);
+    return response()->stream(fn() => fpassthru($stream), 200, $headers);
 })->name('attachments.show')->where('path', '.*');
 
 Route::post('/opengraph-embeds', function (Request $request) {

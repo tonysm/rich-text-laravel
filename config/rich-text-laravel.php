@@ -68,5 +68,6 @@ return [
      */
     'editors' => [
         'trix' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
+        'lexxy' => \Tonysm\RichTextLaravel\Editor\LexxyEditor::class,
     ],
 ];
