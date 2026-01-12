@@ -129,9 +129,9 @@ Route::get('/livewire', function () {
 
 Route::get('/mentions', function (Request $request) {
     return User::query()
-        ->when($request->query('search'), fn($query, $search) => $query->where('name', 'like', "%{$search}%"))
+        ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
         ->get()
-        ->map(fn(User $user) => [
+        ->map(fn (User $user) => [
             'sgid' => $user->richTextSgid(),
             'name' => $user->name,
             'content' => $user->richTextRender(),
@@ -163,7 +163,7 @@ Route::get('/attachments/{path}', function (string $path) {
         'Content-Length' => $disk->size($path),
     ];
 
-    return response()->stream(fn() => fpassthru($stream), 200, $headers);
+    return response()->stream(fn () => fpassthru($stream), 200, $headers);
 })->name('attachments.show')->where('path', '.*');
 
 Route::post('/opengraph-embeds', function (Request $request) {
