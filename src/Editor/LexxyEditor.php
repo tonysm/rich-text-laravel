@@ -17,10 +17,9 @@ class LexxyEditor implements Editor
     {
         return $fragment->replace(Attachment::$SELECTOR, function (DOMElement $node) {
             if (! $node->hasAttribute('url')) {
-                // TODO: We also need to render the normal attachments (those that don't rely on content attribute, but actually render inside the tag)...
                 $node->setAttribute('content', match (true) {
-                    $node->hasAttribute('content') => json_encode($node->getAttribute('content')),
-                    default => '',
+                    $node->hasAttribute('content') => json_encode(trim($node->getAttribute('content'))),
+                    default => json_encode(trim(Attachment::fromNode($node)->toHtml())),
                 });
             }
 
