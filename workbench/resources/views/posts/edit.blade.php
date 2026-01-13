@@ -11,7 +11,20 @@
     </div>
 
     <div class="mt-6 space-y-6">
-       <div class="rounded border shadow p-6 space-y-2 bg-white">
+        <div class="rounded border shadow p-6 space-y-2 bg-white">
+            <div class="flex items-center space-x-2 justify-end">
+                @if ($editor === 'lexxy')
+                <x-button-link
+                    href="{{ route('posts.edit', $post) }}"
+                    variant="secondary"
+                >{{ __('Switch to Trix') }}</x-button-link>
+                @else
+                <x-button-link
+                    href="{{ route('posts.edit', ['post' => $post, 'editor' => 'lexxy']) }}"
+                    variant="secondary"
+                >{{ __('Switch to Lexxy') }}</x-button-link>
+                @endif
+            </div>
             @include('posts.partials.form', ['post' => $post, 'editor' => $editor])
         </div>
     </div>

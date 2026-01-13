@@ -46,6 +46,47 @@
                 @apply ring-0 outline-none;
             }
         }
+
+        /* Restore semantic HTML defaults that Tailwind removes, for rich text editing */
+        @layer components {
+            .lexxy-editor__content {
+                ul,
+                ol {
+                    list-style: revert;
+                    margin: revert;
+                    padding: revert;
+                }        h1, h2, h3, h4, h5, h6 {
+                    font-size: revert;
+                    font-weight: revert;
+                    margin: revert;
+                }
+                strong {
+                    font-weight: revert;
+                }
+                em {
+                    font-style: revert;
+                }
+                code[data-language] {
+                    display: block;
+                    border-radius: 6px;
+                    background: #ccc;
+                    margin: 1.5em 0;
+                    padding: 1em;
+                    font-size: 0.876rem;
+                }
+
+                blockquote {
+                    border-left: 3px solid #ccc;
+                    padding: 1em;
+                }
+            }
+
+            summary.lexxy-editor__toolbar-button {
+                list-style: none;
+                align-content: center;
+                text-align: center;
+            }
+        }
     </style>
 
     <x-rich-text::styles theme="richtextlaravel" />
@@ -64,7 +105,7 @@
     <script type="importmap">
     {
         "imports": {
-            "@37signals/lexxy": "https://ga.jspm.io/npm:@37signals/lexxy@0.1.27-beta/dist/lexxy.esm.js",
+            "@37signals/lexxy": "https://ga.jspm.io/npm:@37signals/lexxy@0.7.0-beta/dist/lexxy.esm.js",
             "@hotwired/stimulus": "https://cdn.skypack.dev/@hotwired/stimulus",
             "tributejs": "https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js",
             "trix": "https://unpkg.com/trix@2.1.0/dist/trix.esm.min.js"
@@ -80,6 +121,7 @@
                 "@lexical/link": "https://ga.jspm.io/npm:@lexical/link@0.38.2/LexicalLink.dev.mjs",
                 "@lexical/list": "https://ga.jspm.io/npm:@lexical/list@0.38.2/LexicalList.dev.mjs",
                 "@lexical/markdown": "https://ga.jspm.io/npm:@lexical/markdown@0.38.2/LexicalMarkdown.dev.mjs",
+                "@lexical/plain-text": "https://ga.jspm.io/npm:@lexical/plain-text@0.38.2/LexicalPlainText.dev.mjs",
                 "@lexical/rich-text": "https://ga.jspm.io/npm:@lexical/rich-text@0.38.2/LexicalRichText.dev.mjs",
                 "@lexical/selection": "https://ga.jspm.io/npm:@lexical/selection@0.38.2/LexicalSelection.dev.mjs",
                 "@lexical/table": "https://ga.jspm.io/npm:@lexical/table@0.38.2/LexicalTable.dev.mjs",
@@ -117,6 +159,8 @@
                     attachmentTagName: "rich-text-attachment",
                 },
             })
+        } else {
+            console.error('Lexxy object doesnt have a configure method...');
         }
 
         window.Stimulus = Application.start()
@@ -156,7 +200,7 @@
             }
 
             #fetchUsers(text, callback) {
-                fetch(`/mentions?search=${text}`)
+                fetch(`/mentions?search=${text}`, { headers: { Accept: 'application/json' } })
                     .then(resp => resp.json())
                     .then(users => callback(users))
                     .catch(error => callback([]))

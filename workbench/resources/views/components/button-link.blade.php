@@ -1,4 +1,4 @@
-@props(['variant' => 'primary', 'icon' => $icon])
+@props(['variant' => 'primary', 'icon' => null])
 
 @php
 $color = match ($variant) {
