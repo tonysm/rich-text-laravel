@@ -33,6 +33,7 @@
         @tailwind base;
         @tailwind components;
         @tailwind utilities;
+
         @layer base {
             .trix-content figure[data-trix-mutable=true] > :first-child {
                 @apply ring-2 ring-offset-2;
@@ -90,8 +91,6 @@
     </style>
 
     <x-rich-text::styles theme="richtextlaravel" />
-
-    @include('partials.lexxy-style')
 
     {{-- Tribute's Styles... --}}
     <link rel="stylesheet" href="https://unpkg.com/tributejs@5.1.3/dist/tribute.css">
