@@ -12,6 +12,7 @@
 
     <div class="mt-6 space-y-6">
        <div class="rounded border shadow p-6 space-y-2 bg-white">
+            @include('posts.partials.editor_switcher', ['editor' => $editor])
             @include('posts.partials.form', ['post' => null, 'editor' => $editor])
         </div>
     </div>
