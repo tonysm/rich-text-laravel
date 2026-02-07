@@ -30,7 +30,7 @@ class AssetsManager
         $manifestPath = public_path('vendor/rich-text-laravel/manifest.json');
 
         if (! file_exists($manifestPath)) {
-            throw new RuntimeException('Assets manifest not found. Please run "php artisan vendor:publish --tag=rich-text-assets" to publish the assets.');
+            throw new RuntimeException('Assets manifest not found. Please run "php artisan vendor:publish --tag=rich-text-laravel-assets" to publish the assets.');
         }
 
         $this->manifestContent = json_decode(file_get_contents($manifestPath), true);
