@@ -52,7 +52,8 @@ class CoreStylesComponentTest extends TestCase
 
         $this->blade('<x-rich-text::styles />')
             ->assertSee('<link ', escape: false)
-            ->assertSee('lexxy');
+            ->assertSee('lexxy')
+            ->assertSee('lexxy-rich-text-laravel-attachments');
     }
 
     #[Test]
@@ -62,6 +63,7 @@ class CoreStylesComponentTest extends TestCase
 
         $this->blade('<x-rich-text::styles nonce="lorem" />')
             ->assertSee('<link nonce="lorem"', escape: false)
-            ->assertSee('lexxy');
+            ->assertSee('lexxy')
+            ->assertSee('lexxy-rich-text-laravel-attachments');
     }
 }
