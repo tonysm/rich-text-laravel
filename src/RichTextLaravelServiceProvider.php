@@ -30,7 +30,7 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
         $this->app->scoped(AssetsManager::class);
 
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade): void {
-            $blade->anonymousComponentPath(dirname(__DIR__) . implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
+            $blade->anonymousComponentPath(dirname(__DIR__).implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
         });
     }
 }
