@@ -1,0 +1,17 @@
+{
+    "name": "rich-text-laravel",
+    "version": "1.0.0",
+    "description": "Build scripts for Rich Text Laravel",
+    "license": "MIT",
+    "author": "Tony Messias",
+    "scripts": {
+        "build": "node ./scripts/build.js"
+    },
+    "devDependencies": {
+        "esbuild": "^0.14.49"
+    },
+    "dependencies": {
+        "@37signals/lexxy": "^0.7.4-beta",
+        "trix": "^2.1.16"
+    }
+}

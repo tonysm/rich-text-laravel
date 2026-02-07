@@ -13,17 +13,55 @@ class CoreStylesComponentTest extends TestCase
     public function renders_core_styles_component(): void
     {
         $this->blade('<x-rich-text::styles />')
-            ->assertSee('<style ', escape: false)
-            ->assertSee('</style>', escape: false)
-            ->assertSee('trix-editor {', escape: false);
+            ->assertSee('<link', escape: false)
+            ->assertSee('trix')
+            ->assertSee('trix-rich-text-laravel-attachments');
     }
 
     #[Test]
     public function renders_core_styles_component_with_attributes(): void
     {
         $this->blade('<x-rich-text::styles nonce="lorem" />')
-            ->assertSee('<style nonce="lorem">', escape: false)
-            ->assertSee('</style>', escape: false)
-            ->assertSee('trix-editor {', escape: false);
+            ->assertSee('<link nonce="lorem"', escape: false)
+            ->assertSee('trix')
+            ->assertSee('trix-rich-text-laravel-attachments');
+    }
+
+    #[Test]
+    public function renders_core_styles_component_with_theme(): void
+    {
+        $this->blade('<x-rich-text::styles theme="richtextlaravel" />')
+            ->assertSee('<link', escape: false)
+            ->assertSee('trix-rich-text-laravel')
+            ->assertSee('trix-rich-text-laravel-attachments');
+    }
+
+    #[Test]
+    public function renders_core_styles_component_with_attributes_and_theme(): void
+    {
+        $this->blade('<x-rich-text::styles nonce="lorem" theme="richtextlaravel" />')
+            ->assertSee('<link nonce="lorem"', escape: false)
+            ->assertSee('trix-rich-text-laravel')
+            ->assertSee('trix-rich-text-laravel-attachments');
+    }
+
+    #[Test]
+    public function renders_lexxy_styles(): void
+    {
+        config()->set('rich-text-laravel.editor', 'lexxy');
+
+        $this->blade('<x-rich-text::styles />')
+            ->assertSee('<link ', escape: false)
+            ->assertSee('lexxy');
+    }
+
+    #[Test]
+    public function renders_lexxy_styles_with_attributes(): void
+    {
+        config()->set('rich-text-laravel.editor', 'lexxy');
+
+        $this->blade('<x-rich-text::styles nonce="lorem" />')
+            ->assertSee('<link nonce="lorem"', escape: false)
+            ->assertSee('lexxy');
     }
 }

@@ -21,13 +21,16 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_rich_texts_table')
-            ->hasCommand(InstallCommand::class);
+            ->hasCommand(InstallCommand::class)
+            ->hasAssets();
     }
 
     public function packageBooted(): void
     {
+        $this->app->scoped(AssetsManager::class);
+
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade): void {
-            $blade->anonymousComponentPath(dirname(__DIR__).implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
+            $blade->anonymousComponentPath(dirname(__DIR__) . implode(DIRECTORY_SEPARATOR, ['', 'resources', 'views', 'components']), 'rich-text');
         });
     }
 }
