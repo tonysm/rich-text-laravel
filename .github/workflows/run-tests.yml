@@ -25,6 +25,9 @@ jobs:
           - laravel: 12.*
             testbench: 10.*
             workbench: 10.*
+          - laravel: 13.*
+            testbench: 11.*
+            workbench: 11.*
         exclude:
           - php: 8.4
             laravel: 10.*
