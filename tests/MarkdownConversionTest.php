@@ -499,8 +499,8 @@ class MarkdownConversionTest extends TestCase
         <rich-text-attachment sgid="{$sgid}"></rich-text-attachment>
         HTML;
 
-        // Users don't have richTextAsMarkdown, so it falls back to caption which is empty
-        $this->assertEquals('', (new Content($html))->toMarkdown());
+        // User implements richTextAsMarkdown, so it falls back to the user's name
+        $this->assertEquals('Test User', (new Content($html))->toMarkdown());
     }
 
     #[\PHPUnit\Framework\Attributes\Test]

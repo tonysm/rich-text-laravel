@@ -19,4 +19,9 @@ trait Mentionee
     {
         return e($this->name);
     }
+
+    public function richTextAsMarkdown(?string $caption = null): string
+    {
+        return $caption ?: e($this->name);
+    }
 }
