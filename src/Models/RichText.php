@@ -5,6 +5,12 @@ namespace Tonysm\RichTextLaravel\Models;
 use Illuminate\Database\Eloquent\Model;
 use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
 
+/**
+ * RichText model for storing rich text content.
+ *
+ * @method string toPlainText() Returns a plain text version of the content. Not HTML safe.
+ * @method string toMarkdown() Returns a Markdown version of the content. Not HTML safe.
+ */
 class RichText extends Model
 {
     protected $table = 'rich_texts';

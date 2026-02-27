@@ -52,6 +52,11 @@ class ContentAttachment implements AttachableContract
         return $this->contentInstance()->fragment->source->textContent;
     }
 
+    public function richTextAsMarkdown(?string $caption = null): string
+    {
+        return $this->contentInstance()->toMarkdown();
+    }
+
     public function richTextRender(array $options = []): string
     {
         return view('rich-text-laravel::attachables._content', [

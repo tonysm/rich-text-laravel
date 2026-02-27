@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMElement;
 use Illuminate\Support\Str;
+use Tonysm\RichTextLaravel\MarkdownConversion;
 
 class RemoteImage implements AttachableContract
 {
@@ -110,6 +111,15 @@ class RemoteImage implements AttachableContract
     public function richTextAsPlainText($caption = null): string
     {
         return sprintf('[%s]', $caption ?: 'Image');
+    }
+
+    public function richTextAsMarkdown(?string $caption = null): string
+    {
+        $text = $caption ?: 'Image';
+        $text = MarkdownConversion::escapeLinkText($text);
+        $url = MarkdownConversion::escapeLinkUrl($this->url);
+
+        return sprintf('![%s](%s)', $text, $url);
     }
 
     public function extension(): string

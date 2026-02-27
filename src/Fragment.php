@@ -15,6 +15,8 @@ class Fragment implements Htmlable, Stringable
 
     private $cachedHtml;
 
+    private ?string $cachedMarkdown = null;
+
     public static function wrap(string|Fragment|DOMDocument|Htmlable $fragmentOrHtml): self
     {
         if ($fragmentOrHtml instanceof Fragment) {
@@ -103,6 +105,11 @@ class Fragment implements Htmlable, Stringable
     public function toHtml(): string
     {
         return $this->cachedHtml ??= HtmlConversion::nodeToHtml($this->source);
+    }
+
+    public function toMarkdown(): string
+    {
+        return $this->cachedMarkdown ??= MarkdownConversion::nodeToMarkdown($this->source);
     }
 
     public function __toString(): string

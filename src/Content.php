@@ -102,6 +102,14 @@ class Content implements \Stringable
         )->fragment->toPlainText();
     }
 
+    public function toMarkdown(): string
+    {
+        return $this->renderAttachments(
+            ['withFullAttributes' => false],
+            fn (Attachment $item): string => $item->toMarkdown()
+        )->fragment->toMarkdown();
+    }
+
     /**
      * @deprecated Use toEditorHtml instead.
      */

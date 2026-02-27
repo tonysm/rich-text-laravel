@@ -34,6 +34,15 @@
         {{-- YOU MUST ALWAYS ESCAPE THE PLAIN-TEXT VERSION TOO. --}}
         <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
 
+        <h1 class="text-xl">The Markdown version:</h1>
+
+        <x-info>
+            <span>You may also render the document as Markdown. Like the plain text version, the Markdown output <strong>MUST</strong> be escaped too:</span>
+        </x-info>
+
+        {{-- YOU MUST ALWAYS ESCAPE THE MARKDOWN VERSION TOO. --}}
+        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white font-mono text-sm">{{ $post->body->toMarkdown() }}</div>
+
         <h1 class="text-xl">Links in the document:</h1>
 
         <x-info>
