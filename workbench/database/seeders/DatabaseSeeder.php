@@ -28,17 +28,17 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Kathryn Janeway'],
         )->create();
 
-        $trixAttributes = fn (User $mention) => e(Js::encode($mention->toRichTextAttributes([
+        $trixAttributes = fn(User $mention) => e(Js::encode($mention->toRichTextAttributes([
             'content' => $mention->richTextRender(),
         ])));
 
-        $encodeImage = fn (string $imageUrl) => e($imageUrl);
+        $encodeImage = fn(string $imageUrl) => e($imageUrl);
 
         PostFactory::new()->create([
-            'title' => 'Rich Text Laravel & Trix',
+            'title' => 'Rich Text Laravel & (Trix || Lexxy)',
             'body' => <<<HTML
             <div>
-            <strong><em>Hey, folks<br><br></em></strong>This is an example of using the <a href="https://github.com/tonysm/rich-text-laravel">Rich Text Laravel</a> package, which serves as a backend integration for the <a href="https://trix-editor.org/">Trix</a> editor.<br><br>You can at-mention folks like <figure data-trix-attachment="{$trixAttributes($tony)}"></figure> or <figure data-trix-attachment="{$trixAttributes($picard)}"></figure>, and then scan the document later to extract them.<br><br>It supports code too:</div>
+            <strong><em>Hey, folks<br><br></em></strong>This is an example of using the <a href="https://github.com/tonysm/rich-text-laravel">Rich Text Laravel</a> package, which serves as a backend integration for WYSIWYG editors such as <a href="https://trix-editor.org/">Trix</a> or <a href="https://basecamp.github.io/lexxy/">Lexxy</a> (or any other one you may integrate).<br><br>You can at-mention folks like <figure data-trix-attachment="{$trixAttributes($tony)}"></figure> or <figure data-trix-attachment="{$trixAttributes($picard)}"></figure>, and then scan the document later to extract them.<br><br>It supports code too:</div>
             <div><pre>console.log('hello')</pre></div>
             <div>Now a quote:<br><br></div>
             <blockquote>Hello World! - Data</blockquote>
