@@ -128,7 +128,9 @@ class MarkdownConversion
 
     private static function markdownForPreNode(DOMElement $node): string
     {
-        return "```\n".trim(static::markdownForNodeChildren($node))."\n```\n\n";
+        $language = $node->getAttribute('data-language');
+
+        return "```{$language}\n".trim(static::markdownForNodeChildren($node))."\n```\n\n";
     }
 
     private static function markdownForPNode(DOMElement $node): string

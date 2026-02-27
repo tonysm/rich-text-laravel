@@ -179,6 +179,12 @@ class MarkdownConversionTest extends TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
+    public function pre_with_php_code_inside_is_converted_to_fenced_code_block_with_language(): void
+    {
+        $this->assertConvertedTo("```php\n<?= 'hello world' ?>\n```", '<pre data-language="php" data-highlight-language="php">&lt;?= \'hello world\' ?&gt;</pre>');
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pre_followed_by_p_has_blank_line_separator(): void
     {
         $this->assertConvertedTo(
