@@ -13,10 +13,12 @@ trait HasRichText
 {
     protected static function bootHasRichText()
     {
-        $fields = (new static)->getRichTextFields();
-
-        foreach ($fields as $field => $options) {
-            static::registerRichTextRelationships($field, $options);
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted(function () {
+                static::configureDynamicRelationshipsForRichTextFields();
+            });
+        } else {
+            static::configureDynamicRelationshipsForRichTextFields();
         }
 
         static::saving(function (Model $model): void {
@@ -41,6 +43,15 @@ trait HasRichText
                 }
             }
         });
+    }
+
+    protected static function configureDynamicRelationshipsForRichTextFields(): void
+    {
+        $fields = (new static)->getRichTextFields();
+
+        foreach ($fields as $field => $options) {
+            static::registerRichTextRelationships($field, $options);
+        }
     }
 
     protected static function registerRichTextRelationships(string $field, array $options = []): void
