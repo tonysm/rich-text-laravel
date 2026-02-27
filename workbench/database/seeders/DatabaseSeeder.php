@@ -34,35 +34,77 @@ class DatabaseSeeder extends Seeder
 
         $encodeImage = fn(string $imageUrl) => e($imageUrl);
 
-        PostFactory::new()->create([
-            'title' => 'Rich Text Laravel & (Trix || Lexxy)',
-            'body' => <<<HTML
-            <div>
-            <strong><em>Hey, folks<br><br></em></strong>This is an example of using the <a href="https://github.com/tonysm/rich-text-laravel">Rich Text Laravel</a> package, which serves as a backend integration for WYSIWYG editors such as <a href="https://trix-editor.org/">Trix</a> or <a href="https://basecamp.github.io/lexxy/">Lexxy</a> (or any other one you may integrate).<br><br>You can at-mention folks like <figure data-trix-attachment="{$trixAttributes($tony)}"></figure> or <figure data-trix-attachment="{$trixAttributes($picard)}"></figure>, and then scan the document later to extract them.<br><br>It supports code too:</div>
-            <div><pre>console.log('hello')</pre></div>
-            <div>Now a quote:<br><br></div>
-            <blockquote>Hello World! - Data</blockquote>
-            <div><br>And lists:</div>
-            <ul><li>First Item</li><li>Second Item</li></ul>
-            <div><br>And ordered lists:</div>
-            <ol><li>First Item</li><li>Second Item</li></ol>
-            <div><h1>Image Support</h1></div>
-            <div>It also supports image uploads:</div>
-            <div><figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage(self::FIRST_IMAGE)}","href":"{$encodeImage(self::FIRST_IMAGE)}","filename":"first-image.jpg","filesize":47665,"width":880,"height":660}' data-trix-attributes='{"presentation":"gallery","caption":"First Image"}'></figure><figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage(self::SECOND_IMAGE)}","href":"{$encodeImage(self::SECOND_IMAGE)}","filename":"second-image.jpg","filesize":25230,"width":325,"height":396}' data-trix-attributes='{"presentation":"gallery","caption":"Second Image"}'></figure></div>
-            <div>
-            How cool is that?<br><br>
-            Cheers!
-            </div>
-            HTML,
-        ]);
+        $this->withEditor('trix', function () use ($encodeImage, $trixAttributes, $tony, $picard) {
+            PostFactory::new()->create([
+                'title' => 'Rich Text Laravel && Trix',
+                'body' => <<<HTML
+                <div>
+                <strong><em>Hey, folks<br><br></em></strong>This is an example of using the <a href="https://github.com/tonysm/rich-text-laravel">Rich Text Laravel</a> package, which serves as a backend integration for WYSIWYG editors such as <a href="https://trix-editor.org/">Trix</a> or <a href="https://basecamp.github.io/lexxy/">Lexxy</a> (or any other one you may integrate).<br><br>You can at-mention folks like <figure data-trix-attachment="{$trixAttributes($tony)}"></figure> or <figure data-trix-attachment="{$trixAttributes($picard)}"></figure>, and then scan the document later to extract them.<br><br>It supports code too:</div>
+                <div><pre>console.log('hello')</pre></div>
+                <div>Now a quote:<br><br></div>
+                <blockquote>Hello World! - Data</blockquote>
+                <div><br>And lists:</div>
+                <ul><li>First Item</li><li>Second Item</li></ul>
+                <div><br>And ordered lists:</div>
+                <ol><li>First Item</li><li>Second Item</li></ol>
+                <div><h1>Image Support</h1></div>
+                <div>It also supports image uploads:</div>
+                <div><figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage(self::FIRST_IMAGE)}","href":"{$encodeImage(self::FIRST_IMAGE)}","filename":"first-image.jpg","filesize":47665,"width":880,"height":660}' data-trix-attributes='{"presentation":"gallery","caption":"First Image"}'></figure><figure data-trix-attachment='{"contentType":"image\/jpeg","url":"{$encodeImage(self::SECOND_IMAGE)}","href":"{$encodeImage(self::SECOND_IMAGE)}","filename":"second-image.jpg","filesize":25230,"width":325,"height":396}' data-trix-attributes='{"presentation":"gallery","caption":"Second Image"}'></figure></div>
+                <div>
+                How cool is that?<br><br>
+                Cheers!
+                </div>
+                HTML,
+            ]);
 
-        MessageFactory::new()->create([
-            'created_at' => now()->subMinute(),
-            'content' => <<<'HTML'
-            <div>
-            Hello, <strong><em>World!</em></strong>
-            </div>
-            HTML,
-        ]);
+            MessageFactory::new()->create([
+                'created_at' => now()->subMinute(),
+                'content' => <<<'HTML'
+                <div>
+                Hello, <strong><em>World!</em></strong>
+                </div>
+                HTML,
+            ]);
+        });
+
+        $this->withEditor('lexxy', function () use ($tony, $picard) {
+            PostFactory::new()->create([
+                'title' => 'Rich Text Laravel && Lexxy',
+                'body' => <<<HTML
+                <p>This post was created with <i><b><strong>Lexxy</strong></b></i>. We can still use the at-mentions <rich-text-attachment sgid="{$tony->richTextSgid()}" content-type="{$tony->richTextContentType()}"></rich-text-attachment> and <rich-text-attachment sgid="{$picard->richTextSgid()}" content-type="{$picard->richTextContentType()}"></rich-text-attachment>, which is baked by the same backend code as the Trix version.</p>
+                <h3>Quote</h3>
+                <p>And we can use quotes:</p>
+                <blockquote>Someone said something inspiring one day, I guess?</blockquote>
+                <h3>Lists</h3>
+                <p>And we can use ordered lists:</p>
+                <ol>
+                    <li>First item</li>
+                    <li>Second item</li>
+                </ol>
+                <p>And we can also use unordered lists:</p>
+                <ul>
+                    <li>First item</li>
+                    <li>Second item</li>
+                </ul>
+                <h3>Code blocks</h3>
+                <p>And we can use code blocks:</p>
+                <pre data-language="php" data-highlight-language="php">&lt;?= 'hello world' ?&gt;</pre>
+                <p>How cool is that?</p>
+                <p>Cheers!</p>
+                HTML,
+            ]);
+        });
+    }
+
+    private function withEditor(string $editor, callable $callback): mixed
+    {
+        $originalEditor = config('rich-text-laravel.editor');
+
+        try {
+            config()->set('rich-text-laravel.editor', $editor);
+            return $callback();
+        } finally {
+            config()->set('rich-text-laravel.editor', $originalEditor);
+        }
     }
 }
