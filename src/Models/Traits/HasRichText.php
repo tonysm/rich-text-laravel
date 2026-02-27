@@ -16,11 +16,16 @@ trait HasRichText
         if (method_exists(static::class, 'whenBooted')) {
             static::whenBooted(function () {
                 static::configureDynamicRelationshipsForRichTextFields();
+                static::registerModelEventsForRichTextFields();
             });
         } else {
             static::configureDynamicRelationshipsForRichTextFields();
+            static::registerModelEventsForRichTextFields();
         }
+    }
 
+    protected static function registerModelEventsForRichTextFields(): void
+    {
         static::saving(function (Model $model): void {
             if (! $model::isIgnoringTouch()) {
                 foreach ($model->getRichTextFields() as $field => $_options) {
