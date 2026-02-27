@@ -19,6 +19,7 @@ Integrates rich text editors like [Trix](https://trix-editor.org/) and [Lexxy](h
     - [Content Attachments](#attachments)
     - [The Content Object](#content-object)
     - [Plain Text Rendering](#plain-text)
+    - [Markdown Rendering](#markdown)
     - [Sanitization](#sanitization)
     - [SGID](#sgid)
     - [Livewire](#livewire)
@@ -507,6 +508,48 @@ Cheers,
 If you're attaching models, you can implement the `richTextAsPlainText(?string $caption = null): string` method on it, where you should return the plain text representation of that attachable. If the method is not implemented on the attachable and no caption is stored in the attachment, that attachment won't be present in the Plain Text version of the content.
 
 | 💡 The plain text output representation is not HTML-safe. You must escape the plain text version generated. |
+|------------------------|
+
+### Markdown Rendering
+
+<a name="markdown"></a>
+
+Rich text content can also be converted to Markdown by calling the `toMarkdown()` method:
+
+```php
+$post->body->toMarkdown()
+```
+
+As an example, this rich text content:
+
+```html
+<h1>Very Important Message</h1>
+<p>This is an important message, with <strong>bold</strong> and <em>italic</em> text.</p>
+<ul>
+    <li>first item</li>
+    <li>second item</li>
+</ul>
+<blockquote>Lorem Ipsum Dolor - Lorense Ipsus</blockquote>
+```
+
+Will be converted to:
+
+```markdown
+# Very Important Message
+
+This is an important message, with **bold** and *italic* text.
+
+- first item
+- second item
+
+> Lorem Ipsum Dolor - Lorense Ipsus
+```
+
+The Markdown output supports headings, bold, italic, strikethrough, inline code, code blocks (with language from the `data-language` attribute), blockquotes, ordered and unordered lists, links, and tables.
+
+If you're attaching models, you can implement the `richTextAsMarkdown(?string $caption = null): string` method on it, where you should return the Markdown representation of that attachable.
+
+| 💡 The Markdown output is not HTML-safe, but no sanitization is needed — regular Blade escaping is enough: `{{ $post->body->toMarkdown() }}`. |
 |------------------------|
 
 ### Sanitization
