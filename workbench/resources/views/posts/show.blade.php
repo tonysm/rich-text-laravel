@@ -41,13 +41,13 @@
         <h1 class="text-xl">The Markdown version:</h1>
 
         <x-info>
-            <span>You may also render the document as Markdown. Like the plain text version, the Markdown output <strong>MUST</strong> be escaped too:</span>
+            <span>You may also render the document as Markdown. No need for sanitization — regular Blade escaping (<code>@verbatim{{ }}@endverbatim</code>) is enough:</span>
         </x-info>
 
         {{-- YOU MUST ALWAYS ESCAPE THE MARKDOWN VERSION TOO. --}}
-        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white font-mono text-sm">{{ clean($post->body->toMarkdown()) }}</div>
+        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white font-mono text-sm">{{ $post->body->toMarkdown() }}</div>
 
-        <x-code-sample lang="php">@verbatim{{ clean($post->body->toMarkdown()) }}@endverbatim</x-code-sample>
+        <x-code-sample lang="php">@verbatim{{ $post->body->toMarkdown() }}@endverbatim</x-code-sample>
 
         <h1 class="text-xl">Links in the document:</h1>
 
