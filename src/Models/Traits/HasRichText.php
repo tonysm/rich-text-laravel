@@ -65,6 +65,10 @@ trait HasRichText
         $fields = (new static)->getRichTextFields();
 
         foreach ($fields as $field => $options) {
+            if ($options['attribute'] ?? false) {
+                continue;
+            }
+
             static::registerRichTextRelationships($field, $options);
         }
     }
