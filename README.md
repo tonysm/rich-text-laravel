@@ -6,7 +6,32 @@
     <a href="https://packagist.org/packages/tonysm/rich-text-laravel"><img src="https://img.shields.io/github/license/tonysm/rich-text-laravel" alt="License"></a>
 </p>
 
-Integrates the [Trix Editor](https://trix-editor.org/) with Laravel. Inspired by the Action Text gem from Rails.
+Integrates rich text editors like [Trix](https://trix-editor.org/) and [Lexxy](https://github.com/nicholasgasior/lexxy) with Laravel. Inspired by the Action Text gem from Rails.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Overview](#overview)
+    - [The RichText Model](#rich-text-model)
+    - [Encrypted Rich Text Attributes](#encrypted-rich-text-attributes)
+    - [Storing Rich Text as a Model Attribute](#attribute-rich-text)
+    - [Image Upload](#image-upload)
+    - [Content Attachments](#attachments)
+    - [The Content Object](#content-object)
+    - [Plain Text Rendering](#plain-text)
+    - [Markdown Rendering](#markdown)
+    - [Sanitization](#sanitization)
+    - [SGID](#sgid)
+    - [Livewire](#livewire)
+    - [Custom Editors](#custom-editors)
+- [Testing](#testing)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [Security Vulnerabilities](#security-vulnerabilities)
+- [Credits](#credits)
+- [License](#license)
+
+<a name="installation"></a>
 
 ## Installation
 
@@ -46,20 +71,26 @@ Finally, you may now use the published input Blade component on your forms like 
 <x-trix-input id="bio" name="bio" />
 ```
 
+Or, if you're using Lexxy as your editor:
+
+```blade
+<x-lexxy-input id="bio" name="bio" />
+```
+
 That's it!
 
 ## Overview
 
-We extract attachments before saving the rich text field (which uses Trix) in the database and minimize the content for storage. Attachments are replaced with `rich-text-attachment` tags. Attachments from attachable models have a `sgid` attribute, which should globally identify them in your app.
+We extract attachments before saving the rich text field in the database and minimize the content for storage. This works with any supported editor (Trix, Lexxy, or your own [custom editor](#custom-editors)). Attachments are replaced with `rich-text-attachment` tags. Attachments from attachable models have a `sgid` attribute, which should globally identify them in your app.
 
 When storing images directly (say, for a simple image uploading where you don't have a model for representing that attachment in your application), we'll fill the `rich-text-attachment` with all the attachment's properties needded to render that image again. Storing a minimized (canonical) version of the rich text content means we don't store the inner contents of the attachment tags, only the metadata needded to render it again when needed.
 
 There are two ways of using the package:
 
 1. With the recommended database structure where all rich text content will be stored outside of the model that has rich text content (recommended); and
-1. Only using the `AsRichTextContent` trait to cast a rich text content field on any model, on any table you want.
+1. Storing the rich text content directly on the model's own table using the `'attribute' => true` option.
 
-Below, we cover each usage way. It's recommended that you at least read the [Trix documentation](https://github.com/basecamp/trix) at some point to get an overview of the client-side of it.
+Below, we cover each usage way. It's recommended that you at least read the documentation for your editor of choice ([Trix](https://github.com/basecamp/trix), [Lexxy](https://github.com/nicholasgasior/lexxy)) at some point to get an overview of the client-side of it.
 
 ### The RichText Model
 
@@ -155,7 +186,7 @@ rich_texts
 
 We store a back-reference to the field name in the `rich_texts` table because a model may have multiple rich text fields, so that is used in the dynamic relationship the `HasRichText` creates for you. There's also a unique constraint on this table, which prevents having multiple entries for the same model/field pair.
 
-Rendering the rich text content back to the Trix editor is a bit differently than rendering for the end users, so you may do that using the `toTrixHtml` method on the field, like so:
+Rendering the rich text content back to the editor (Trix, Lexxy, etc.) is a bit different than rendering for the end users, so you may do that using the `toEditorHtml` method on the field, like so:
 
 ```blade
 <x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
@@ -215,63 +246,43 @@ Laravel's Encryption component relies on the `APP_KEY` master key. If you need t
 
 Additionally, the stored content attachments rely on the [Globalid Laravel](https://github.com/tonysm/globalid-laravel) package. That package generates a derived key based on your `APP_KEY`. When rotating the `APP_KEY`, you'll also need to update all stored content attachments's `sgid` attributes.
 
-### The AsRichTextContent Trait
+### Storing Rich Text as a Model Attribute
 
-<a name="asrichtextcontent-trait"></a>
+<a name="attribute-rich-text"></a>
 
-In case you don't want to use the recommended structure (either because you have strong opinions here or you want to rule your own database structure), you may skip the entire recommended database structure and use the `AsRichTextContent` custom cast on your rich text content field. For instance, if you're storing the `body` field on the `posts` table, you may do it like so:
+In case you don't want to use the recommended structure and prefer storing the rich text content directly on the model's own table, you may use the `'attribute' => true` option. This requires that your table has a text column for the field. For instance, if you're storing the `body` field directly on the `posts` table:
 
 ```php
-use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
+use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 
 class Post extends Model
 {
-    protected $casts = [
-        'body' => AsRichTextContent::class,
+    use HasRichText;
+
+    protected $guarded = [];
+
+    protected $richTextAttributes = [
+        'body' => ['attribute' => true],
     ];
 }
 ```
 
-Then the custom cast will parse the HTML content and minify it for storage. Essentially, it will convert this content submitted by Trix which has only an image attachment:
+With this setup, the rich text HTML will be canonicalized and stored directly in the `posts.body` column. No `rich_texts` table record is created. When you access `$post->body`, you'll get a [`Content`](./src/Content.php) instance directly, which supports rendering, plain text conversion, attachments, and everything else:
 
 ```php
-$post->update([
-    'content' => <<<HTML
-    <h1>Hello World</h1>
-    <figure data-trix-attachment='{
-        "url": "http://example.com/blue.jpg",
-        "width": 300,
-        "height": 150,
-        "contentType": "image/jpeg",
-        "caption": "Something cool",
-        "filename":"blue.png",
-        "filesize":1168
-    }'>
-        <img src="http://example.com/blue.jpg" width="300" height="150" />
-        <caption>
-            Something cool
-        </caption>
-    </figure>
-    HTML,
-])
+$post->body->toPlainText();
+$post->body->attachments();
 ```
 
-To this minified version:
-
-```html
-<h1>Hello World</h1>
-<rich-text-attachment content-type="image/jpeg" filename="blue.png" filesize="1168" height="300" href="http://example.com/blue.jpg" url="http://example.com/blue.jpg" width="300" caption="testing this caption" presentation="gallery"></rich-text-attachment>
-```
-
-And when it renders it again, it will re-render the remote image again inside the `rich-text-attachment` tag. You can render the content for _viewing_ by simply echoing out the output, something like this:
+You can render the content for _viewing_ by simply echoing it:
 
 ```blade
-{!! $post->content !!}
+{!! $post->body !!}
 ```
 
 _Note_: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
 
-When feeding the Trix editor again, you need to do it differently:
+When feeding the editor (Trix, Lexxy, etc.) again, you need to do it differently:
 
 ```blade
 <x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
@@ -279,42 +290,63 @@ When feeding the Trix editor again, you need to do it differently:
 
 Rendering for the editor is a bit different, so it has to be like that.
 
+You can mix attribute-based and relationship-based fields on the same model:
+
+```php
+protected $richTextAttributes = [
+    'body' => ['attribute' => true], // Stored in the model's own table...
+    'notes', // Stored in the rich_texts table...
+];
+```
+
+When using `withRichText()`, attribute-based fields are automatically skipped since their data is already on the model and doesn't need eager loading.
+
+You can also combine `'attribute' => true` with `'encrypted' => true` to store encrypted rich text content directly on the model:
+
+```php
+protected $richTextAttributes = [
+    'body' => ['attribute' => true, 'encrypted' => true],
+];
+```
+
 ### Image Upload
 
 <a name="image-upload"></a>
 
-Trix shows the attachment button, but it doesn't work out-of-the-box, we must implement that behavior in our applications.
+Editors like Trix and Lexxy support file attachments, but the upload behavior doesn't work out-of-the-box — we must implement it in our applications.
 
-A basic version of attachments uploading would look something like this:
+A basic version of attachments uploading with Trix would look something like this:
 
 - Listen to the `trix-attachment-add` event on the Trix element (or any parent element, as it bubbles up);
 - Implement the upload request. On this event, you get access to the Trix attachment instance, so you may update the progress on it if you want to, but this is not required;
 - Once the upload is done, you must return the attachmentURL from upload endpoint, which you can use to set `url` and `href` attributes on the attachment itself. That's it.
 
+The same concept applies to Lexxy and other editors, though the event names and API may differ. The server-side handling remains the same regardless of which editor you use.
+
 The package contains a demo application with basic image uploading functionality implemented in the Workbench application. Here's some relevant links:
 
 - The Stimulus controller that manages uploading (you should be able to map what's going on there to any JavaScript framework you'd like) can be found at [resources/views/components/app-layout.blade.php](workbench/resources/views/components/app-layout.blade.php), look for the "rich-text-uploader" Stimulus controller;
 - The upload route can be found at [routes/web.php](workbench/routes/web.php), look for the `POST /attachments` route;
-- The Trix Input Blade component at [resources/components/trix-input.blade.php](workbench/resources/views/components/trix-input.blade.php). This is copy of the component that ships with the package with some tweaks.
+- The Trix Input Blade component at [resources/components/trix-input.blade.php](workbench/resources/views/components/trix-input.blade.php). This is a copy of the component that ships with the package with some tweaks.
 
-However, you're not limited to this basic attachment handling in Trix. A more advanced attachment behavior could create its own backend model, then set the `sgid` attribute on the attachment, which would let you have full control over the rendered HTML when the document renders outside the Trix editor.
+However, you're not limited to this basic attachment handling. A more advanced attachment behavior could create its own backend model, then set the `sgid` attribute on the attachment, which would let you have full control over the rendered HTML when the document renders outside the editor.
 
 ### Content Attachments
 
 <a name="attachments"></a>
 
-With Trix we can have [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature on top of Trix. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The workflow is pretty much the same in Laravel.
+Rich text editors like Trix and Lexxy support [content Attachments](https://github.com/basecamp/trix#inserting-a-content-attachment). In order to cover this, let's build a users mentions feature. There's a good [Rails Conf talk](https://youtu.be/2iGBuLQ3S0c?t=1556) building out this entire feature but with Rails. The workflow is pretty much the same in Laravel.
 
-To turn _any_ model into an _Attachable_, you must implement the `AttachableContract`. You may use the `Attachable` trait to provide some basic _Attachable_ functionality (it implements most of the basic handling of attachables), except for the `richTextRender(array $options): string` method, which you must implement. This method is used to figure out how to render the content attachment both inside and outside of Trix.
+To turn _any_ model into an _Attachable_, you must implement the `AttachableContract`. You may use the `Attachable` trait to provide some basic _Attachable_ functionality (it implements most of the basic handling of attachables), except for the `richTextRender(array $options): string` method, which you must implement. This method is used to figure out how to render the content attachment both inside and outside of the editor.
 
 The `$options` array passed to the `richTextRender` is there in case you're rendering multiple models inside a gallery, so you would get a `in_gallery` boolean field (optional) in that case, which is not the case for this user mentions example, so we can ignore it.
 
-You may use Blade to render an HTML partial for the attachable. For a reference, the Workbench application ships with a User Mentions feature, which may be used as an example of content attachments. Here's some relevant links:
+You may use Blade to render an HTML partial for the attachable. For a reference, the Workbench application ships with a User Mentions feature using Trix, which may be used as an example of content attachments. The same server-side concepts apply when using Lexxy or any other editor. Here's some relevant links:
 
 - The User model which implements the `AttachmentContract` can be found at [User Model](workbench/app/Models/User.php);
 - The model uses a custom Trait called `Mentionee` which uses the `Attachable` trait under the hood, so take a look at the [Mentionee Trait](workbench/app/Models/User/Mentionee.php) trait;
-- In the frontend, we're using [Zurb's Tribute](https://github.com/zurb/tribute) lib to detect mentions whenever the user types the `@` symbol in Trix. The Simulus controller that sets it up can be found at [resources/views/components/app-layout.blade.php](workbench/resources/views/components/app-layout.blade.php). Look for the "rich-text-mentions" controller. This is the same implement covered in the RailsConf talk mentioned earlier, so check that out if you need some help understanding what's going on. There are two Trix components in the workbench app, one used for posts and comments which may be found at [resources/views/components/trix-input.blade.php](workbench/resources/views/components/trix-input.blade.php) and one for the Chat composer, which may be found at [resources/views/chat/partials/trix-input.blade.php](workbench/resources/views/chat/partials/trix-input.blade.php). In both components you will find a `data-action` entry listening for the `tribute-replaced` event, that's the event Tribute will dispatch for us to create the Trix attachment, providing us the selected option the user has picked from the dropdown;
-- The mentioner class will look for mentions in the `GET /mentions?search=` route, which you may find at [routes/web.php](workbench/routes/web.php). Note that we're turning the `sgid` and the `content` field, those are used for the Trix attachment. The `name` field is also returning, which is used by Tribute itself to compose the mentions feature.
+- In the frontend, we're using [Zurb's Tribute](https://github.com/zurb/tribute) lib to detect mentions whenever the user types the `@` symbol in the editor. The Stimulus controller that sets it up can be found at [resources/views/components/app-layout.blade.php](workbench/resources/views/components/app-layout.blade.php). Look for the "rich-text-mentions" controller. This is the same implementation covered in the RailsConf talk mentioned earlier, so check that out if you need some help understanding what's going on. There are two Trix components in the workbench app, one used for posts and comments which may be found at [resources/views/components/trix-input.blade.php](workbench/resources/views/components/trix-input.blade.php) and one for the Chat composer, which may be found at [resources/views/chat/partials/trix-input.blade.php](workbench/resources/views/chat/partials/trix-input.blade.php). In both components you will find a `data-action` entry listening for the `tribute-replaced` event, that's the event Tribute will dispatch for us to create the attachment, providing us the selected option the user has picked from the dropdown;
+- The mentioner class will look for mentions in the `GET /mentions?search=` route, which you may find at [routes/web.php](workbench/routes/web.php). Note that we're returning the `sgid` and the `content` field, those are used for the attachment. The `name` field is also returned, which is used by Tribute itself to compose the mentions feature.
 - The Blade view that will render the user attachment can be found at [resources/views/mentions/partials/user.blade.php](workbench/resources/views/mentions/partials/user.blade.php)
 
 You can later retrieve all attachments from that rich text content. See [The Content Object](#content-object) section for more.
@@ -353,7 +385,7 @@ $post->body->links()
 
 #### Getting Attachment Galleries
 
-Trix has a concept of galleries, you may want to retrieve all the galleries:
+Editors like Trix and Lexxy have a concept of galleries. You may want to retrieve all the galleries:
 
 ```php
 $post->body->attachmentGalleries()
@@ -429,7 +461,7 @@ You can see a full working implementation of this OpenGraph example in the Chat 
 
 <a name="plain-text"></a>
 
-Trix content can be converted to anything. This essentially means `HTML > something`. The package ships with a `HTML > Plain Text` implementation, so you can convert any Trix content to plain text by calling the `toPlainText()` method on it:
+Rich text content can be converted to anything. This essentially means `HTML > something`. The package ships with a `HTML > Plain Text` implementation, so you can convert any rich text content to plain text by calling the `toPlainText()` method on it:
 
 ```php
 $post->body->toPlainText()
@@ -473,9 +505,51 @@ With a famous quote
 Cheers,
 ```
 
-If you're attaching models, you can implement the `richTextAsPlainText(?string $caption = null): string` method on it, where you should return the plain text representation of that attachable. If the method is not implemented on the attachable and no caption is stored in the Trix attachment, that attachment won't be present in the Plain Text version of the content.
+If you're attaching models, you can implement the `richTextAsPlainText(?string $caption = null): string` method on it, where you should return the plain text representation of that attachable. If the method is not implemented on the attachable and no caption is stored in the attachment, that attachment won't be present in the Plain Text version of the content.
 
 | 💡 The plain text output representation is not HTML-safe. You must escape the plain text version generated. |
+|------------------------|
+
+### Markdown Rendering
+
+<a name="markdown"></a>
+
+Rich text content can also be converted to Markdown by calling the `toMarkdown()` method:
+
+```php
+$post->body->toMarkdown()
+```
+
+As an example, this rich text content:
+
+```html
+<h1>Very Important Message</h1>
+<p>This is an important message, with <strong>bold</strong> and <em>italic</em> text.</p>
+<ul>
+    <li>first item</li>
+    <li>second item</li>
+</ul>
+<blockquote>Lorem Ipsum Dolor - Lorense Ipsus</blockquote>
+```
+
+Will be converted to:
+
+```markdown
+# Very Important Message
+
+This is an important message, with **bold** and *italic* text.
+
+- first item
+- second item
+
+> Lorem Ipsum Dolor - Lorense Ipsus
+```
+
+The Markdown output supports headings, bold, italic, strikethrough, inline code, code blocks (with language from the `data-language` attribute), blockquotes, ordered and unordered lists, links, and tables.
+
+If you're attaching models, you can implement the `richTextAsMarkdown(?string $caption = null): string` method on it, where you should return the Markdown representation of that attachable.
+
+| 💡 The Markdown output is not HTML-safe, but no sanitization is needed — regular Blade escaping is enough: `{{ $post->body->toMarkdown() }}`. |
 |------------------------|
 
 ### Sanitization
@@ -501,11 +575,83 @@ In case you want to rotate your key, you would need to loop-through all the rich
 
 ### Livewire
 
-If you want to use Livewire with Trix and Rich Text Laravel, the best way to integrate would be using Livewire's `@entangle()` feature. The Workbench app ships with an example app. Some interesting points:
+If you want to use Livewire with your rich text editor (Trix, Lexxy, etc.) and Rich Text Laravel, the best way to integrate would be using Livewire's `@entangle()` feature. The Workbench app ships with an example using Trix. Some interesting points:
 
 - There's a custom [components/trix-input-livewire.blade.php](workbench/resources/views/components/trix-input-livewire.blade.php) just to show how to use it with Livewire;
 - As you can see, it relies on entangle. This is the recommended way;
-- See the [`Livewire\Posts`](workbench/app/Livewire/Posts.php) component. When the user clicks on "edit", it sets the currently editing Post into state and fills the `PostForm` with the data from the Post model, including the Trix HTML;
+- See the [`Livewire\Posts`](workbench/app/Livewire/Posts.php) component. When the user clicks on "edit", it sets the currently editing Post into state and fills the `PostForm` with the data from the Post model, including the editor HTML;
+
+### Custom Editors
+
+<a name="custom-editors"></a>
+
+The package decouples content storage from any specific editor through the [`Editor`](./src/Editor/Editor.php) interface. Each editor implements two methods that handle the translation between the editor's HTML format and the canonical storage format:
+
+- **`asCanonical(Fragment $fragment): Fragment`** — Transforms editor-specific HTML (e.g., Trix's `<figure data-trix-attachment>` elements) into the canonical `<rich-text-attachment>` format used for storage.
+- **`asEditable(Fragment $fragment): Fragment`** — Transforms the canonical storage format back into the editor's native format for editing.
+
+This means the stored content is always editor-agnostic. You can switch editors without migrating your existing content.
+
+#### Configuration
+
+The default editor is configured in `config/rich-text-laravel.php`:
+
+```php
+'editor' => env('RICH_TEXT_EDITOR', 'trix'),
+
+'editors' => [
+    'trix' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
+    'lexxy' => \Tonysm\RichTextLaravel\Editor\LexxyEditor::class,
+],
+```
+
+The package ships with two built-in editors: [`TrixEditor`](./src/Editor/TrixEditor.php) and [`LexxyEditor`](./src/Editor/LexxyEditor.php). You can switch between them by setting the `RICH_TEXT_EDITOR` environment variable.
+
+#### Creating a Custom Editor
+
+To integrate a different rich text editor, create a class that implements the `Editor` interface:
+
+```php
+namespace App\Editors;
+
+use Tonysm\RichTextLaravel\Editor\Editor;
+use Tonysm\RichTextLaravel\Fragment;
+
+class MyCustomEditor implements Editor
+{
+    public function asCanonical(Fragment $fragment): Fragment
+    {
+        // Convert your editor's attachment format
+        // into <rich-text-attachment> elements for storage.
+        return $fragment;
+    }
+
+    public function asEditable(Fragment $fragment): Fragment
+    {
+        // Convert <rich-text-attachment> elements back
+        // into your editor's native format for editing.
+        return $fragment;
+    }
+}
+```
+
+Then register it in `config/rich-text-laravel.php`:
+
+```php
+'editors' => [
+    'trix' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
+    'lexxy' => \Tonysm\RichTextLaravel\Editor\LexxyEditor::class,
+    'my-editor' => \App\Editors\MyCustomEditor::class,
+],
+```
+
+And set it as the default:
+
+```env
+RICH_TEXT_EDITOR=my-editor
+```
+
+If your editor doesn't have its own attachment format (i.e., it already uses `<rich-text-attachment>` elements or doesn't support attachments), your `asCanonical()` and `asEditable()` methods can simply return the fragment unchanged, as the [`LexxyEditor`](./src/Editor/LexxyEditor.php) does for `asCanonical()`.
 
 ## Testing
 

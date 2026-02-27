@@ -5,7 +5,7 @@
         </div>
 
         <div class="mt-6 space-y-4">
-            <p>This is a demo application for the Rich Text Laravel package. The goal of this sample application is to show the power of Trix when combined with Laravel.</p>
+            <p>This is a demo application for the Rich Text Laravel package. The goal of this sample application is to show the power of rich text editors like Trix and Lexxy when combined with Laravel.</p>
             <h2 class="text-2xl font-semibold italic">Sample Applications</h2>
             <div class="grid divide-y sm:divide-y-none sm:grid-cols-2 sm:gap-6">
                 <div>

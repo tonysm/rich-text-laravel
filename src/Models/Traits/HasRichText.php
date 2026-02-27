@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Tonysm\RichTextLaravel\Casts\AsEncryptedRichTextContent;
+use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
 use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 
@@ -28,7 +30,11 @@ trait HasRichText
     {
         static::saving(function (Model $model): void {
             if (! $model::isIgnoringTouch()) {
-                foreach ($model->getRichTextFields() as $field => $_options) {
+                foreach ($model->getRichTextFields() as $field => $options) {
+                    if ($options['attribute'] ?? false) {
+                        continue;
+                    }
+
                     $relationship = static::fieldToRichTextRelationship($field);
 
                     if ($model->relationLoaded($relationship) && $model->{$field}->isDirty() && $model->timestamps) {
@@ -39,7 +45,11 @@ trait HasRichText
         });
 
         static::saved(function (Model $model): void {
-            foreach ($model->getRichTextFields() as $field => $_options) {
+            foreach ($model->getRichTextFields() as $field => $options) {
+                if ($options['attribute'] ?? false) {
+                    continue;
+                }
+
                 $relationship = static::fieldToRichTextRelationship($field);
 
                 if ($model->relationLoaded($relationship) && $model->{$field}->isDirty()) {
@@ -72,9 +82,17 @@ trait HasRichText
 
     protected function initializeHasRichText()
     {
-        foreach ($this->getRichTextFields() as $field => $_options) {
+        foreach ($this->getRichTextFields() as $field => $options) {
+            if ($options['attribute'] ?? false) {
+                $cast = ($options['encrypted'] ?? false)
+                    ? AsEncryptedRichTextContent::class
+                    : AsRichTextContent::class;
+            } else {
+                $cast = ForwardsAttributeToRelationship::class;
+            }
+
             $this->mergeCasts([
-                $field => ForwardsAttributeToRelationship::class,
+                $field => $cast,
             ]);
         }
     }
@@ -92,9 +110,12 @@ trait HasRichText
 
     public function unsetRichTextRelationshipsForLivewireDehydration(): void
     {
-        $relationships = array_map(fn ($field): string => static::fieldToRichTextRelationship($field), array_keys($this->getRichTextFields()));
+        $fields = collect($this->getRichTextFields())
+            ->filter(fn ($options) => ! ($options['attribute'] ?? false))
+            ->keys()
+            ->map(fn ($field): string => static::fieldToRichTextRelationship($field));
 
-        foreach ($relationships as $relationship) {
+        foreach ($fields as $relationship) {
             if ($this->relationLoaded($relationship)) {
                 $this->unsetRelation($relationship);
             }
@@ -108,16 +129,18 @@ trait HasRichText
 
     public function scopeWithRichText(Builder $query, $fields = []): void
     {
-        $allFields = array_keys((new static)->getRichTextFields());
+        $richTextFields = (new static)->getRichTextFields();
+        $allFields = array_keys($richTextFields);
 
         $fields = empty($fields) ? $allFields : $fields;
 
-        // We're converting the attributes to the relationship pattern and
-        // only then we'll perform the eager loading. If any of the given
-        // fields is not a valid one, we'll throw an exception and halt.
+        // Converts fields to relationships for eager loading and validates them;
+        // fields with 'attribute' => true are on the model, so we skip them.
+        // Any unknown fields passed here will throw an exception and halt.
 
         $fields = collect($fields)
             ->each(fn ($field) => throw_unless(in_array($field, $allFields), RichTextException::unknownRichTextFieldOnEagerLoading($field)))
+            ->filter(fn ($field) => ! ($richTextFields[$field]['attribute'] ?? false))
             ->map(fn ($field): string => static::fieldToRichTextRelationship($field))
             ->all();
 

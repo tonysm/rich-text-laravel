@@ -106,6 +106,15 @@ class Attachment implements Htmlable, Stringable
         return $this->caption() ?: '';
     }
 
+    public function toMarkdown(): string
+    {
+        if (method_exists($this->attachable, 'richTextAsMarkdown')) {
+            return $this->attachable->richTextAsMarkdown($this->caption());
+        }
+
+        return $this->caption() ?: '';
+    }
+
     public function toHtml(): string
     {
         return HtmlConversion::nodeElementToHtml($this->node);

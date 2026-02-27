@@ -56,6 +56,7 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/workbench:${{ matrix.workbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          vendor/bin/testbench vendor:publish --tag=rich-text-laravel-assets
 
       - name: Execute tests
         run: vendor/bin/phpunit

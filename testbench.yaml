@@ -15,15 +15,17 @@ seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
 
 workbench:
-  start: '/demo'
+  start: "/demo"
   install: true
   welcome: true
   discovers:
     web: true
     views: true
   build:
+    - asset-publish
     - create-sqlite-db
     - db:wipe
     - migrate:fresh
-  assets: []
+  assets:
+    - rich-text-laravel-assets
   sync: []

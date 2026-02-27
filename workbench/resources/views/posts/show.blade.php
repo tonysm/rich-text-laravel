@@ -20,10 +20,12 @@
             <span>Here is how the document will render. Notice the HTML content is being cleaned up using <a class="text-blue-600 underline underline-offset-4" href="https://symfony.com/doc/current/html_sanitizer.html">Symfony's HTML Sanitizer</a>. You <strong>MUST</strong> always escape both the HTML and the plain text version of the user-generated content.</span>
         </x-info>
 
-        <div class="rounded border shadow p-6 trix-content bg-white">
+        <div class="rounded border shadow p-6 prose prose-pre:!text-black max-w-none bg-white">
             {{-- YOU MUST ALWAYS ESCAPE THE USER-ENTERED HTML. --}}
             {{ clean($post->body) }}
         </div>
+
+        <x-code-sample lang="blade">@verbatim{{ clean($post->body) }}@endverbatim</x-code-sample>
 
         <h1 class="text-xl">The Plain Text version:</h1>
 
@@ -32,7 +34,20 @@
         </x-info>
 
         {{-- YOU MUST ALWAYS ESCAPE THE PLAIN-TEXT VERSION TOO. --}}
-        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ $post->body->toPlainText() }}</div>
+        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white">{{ clean($post->body->toPlainText()) }}</div>
+
+        <x-code-sample lang="php">@verbatim{{ clean($post->body->toPlainText()) }}@endverbatim</x-code-sample>
+
+        <h1 class="text-xl">The Markdown version:</h1>
+
+        <x-info>
+            <span>You may also render the document as Markdown. No need for sanitization — regular Blade escaping (<code>@verbatim{{ }}@endverbatim</code>) is enough:</span>
+        </x-info>
+
+        {{-- YOU MUST ALWAYS ESCAPE THE MARKDOWN VERSION TOO. --}}
+        <div class="rounded border shadow p-6 space-y-2 whitespace-pre-line bg-white font-mono text-sm">{{ $post->body->toMarkdown() }}</div>
+
+        <x-code-sample lang="php">@verbatim{{ $post->body->toMarkdown() }}@endverbatim</x-code-sample>
 
         <h1 class="text-xl">Links in the document:</h1>
 
@@ -48,6 +63,14 @@
             @endforelse
         </ul>
 
+        <x-code-sample lang="php">@verbatim&lt;ul&gt;
+    @forelse ($post->body->links() as $link)
+    &lt;li&gt;{{ $link }}&lt;/li&gt;
+    @empty
+    &lt;li&gt;No links were used.&lt;/li&gt;
+    @endforelse
+&lt;/ul&gt;@endverbatim</x-code-sample>
+
         <h2 class="text-xl">User Mentions</h2>
 
         <x-info>
@@ -62,6 +85,14 @@
             @endforelse
         </ul>
 
+        <x-code-sample lang="php">@verbatim&lt;ul&gt;
+    @forelse ($post->body->attachments()->filter(fn ($attachment) => $attachment->attachable instanceof User) as $attachment)
+    &lt;li&gt;{{ $attachment->attachable->name }}&lt;/li&gt;
+    @empty
+    &lt;li&gt;No users were mentioned.&lt;/li&gt;
+    @endforelse
+&lt;/ul&gt;@endverbatim</x-code-sample>
+
         <h2 class="text-xl">Comments</h2>
 
         @foreach($post->comments as $comment)
@@ -72,7 +103,7 @@
             </div>
         @endforeach
 
-        <x-info>Here you can see how you may customize the Trix toolbar for a mimimal look.</x-info>
+        <x-info>Here you can see how you may customize the editor toolbar (Trix, Lexxy, etc.) for a minimal look.</x-info>
 
         <form action="{{ route('posts.comments.store', $post) }}" method="post">
             @csrf
