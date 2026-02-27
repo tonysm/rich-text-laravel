@@ -28,11 +28,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Kathryn Janeway'],
         )->create();
 
-        $trixAttributes = fn(User $mention) => e(Js::encode($mention->toRichTextAttributes([
+        $trixAttributes = fn (User $mention) => e(Js::encode($mention->toRichTextAttributes([
             'content' => $mention->richTextRender(),
         ])));
 
-        $encodeImage = fn(string $imageUrl) => e($imageUrl);
+        $encodeImage = fn (string $imageUrl) => e($imageUrl);
 
         $this->withEditor('trix', function () use ($encodeImage, $trixAttributes, $tony, $picard) {
             PostFactory::new()->create([
@@ -102,6 +102,7 @@ class DatabaseSeeder extends Seeder
 
         try {
             config()->set('rich-text-laravel.editor', $editor);
+
             return $callback();
         } finally {
             config()->set('rich-text-laravel.editor', $originalEditor);
