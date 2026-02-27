@@ -57,7 +57,7 @@ When storing images directly (say, for a simple image uploading where you don't 
 There are two ways of using the package:
 
 1. With the recommended database structure where all rich text content will be stored outside of the model that has rich text content (recommended); and
-1. Only using the `AsRichTextContent` trait to cast a rich text content field on any model, on any table you want.
+1. Storing the rich text content directly on the model's own table using the `'attribute' => true` option.
 
 Below, we cover each usage way. It's recommended that you at least read the [Trix documentation](https://github.com/basecamp/trix) at some point to get an overview of the client-side of it.
 
@@ -215,58 +215,38 @@ Laravel's Encryption component relies on the `APP_KEY` master key. If you need t
 
 Additionally, the stored content attachments rely on the [Globalid Laravel](https://github.com/tonysm/globalid-laravel) package. That package generates a derived key based on your `APP_KEY`. When rotating the `APP_KEY`, you'll also need to update all stored content attachments's `sgid` attributes.
 
-### The AsRichTextContent Trait
+### Storing Rich Text as a Model Attribute
 
-<a name="asrichtextcontent-trait"></a>
+<a name="attribute-rich-text"></a>
 
-In case you don't want to use the recommended structure (either because you have strong opinions here or you want to rule your own database structure), you may skip the entire recommended database structure and use the `AsRichTextContent` custom cast on your rich text content field. For instance, if you're storing the `body` field on the `posts` table, you may do it like so:
+In case you don't want to use the recommended structure and prefer storing the rich text content directly on the model's own table, you may use the `'attribute' => true` option. This requires that your table has a text column for the field. For instance, if you're storing the `body` field directly on the `posts` table:
 
 ```php
-use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
+use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 
 class Post extends Model
 {
-    protected $casts = [
-        'body' => AsRichTextContent::class,
+    use HasRichText;
+
+    protected $guarded = [];
+
+    protected $richTextAttributes = [
+        'body' => ['attribute' => true],
     ];
 }
 ```
 
-Then the custom cast will parse the HTML content and minify it for storage. Essentially, it will convert this content submitted by Trix which has only an image attachment:
+With this setup, the rich text HTML will be canonicalized and stored directly in the `posts.body` column. No `rich_texts` table record is created. When you access `$post->body`, you'll get a [`Content`](./src/Content.php) instance directly, which supports rendering, plain text conversion, attachments, and everything else:
 
 ```php
-$post->update([
-    'content' => <<<HTML
-    <h1>Hello World</h1>
-    <figure data-trix-attachment='{
-        "url": "http://example.com/blue.jpg",
-        "width": 300,
-        "height": 150,
-        "contentType": "image/jpeg",
-        "caption": "Something cool",
-        "filename":"blue.png",
-        "filesize":1168
-    }'>
-        <img src="http://example.com/blue.jpg" width="300" height="150" />
-        <caption>
-            Something cool
-        </caption>
-    </figure>
-    HTML,
-])
+$post->body->toPlainText();
+$post->body->attachments();
 ```
 
-To this minified version:
-
-```html
-<h1>Hello World</h1>
-<rich-text-attachment content-type="image/jpeg" filename="blue.png" filesize="1168" height="300" href="http://example.com/blue.jpg" url="http://example.com/blue.jpg" width="300" caption="testing this caption" presentation="gallery"></rich-text-attachment>
-```
-
-And when it renders it again, it will re-render the remote image again inside the `rich-text-attachment` tag. You can render the content for _viewing_ by simply echoing out the output, something like this:
+You can render the content for _viewing_ by simply echoing it:
 
 ```blade
-{!! $post->content !!}
+{!! $post->body !!}
 ```
 
 _Note_: since the HTML output is NOT escaped, make sure you sanitize it before rendering. See the [sanitization](#sanitization) section for more about this.
@@ -278,6 +258,25 @@ When feeding the Trix editor again, you need to do it differently:
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.
+
+You can mix attribute-based and relationship-based fields on the same model:
+
+```php
+protected $richTextAttributes = [
+    'body' => ['attribute' => true], // Stored in the model's own table...
+    'notes', // Stored in the rich_texts table...
+];
+```
+
+When using `withRichText()`, attribute-based fields are automatically skipped since their data is already on the model and doesn't need eager loading.
+
+You can also combine `'attribute' => true` with `'encrypted' => true` to store encrypted rich text content directly on the model:
+
+```php
+protected $richTextAttributes = [
+    'body' => ['attribute' => true, 'encrypted' => true],
+];
+```
 
 ### Image Upload
 
