@@ -51,10 +51,26 @@ Route::get('/posts', function () {
 })->name('posts.index');
 
 Route::get('/posts/create', function () {
-    return view('posts.create');
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
+    return view('posts.create', [
+        'editor' => $editor,
+    ]);
 })->name('posts.create');
 
 Route::post('/posts', function (Request $request) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     $post = Post::create($request->validate([
         'title' => ['required'],
         'body' => ['required'],
@@ -70,12 +86,27 @@ Route::get('/posts/{post}', function (Post $post) {
 })->name('posts.show');
 
 Route::get('/posts/{post}/edit', function (Post $post) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     return view('posts.edit', [
         'post' => $post,
+        'editor' => $editor,
     ]);
 })->name('posts.edit');
 
 Route::put('/posts/{post}', function (Request $request, Post $post) {
+    $editor = match (request('editor', '')) {
+        'lexxy' => 'lexxy',
+        default => 'trix',
+    };
+
+    config()->set('rich-text-laravel.editor', $editor);
+
     $post->update($request->validate([
         'title' => ['required'],
         'body' => ['required'],
@@ -97,14 +128,21 @@ Route::get('/livewire', function () {
 })->name('livewire');
 
 Route::get('/mentions', function (Request $request) {
-    return User::query()
+    $users = User::query()
         ->when($request->query('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
-        ->get()
-        ->map(fn (User $user) => [
+        ->get();
+
+    if ($request->wantsJson()) {
+        return $users->map(fn (User $user) => [
             'sgid' => $user->richTextSgid(),
             'name' => $user->name,
             'content' => $user->richTextRender(),
         ]);
+    }
+
+    return view('mentions.index', [
+        'users' => $users,
+    ]);
 })->name('mentions.index');
 
 Route::post('attachments', function (Request $request) {
