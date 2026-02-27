@@ -4,6 +4,7 @@ namespace Tonysm\RichTextLaravel\Attachables;
 
 use DOMElement;
 use Illuminate\Support\Str;
+use Tonysm\RichTextLaravel\MarkdownConversion;
 
 class RemoteFile implements AttachableContract
 {
@@ -98,6 +99,15 @@ class RemoteFile implements AttachableContract
     public function richTextAsPlainText($caption = null): string
     {
         return __(sprintf('[%s]', ($caption ?: $this->filename) ?: 'File'));
+    }
+
+    public function richTextAsMarkdown(?string $caption = null): string
+    {
+        $text = ($caption ?: $this->filename) ?: 'File';
+        $text = MarkdownConversion::escapeLinkText($text);
+        $url = MarkdownConversion::escapeLinkUrl($this->url);
+
+        return sprintf('[%s](%s)', $text, $url);
     }
 
     public function extension(): string
