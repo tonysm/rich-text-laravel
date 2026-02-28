@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         php: [8.2, 8.3, 8.4]
-        laravel: ["10.*", "12.*", "13.*", "^11.47"]
+        laravel: ["10.*", "^11.47", "12.*", "13.*"]
         stability: [prefer-lowest, prefer-stable]
         include:
           - laravel: 10.*
