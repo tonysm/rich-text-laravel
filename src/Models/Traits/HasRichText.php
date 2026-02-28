@@ -15,16 +15,19 @@ trait HasRichText
 {
     protected static function bootHasRichText()
     {
-        $fields = (new static)->getRichTextFields();
-
-        foreach ($fields as $field => $options) {
-            if ($options['attribute'] ?? false) {
-                continue;
-            }
-
-            static::registerRichTextRelationships($field, $options);
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted(function () {
+                static::configureDynamicRelationshipsForRichTextFields();
+                static::registerModelEventsForRichTextFields();
+            });
+        } else {
+            static::configureDynamicRelationshipsForRichTextFields();
+            static::registerModelEventsForRichTextFields();
         }
+    }
 
+    protected static function registerModelEventsForRichTextFields(): void
+    {
         static::saving(function (Model $model): void {
             if (! $model::isIgnoringTouch()) {
                 foreach ($model->getRichTextFields() as $field => $options) {
@@ -55,6 +58,19 @@ trait HasRichText
                 }
             }
         });
+    }
+
+    protected static function configureDynamicRelationshipsForRichTextFields(): void
+    {
+        $fields = (new static)->getRichTextFields();
+
+        foreach ($fields as $field => $options) {
+            if ($options['attribute'] ?? false) {
+                continue;
+            }
+
+            static::registerRichTextRelationships($field, $options);
+        }
     }
 
     protected static function registerRichTextRelationships(string $field, array $options = []): void
