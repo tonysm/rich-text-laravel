@@ -1,8 +1,4 @@
-<div @class([
-    'trix-content' => \Tonysm\RichTextLaravel\RichTextLaravel::editorName() === 'trix',
-    'lexxy-content' => \Tonysm\RichTextLaravel\RichTextLaravel::editorName() === 'lexxy',
-    \Tonysm\RichTextLaravel\RichTextLaravel::editorName() . '-content' => ! in_array(\Tonysm\RichTextLaravel\RichTextLaravel::editorName(), ['trix', 'lexxy']),
-])>
+<div class="{{ e(\Tonysm\RichTextLaravel\RichTextLaravel::editorName()) . '-content' }}">
 @if (trim($content = $content->renderWithAttachments()))
     {!! $content !!}
 @endif
