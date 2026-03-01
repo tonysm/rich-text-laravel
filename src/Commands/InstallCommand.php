@@ -164,11 +164,50 @@ class InstallCommand extends Command
 
     private function installJsDependenciesWithImportmaps(string $editor): void
     {
-        FacadesProcess::forever()->run(array_merge([
-            $this->phpBinary(),
-            'artisan',
-            'importmap:pin',
-        ], array_keys($this->jsDependencies($editor))), fn ($_type, $output) => $this->output->write($output));
+        if ($editor === 'lexxy') {
+            // For now, let's pin the dependencies directly from a CDN since it's not working well to download...
+
+            File::append(base_path('routes/importmap.php'), <<<'PHP'
+
+            Importmap::pin('@37signals/lexxy', to: 'https://ga.jspm.io/npm:@37signals/lexxy@0.7.6-beta/dist/lexxy.esm.js');
+            Importmap::pin('@lexical/clipboard', to: 'https://ga.jspm.io/npm:@lexical/clipboard@0.38.2/LexicalClipboard.dev.mjs');
+            Importmap::pin('@lexical/code', to: 'https://ga.jspm.io/npm:@lexical/code@0.38.2/LexicalCode.dev.mjs');
+            Importmap::pin('@lexical/dragon', to: 'https://ga.jspm.io/npm:@lexical/dragon@0.38.2/LexicalDragon.dev.mjs');
+            Importmap::pin('@lexical/extension', to: 'https://ga.jspm.io/npm:@lexical/extension@0.38.2/LexicalExtension.dev.mjs');
+            Importmap::pin('@lexical/history', to: 'https://ga.jspm.io/npm:@lexical/history@0.38.2/LexicalHistory.dev.mjs');
+            Importmap::pin('@lexical/html', to: 'https://ga.jspm.io/npm:@lexical/html@0.38.2/LexicalHtml.dev.mjs');
+            Importmap::pin('@lexical/link', to: 'https://ga.jspm.io/npm:@lexical/link@0.38.2/LexicalLink.dev.mjs');
+            Importmap::pin('@lexical/list', to: 'https://ga.jspm.io/npm:@lexical/list@0.38.2/LexicalList.dev.mjs');
+            Importmap::pin('@lexical/markdown', to: 'https://ga.jspm.io/npm:@lexical/markdown@0.38.2/LexicalMarkdown.dev.mjs');
+            Importmap::pin('@lexical/plain-text', to: 'https://ga.jspm.io/npm:@lexical/plain-text@0.38.2/LexicalPlainText.dev.mjs');
+            Importmap::pin('@lexical/rich-text', to: 'https://ga.jspm.io/npm:@lexical/rich-text@0.38.2/LexicalRichText.dev.mjs');
+            Importmap::pin('@lexical/selection', to: 'https://ga.jspm.io/npm:@lexical/selection@0.38.2/LexicalSelection.dev.mjs');
+            Importmap::pin('@lexical/table', to: 'https://ga.jspm.io/npm:@lexical/table@0.38.2/LexicalTable.dev.mjs');
+            Importmap::pin('@lexical/utils', to: 'https://ga.jspm.io/npm:@lexical/utils@0.38.2/LexicalUtils.dev.mjs');
+            Importmap::pin('@rails/activestorage', to: 'https://ga.jspm.io/npm:@rails/activestorage@7.2.300/app/assets/javascripts/activestorage.esm.js');
+            Importmap::pin('dompurify', to: 'https://ga.jspm.io/npm:dompurify@3.3.1/dist/purify.es.mjs');
+            Importmap::pin('lexical', to: 'https://ga.jspm.io/npm:lexical@0.38.2/Lexical.dev.mjs');
+            Importmap::pin('marked', to: 'https://ga.jspm.io/npm:marked@16.4.2/lib/marked.esm.js');
+            Importmap::pin('prismjs', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/prism.js');
+            Importmap::pin('prismjs/components/prism-bash', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-bash.js');
+            Importmap::pin('prismjs/components/prism-clike', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-clike.js');
+            Importmap::pin('prismjs/components/', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/');
+            Importmap::pin('prismjs/components/prism-diff', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-diff.js');
+            Importmap::pin('prismjs/components/prism-go', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-go.js');
+            Importmap::pin('prismjs/components/prism-json', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-json.js');
+            Importmap::pin('prismjs/components/prism-markup', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-markup.js');
+            Importmap::pin('prismjs/components/prism-markup-templating', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-markup-templating.js');
+            Importmap::pin('prismjs/components/prism-php', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-php.js');
+            Importmap::pin('prismjs/components/prism-ruby', to: 'https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-ruby.js');
+
+            PHP);
+        } else {
+            FacadesProcess::forever()->run(array_merge([
+                $this->phpBinary(),
+                'artisan',
+                'importmap:pin',
+            ], array_keys($this->jsDependencies($editor))), fn ($_type, $output) => $this->output->write($output));
+        }
     }
 
     private function installEditorFrontend(string $editor): void
