@@ -11,7 +11,7 @@
         "esbuild": "^0.14.49"
     },
     "dependencies": {
-        "@37signals/lexxy": "^0.7.4-beta",
+        "@37signals/lexxy": "^0.7.6-beta",
         "trix": "^2.1.16"
     }
 }
