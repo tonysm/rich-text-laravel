@@ -127,7 +127,7 @@ class InstallCommand extends Command
     private function jsDependencies(string $editor): array
     {
         return match ($editor) {
-            'trix' => ['trix' => '^2.0.10'],
+            'trix' => ['trix' => '^2.1.16'],
             'lexxy' => ['@37signals/lexxy' => '^0.7.6-beta'],
         };
     }
