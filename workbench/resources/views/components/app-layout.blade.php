@@ -104,43 +104,10 @@
     <script type="importmap">
     {
         "imports": {
-            "@37signals/lexxy": "https://ga.jspm.io/npm:@37signals/lexxy@0.7.6-beta/dist/lexxy.esm.js",
+            "@37signals/lexxy": "https://esm.sh/@37signals/lexxy@latest",
             "@hotwired/stimulus": "https://cdn.skypack.dev/@hotwired/stimulus",
             "tributejs": "https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js",
             "trix": "https://unpkg.com/trix@2.1.0/dist/trix.esm.min.js"
-        },
-        "scopes": {
-            "https://ga.jspm.io/": {
-                "@lexical/clipboard": "https://ga.jspm.io/npm:@lexical/clipboard@0.38.2/LexicalClipboard.dev.mjs",
-                "@lexical/code": "https://ga.jspm.io/npm:@lexical/code@0.38.2/LexicalCode.dev.mjs",
-                "@lexical/dragon": "https://ga.jspm.io/npm:@lexical/dragon@0.38.2/LexicalDragon.dev.mjs",
-                "@lexical/extension": "https://ga.jspm.io/npm:@lexical/extension@0.38.2/LexicalExtension.dev.mjs",
-                "@lexical/history": "https://ga.jspm.io/npm:@lexical/history@0.38.2/LexicalHistory.dev.mjs",
-                "@lexical/html": "https://ga.jspm.io/npm:@lexical/html@0.38.2/LexicalHtml.dev.mjs",
-                "@lexical/link": "https://ga.jspm.io/npm:@lexical/link@0.38.2/LexicalLink.dev.mjs",
-                "@lexical/list": "https://ga.jspm.io/npm:@lexical/list@0.38.2/LexicalList.dev.mjs",
-                "@lexical/markdown": "https://ga.jspm.io/npm:@lexical/markdown@0.38.2/LexicalMarkdown.dev.mjs",
-                "@lexical/plain-text": "https://ga.jspm.io/npm:@lexical/plain-text@0.38.2/LexicalPlainText.dev.mjs",
-                "@lexical/rich-text": "https://ga.jspm.io/npm:@lexical/rich-text@0.38.2/LexicalRichText.dev.mjs",
-                "@lexical/selection": "https://ga.jspm.io/npm:@lexical/selection@0.38.2/LexicalSelection.dev.mjs",
-                "@lexical/table": "https://ga.jspm.io/npm:@lexical/table@0.38.2/LexicalTable.dev.mjs",
-                "@lexical/utils": "https://ga.jspm.io/npm:@lexical/utils@0.38.2/LexicalUtils.dev.mjs",
-                "@rails/activestorage": "https://ga.jspm.io/npm:@rails/activestorage@7.2.300/app/assets/javascripts/activestorage.esm.js",
-                "dompurify": "https://ga.jspm.io/npm:dompurify@3.3.1/dist/purify.es.mjs",
-                "lexical": "https://ga.jspm.io/npm:lexical@0.38.2/Lexical.dev.mjs",
-                "marked": "https://ga.jspm.io/npm:marked@16.4.2/lib/marked.esm.js",
-                "prismjs": "https://ga.jspm.io/npm:prismjs@1.30.0/prism.js",
-                "prismjs/components/prism-bash": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-bash.js",
-                "prismjs/components/prism-clike": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-clike.js",
-                "prismjs/components/": "https://ga.jspm.io/npm:prismjs@1.30.0/components/",
-                "prismjs/components/prism-diff": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-diff.js",
-                "prismjs/components/prism-go": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-go.js",
-                "prismjs/components/prism-json": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-json.js",
-                "prismjs/components/prism-markup": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-markup.js",
-                "prismjs/components/prism-markup-templating": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-markup-templating.js",
-                "prismjs/components/prism-php": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-php.js",
-                "prismjs/components/prism-ruby": "https://ga.jspm.io/npm:prismjs@1.30.0/components/prism-ruby.js"
-            }
         }
     }
     </script>
