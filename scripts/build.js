@@ -13,9 +13,11 @@ let files = {
     'resources/css/trix-rich-text-laravel-attachments.css': 'trix-rich-text-laravel-attachments.css',
 }
 
-if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir, { recursive: true })
+if (fs.existsSync(distDir)) {
+    fs.rmSync(distDir, { recursive: true })
 }
+
+fs.mkdirSync(distDir, { recursive: true })
 
 async function build() {
     let manifest = {}

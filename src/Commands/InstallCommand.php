@@ -128,7 +128,7 @@ class InstallCommand extends Command
     {
         return match ($editor) {
             'trix' => ['trix' => '^2.1.16'],
-            'lexxy' => ['@37signals/lexxy' => '^0.7.6-beta'],
+            'lexxy' => ['@37signals/lexxy' => '^0.8.0-beta'],
         };
     }
 
