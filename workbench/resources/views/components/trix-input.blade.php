@@ -1,6 +1,6 @@
 @props(['id', 'name', 'value' => '', 'toolbar' => null, 'acceptFiles' => true])
 
-<div class="w-full bg-white border border-gray-300 relative border-gray-300 px-2 focus-within:ring-1 focus-within:border-indigo-500 focus-within:ring-indigo-500 rounded-md shadow-sm [&_trix-toolbar]:sticky [&_trix-toolbar]:top-0 [&_trix-toolbar]:-mx-2 [&_trix-toolbar]:px-2 [&_trix-toolbar]:bg-white [&_trix-toolbar]:border-b [&_trix-toolbar]:rounded-t-lg [&_trix-toolbar]:shadow-sm [&_trix-toolbar]:pt-2 [&_trix-toolbar]:z-10">
+<div class="w-full bg-white border border-gray-300 relative px-2 focus-within:ring-1 focus-within:border-indigo-500 focus-within:ring-indigo-500 rounded-md shadow-sm [&_trix-toolbar]:sticky [&_trix-toolbar]:top-0 [&_trix-toolbar]:-mx-2 [&_trix-toolbar]:px-2 [&_trix-toolbar]:bg-white [&_trix-toolbar]:border-b [&_trix-toolbar]:rounded-t-lg [&_trix-toolbar]:shadow-sm [&_trix-toolbar]:pt-2 [&_trix-toolbar]:z-10">
     <input
         type="hidden"
         name="{{ $name }}"
