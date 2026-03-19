@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Exceptions\RichTextException;
 use Tonysm\RichTextLaravel\Models\RichText;
@@ -11,7 +12,7 @@ use Workbench\Database\Factories\PostFactory;
 
 class RichTextModelTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function traits_sets_up_relationship(): void
     {
         $model = PostFactory::new()->create();
@@ -24,7 +25,7 @@ class RichTextModelTest extends TestCase
         $this->assertTrue($model->richTextBody->record->is($model));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function forwards_attribute_mutators_and_accessors_to_relationship(): void
     {
         $post = $this->createPost();
@@ -40,7 +41,7 @@ class RichTextModelTest extends TestCase
         $this->assertNotEmpty($post->body->raw());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function fowards_calls_to_relationship(): void
     {
         $post = $this->createPost();
@@ -49,7 +50,7 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($this->content(), $post->body->toTrixHtml());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function renders_to_text(): void
     {
         $post = $this->createPost();
@@ -77,7 +78,7 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($expectedRender, "$post->richTextBody");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function can_eager_load_rich_text_fields(): void
     {
         PostWithNotes::truncate();
@@ -126,7 +127,7 @@ class RichTextModelTest extends TestCase
         $this->assertEquals(2, $queryCounts);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function throws_exception_when_eager_loading_unkown_rich_text_field(): void
     {
         $this->expectException(RichTextException::class);
@@ -134,7 +135,7 @@ class RichTextModelTest extends TestCase
         PostWithNotes::withRichText(['unknown'])->get();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function can_have_different_fields_on_the_same_model(): void
     {
         $post = PostWithNotes::create(PostFactory::new()->raw([
@@ -169,7 +170,7 @@ class RichTextModelTest extends TestCase
         $this->assertEquals($expectedNotesContent, "$post->richTextNotes");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function can_update_content(): void
     {
         $post = $this->createPost(

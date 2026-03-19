@@ -8,7 +8,7 @@ use Workbench\App\Models\Message;
 /**
  * @template TModel of \Workbench\App\Models\Message
  *
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<TModel>
+ * @extends Factory<TModel>
  */
 class MessageFactory extends Factory
 {

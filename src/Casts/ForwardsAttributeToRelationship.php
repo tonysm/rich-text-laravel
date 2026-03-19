@@ -4,13 +4,14 @@ namespace Tonysm\RichTextLaravel\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Tonysm\RichTextLaravel\Models\RichText;
 
 class ForwardsAttributeToRelationship implements CastsAttributes
 {
     /**
      * Prepare the given value for storage.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes
@@ -29,7 +30,7 @@ class ForwardsAttributeToRelationship implements CastsAttributes
     /**
      * Cast the given value.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes
@@ -41,7 +42,7 @@ class ForwardsAttributeToRelationship implements CastsAttributes
     }
 
     /**
-     * @return \Tonysm\RichTextLaravel\Models\RichText
+     * @return RichText
      */
     public function firstOrNewRelationship(Model $model, string $field)
     {

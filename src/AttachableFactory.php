@@ -4,15 +4,16 @@ namespace Tonysm\RichTextLaravel;
 
 use DOMElement;
 use Tonysm\GlobalId\Facades\Locator;
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachables\ContentAttachment;
 use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 use Tonysm\RichTextLaravel\Attachables\RemoteImage;
 
 class AttachableFactory
 {
-    public static function fromNode(DOMElement $node): Attachables\AttachableContract
+    public static function fromNode(DOMElement $node): AttachableContract
     {
-        if (($attachable = RichTextLaravel::attachableFromCustomResolver($node)) instanceof \Tonysm\RichTextLaravel\Attachables\AttachableContract) {
+        if (($attachable = RichTextLaravel::attachableFromCustomResolver($node)) instanceof AttachableContract) {
             return $attachable;
         }
 
@@ -20,15 +21,15 @@ class AttachableFactory
             return $attachable;
         }
 
-        if (($attachable = ContentAttachment::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\ContentAttachment) {
+        if (($attachable = ContentAttachment::fromNode($node)) instanceof ContentAttachment) {
             return $attachable;
         }
 
-        if (($attachable = RemoteImage::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\RemoteImage) {
+        if (($attachable = RemoteImage::fromNode($node)) instanceof RemoteImage) {
             return $attachable;
         }
 
-        if (($attachable = RemoteFile::fromNode($node)) instanceof \Tonysm\RichTextLaravel\Attachables\RemoteFile) {
+        if (($attachable = RemoteFile::fromNode($node)) instanceof RemoteFile) {
             return $attachable;
         }
 

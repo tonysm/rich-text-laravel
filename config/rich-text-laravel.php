@@ -1,5 +1,10 @@
 <?php
 
+use Tonysm\RichTextLaravel\Editor\LexxyEditor;
+use Tonysm\RichTextLaravel\Editor\TrixEditor;
+use Tonysm\RichTextLaravel\Models\EncryptedRichText;
+use Tonysm\RichTextLaravel\Models\RichText;
+
 return [
     /*
      |--------------------------------------------------------------------------
@@ -11,7 +16,7 @@ return [
      | using this Eloquent Model. You can override this if you really need to.
      |
      */
-    'model' => \Tonysm\RichTextLaravel\Models\RichText::class,
+    'model' => RichText::class,
 
     /*
      |--------------------------------------------------------------------------
@@ -22,7 +27,7 @@ return [
      | will use this model instead of the base RichText model.
      |
      */
-    'encrypted_model' => \Tonysm\RichTextLaravel\Models\EncryptedRichText::class,
+    'encrypted_model' => EncryptedRichText::class,
 
     /*
      |--------------------------------------------------------------------------
@@ -67,7 +72,7 @@ return [
      |
      */
     'editors' => [
-        'trix' => \Tonysm\RichTextLaravel\Editor\TrixEditor::class,
-        'lexxy' => \Tonysm\RichTextLaravel\Editor\LexxyEditor::class,
+        'trix' => TrixEditor::class,
+        'lexxy' => LexxyEditor::class,
     ],
 ];

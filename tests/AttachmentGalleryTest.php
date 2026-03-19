@@ -2,12 +2,13 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\AttachmentGallery;
 use Tonysm\RichTextLaravel\HtmlConversion;
 
 class AttachmentGalleryTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gets_attachment(): void
     {
         $document = HtmlConversion::document(<<<'HTML'

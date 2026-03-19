@@ -3,12 +3,13 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Database\Eloquent\Model;
+use PHPUnit\Framework\Attributes\Test;
 use Workbench\App\Models\Post;
 use Workbench\Database\Factories\PostFactory;
 
 class ModelTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function converts_html(): void
     {
         $post = PostFactory::new()->create([
@@ -23,7 +24,7 @@ class ModelTest extends TestCase
         HTML, "{$post->refresh()->body}");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function plain_text(): void
     {
         $post = PostFactory::new()->create([
@@ -33,7 +34,7 @@ class ModelTest extends TestCase
         $this->assertEquals('Hello World', $post->refresh()->body->toPlainText());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function without_content(): void
     {
         $post = PostFactory::new()->create();
@@ -49,7 +50,7 @@ class ModelTest extends TestCase
         $this->assertTrue($post->body->isEmpty());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function with_blank_content(): void
     {
         $post = PostFactory::new()->create([
@@ -65,7 +66,7 @@ class ModelTest extends TestCase
         $this->assertTrue($post->body->isEmpty());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function updates_content(): void
     {
         $post = PostFactory::new()->create([
@@ -84,7 +85,7 @@ class ModelTest extends TestCase
         HTML, "{$post->refresh()->body}");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function touches_record_when_rich_text_is_updated(): void
     {
         $this->freezeTime();
@@ -102,7 +103,7 @@ class ModelTest extends TestCase
         $this->assertFalse($post->created_at->eq($post->updated_at), 'Didnt touch the record timestamps.');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function doesnt_touch_record_when_rich_text_isnt_updated(): void
     {
         $this->freezeTime();
@@ -120,7 +121,7 @@ class ModelTest extends TestCase
         $this->assertTrue($post->created_at->eq($post->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function doesnt_touch_record_when_touching_is_disabled_on_the_specific_model(): void
     {
         $this->freezeTime();
@@ -138,7 +139,7 @@ class ModelTest extends TestCase
         $this->assertTrue($post->refresh()->created_at->eq($post->refresh()->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function doesnt_touch_record_when_touching_is_disabled_globally(): void
     {
         $this->freezeTime();

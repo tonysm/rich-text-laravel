@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\Content;
 use Tonysm\RichTextLaravel\Fragment;
 use Tonysm\RichTextLaravel\Models\RichText;
@@ -11,79 +12,79 @@ use Workbench\Database\Factories\UserFactory;
 
 class MarkdownConversionTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function plain_text_passes_through_unchanged(): void
     {
         $this->assertConvertedTo('hello world', 'hello world');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function strong_tags_are_converted_to_bold(): void
     {
         $this->assertConvertedTo('**hello**', '<strong>hello</strong>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function b_tags_are_converted_to_bold(): void
     {
         $this->assertConvertedTo('**hello**', '<b>hello</b>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function em_tags_are_converted_to_italic(): void
     {
         $this->assertConvertedTo('*hello*', '<em>hello</em>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function i_tags_are_converted_to_italic(): void
     {
         $this->assertConvertedTo('*hello*', '<i>hello</i>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function s_tags_are_converted_to_strikethrough(): void
     {
         $this->assertConvertedTo('~~hello~~', '<s>hello</s>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function code_tags_are_converted_to_inline_code(): void
     {
         $this->assertConvertedTo('`hello`', '<code>hello</code>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function nested_strong_and_em_tags_produce_bold_italic(): void
     {
         $this->assertConvertedTo('***hello***', '<strong><em>hello</em></strong>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function redundant_nested_b_and_strong_tags_do_not_double_bold(): void
     {
         $this->assertConvertedTo('**hello**', '<b><strong>hello</strong></b>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function strong_with_inner_whitespace_moves_spaces_outside_markers(): void
     {
         $this->assertConvertedTo('a **hello** b', '<p>a<strong> hello </strong>b</p>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function em_with_inner_whitespace_moves_spaces_outside_markers(): void
     {
         $this->assertConvertedTo('a *hello* b', '<p>a<em> hello </em>b</p>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function b_wrapping_code_wrapping_strong_collapses_to_bold_code(): void
     {
         $this->assertConvertedTo('**`asdf`**', '<b><code><strong>asdf</strong></code></b>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function adjacent_b_spans_are_merged(): void
     {
         $this->assertConvertedTo(
@@ -92,7 +93,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function adjacent_i_spans_are_merged(): void
     {
         $this->assertConvertedTo(
@@ -101,7 +102,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function adjacent_bold_and_italic_spans_are_merged(): void
     {
         $this->assertConvertedTo(
@@ -110,7 +111,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function p_tags_are_separated_by_two_new_lines(): void
     {
         $this->assertConvertedTo(
@@ -119,7 +120,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function h1_through_h6_tags_are_converted_to_heading_markers(): void
     {
         $this->assertConvertedTo('# hello', '<h1>hello</h1>');
@@ -130,13 +131,13 @@ class MarkdownConversionTest extends TestCase
         $this->assertConvertedTo('###### hello', '<h6>hello</h6>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function blockquote_tags_are_converted_to_quoted_lines(): void
     {
         $this->assertConvertedTo('> hello', '<blockquote>hello</blockquote>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function blockquote_with_multiple_lines_prefixes_each_line(): void
     {
         $this->assertConvertedTo(
@@ -145,7 +146,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function nested_blockquote_tags_produce_nested_quotes(): void
     {
         $this->assertConvertedTo(
@@ -154,37 +155,37 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function br_tags_are_converted_to_newlines(): void
     {
         $this->assertConvertedTo("hello\nworld", 'hello<br>world');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function hr_tags_are_converted_to_thematic_breaks(): void
     {
         $this->assertConvertedTo('---', '<hr>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pre_tags_are_converted_to_fenced_code_blocks(): void
     {
         $this->assertConvertedTo("```\nhello\n```", '<pre>hello</pre>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pre_with_nested_code_tag_is_converted_to_fenced_code_block(): void
     {
         $this->assertConvertedTo("```\nhello\n```", '<pre><code>hello</code></pre>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pre_with_php_code_inside_is_converted_to_fenced_code_block_with_language(): void
     {
         $this->assertConvertedTo("```php\n<?= 'hello world' ?>\n```", '<pre data-language="php" data-highlight-language="php">&lt;?= \'hello world\' ?&gt;</pre>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pre_followed_by_p_has_blank_line_separator(): void
     {
         $this->assertConvertedTo(
@@ -193,7 +194,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function ul_tags_are_converted_to_unordered_lists(): void
     {
         $this->assertConvertedTo(
@@ -202,7 +203,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function ol_tags_are_converted_to_ordered_lists(): void
     {
         $this->assertConvertedTo(
@@ -211,7 +212,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function empty_li_tags_are_skipped(): void
     {
         $this->assertConvertedTo(
@@ -220,7 +221,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function nested_ul_tags_are_indented(): void
     {
         $this->assertConvertedTo(
@@ -229,7 +230,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function nested_ul_where_sublist_is_in_its_own_li(): void
     {
         $this->assertConvertedTo(
@@ -249,7 +250,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function ul_followed_by_p_has_blank_line_separator(): void
     {
         $this->assertConvertedTo(
@@ -269,7 +270,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_are_converted_to_links(): void
     {
         $this->assertConvertedTo(
@@ -278,7 +279,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_formatting_inside(): void
     {
         $this->assertConvertedTo(
@@ -287,43 +288,43 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_without_href_pass_through_content(): void
     {
         $this->assertConvertedTo('**click here**', '<a><strong>click here</strong></a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_mailto_href_are_converted_to_links(): void
     {
         $this->assertConvertedTo('[email](mailto:test@example.com)', '<a href="mailto:test@example.com">email</a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_tel_href_are_converted_to_links(): void
     {
         $this->assertConvertedTo('[call](tel:+1234567890)', '<a href="tel:+1234567890">call</a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_relative_href_are_converted_to_links(): void
     {
         $this->assertConvertedTo('[page](/about)', '<a href="/about">page</a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_relative_href_containing_colons_are_converted_to_links(): void
     {
         $this->assertConvertedTo('[notes](/docs/v1:notes)', '<a href="/docs/v1:notes">notes</a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tags_with_javascript_href_pass_through_content_without_link(): void
     {
         $this->assertConvertedTo('click here', '<a href="javascript:alert(1)">click here</a>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function table_with_thead_is_converted_to_markdown_table(): void
     {
         $this->assertConvertedTo(
@@ -337,7 +338,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function table_cells_with_formatting(): void
     {
         $this->assertConvertedTo(
@@ -346,7 +347,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function table_without_thead(): void
     {
         $this->assertConvertedTo(
@@ -355,7 +356,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function table_with_th_headers_in_tbody(): void
     {
         $this->assertConvertedTo(
@@ -364,7 +365,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function details_and_summary_are_converted(): void
     {
         $this->assertConvertedTo(
@@ -373,19 +374,19 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function empty_content(): void
     {
         $this->assertConvertedTo('', '');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function leading_and_trailing_whitespace_is_stripped(): void
     {
         $this->assertConvertedTo('hello', '<p>  hello  </p>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function html_entities_are_decoded(): void
     {
         $this->assertConvertedTo(
@@ -394,25 +395,25 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function unknown_elements_pass_through_their_content(): void
     {
         $this->assertConvertedTo('hello', '<asdf>hello</asdf>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function div_passes_through_content(): void
     {
         $this->assertConvertedTo('hello', '<div>  hello  </div>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function span_passes_through_content(): void
     {
         $this->assertConvertedTo('hello', '<span>  hello  </span>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function script_tags_are_ignored(): void
     {
         $this->assertConvertedTo(
@@ -426,7 +427,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function style_tags_are_ignored(): void
     {
         $this->assertConvertedTo(
@@ -440,7 +441,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function image_attachment_with_caption_is_converted_to_markdown_image(): void
     {
         $this->assertConvertedTo(
@@ -449,7 +450,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function image_attachment_without_caption_falls_back_to_image_alt_text(): void
     {
         $this->assertConvertedTo(
@@ -458,7 +459,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function content_attachment_html_is_converted_to_markdown(): void
     {
         $this->assertConvertedTo(
@@ -472,7 +473,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function attachment_with_surrounding_text(): void
     {
         $this->assertConvertedTo(
@@ -481,7 +482,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_attachment_is_converted_to_markdown_with_caption(): void
     {
         $user = UserFactory::new()->create(['name' => 'Test User']);
@@ -495,7 +496,7 @@ class MarkdownConversionTest extends TestCase
         $this->assertEquals('Captioned', (new Content($html))->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_attachment_without_caption(): void
     {
         $user = UserFactory::new()->create(['name' => 'Test User']);
@@ -509,7 +510,7 @@ class MarkdownConversionTest extends TestCase
         $this->assertEquals('Test User', (new Content($html))->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function missing_attachable_is_converted_to_box(): void
     {
         $user = UserFactory::new()->create(['name' => 'Test User']);
@@ -524,28 +525,28 @@ class MarkdownConversionTest extends TestCase
         $this->assertEquals('☒', (new Content($html))->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function rich_text_to_markdown(): void
     {
         $richText = new RichText(['body' => '<p><strong>hello</strong></p>']);
         $this->assertEquals('**hello**', $richText->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function rich_text_to_markdown_handles_blank_body(): void
     {
         $richText = new RichText(['body' => '']);
         $this->assertEquals('', $richText->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function rich_text_to_markdown_handles_nil_body(): void
     {
         $richText = new RichText(['body' => null]);
         $this->assertEquals('', $richText->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function multiple_attachments_separated_by_whitespace_preserve_the_whitespace(): void
     {
         $this->assertConvertedTo(
@@ -554,26 +555,26 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function fragment_to_markdown_memoizes_the_result(): void
     {
         $fragment = Fragment::fromHtml('<p><strong>hello</strong></p>');
         $this->assertSame($fragment->toMarkdown(), $fragment->toMarkdown());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function whitespace_between_adjacent_code_elements_is_preserved(): void
     {
         $this->assertConvertedTo('`a` `b`', '<code>a</code> <code>b</code>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function whitespace_between_adjacent_strikethrough_elements_is_preserved(): void
     {
         $this->assertConvertedTo('~~a~~ ~~b~~', '<s>a</s> <s>b</s>');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function a_tag_with_brackets_in_text_and_parens_in_url_is_escaped(): void
     {
         $this->assertConvertedTo(
@@ -582,7 +583,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function image_attachment_with_parens_in_url_is_escaped(): void
     {
         $this->assertConvertedTo(
@@ -591,7 +592,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function file_attachment_is_converted_to_markdown_link(): void
     {
         $this->assertConvertedTo(
@@ -600,7 +601,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function file_attachment_with_parens_in_url_is_escaped(): void
     {
         $this->assertConvertedTo(
@@ -609,7 +610,7 @@ class MarkdownConversionTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function nested_s_tags_do_not_double_wrap_strikethrough(): void
     {
         $this->assertConvertedTo('~~hello~~', '<s><s>hello</s></s>');

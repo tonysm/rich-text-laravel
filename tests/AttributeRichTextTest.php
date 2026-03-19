@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\Content;
+use Tonysm\RichTextLaravel\Models\RichText;
 use Tonysm\RichTextLaravel\RichTextLaravel;
 use Workbench\App\Models\Page;
 
 class AttributeRichTextTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function stores_content_in_model_attribute(): void
     {
         $page = Page::create([
@@ -23,7 +25,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertEquals(0, DB::table('rich_texts')->count(), 'Content should not be stored in the rich_texts table.');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function returns_content_instance(): void
     {
         $page = Page::create([
@@ -36,7 +38,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertInstanceOf(Content::class, $page->body);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function renders_content(): void
     {
         $page = Page::create([
@@ -54,7 +56,7 @@ class AttributeRichTextTest extends TestCase
         HTML, "{$page->body}");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function converts_to_plain_text(): void
     {
         $page = Page::create([
@@ -67,7 +69,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertEquals('Hello World', $page->body->toPlainText());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function handles_empty_content(): void
     {
         $page = Page::create([
@@ -81,7 +83,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertTrue($page->body->isEmpty());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function handles_null_content(): void
     {
         $page = Page::create([
@@ -95,7 +97,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertTrue($page->body->isEmpty());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function updates_content(): void
     {
         $page = Page::create([
@@ -115,7 +117,7 @@ class AttributeRichTextTest extends TestCase
         HTML, "{$page->refresh()->body}");
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function does_not_register_relationship_for_attribute_fields(): void
     {
         $page = new Page;
@@ -123,7 +125,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertFalse($page->isRelation('richTextBody'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function with_rich_text_scope_skips_attribute_fields(): void
     {
         Page::create([
@@ -139,7 +141,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertInstanceOf(Content::class, $pages->first()->body);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function mixed_attribute_and_relationship_fields(): void
     {
         $page = PageWithMixedFields::create([
@@ -155,11 +157,11 @@ class AttributeRichTextTest extends TestCase
         $this->assertNotNull(DB::table('pages')->where('id', $page->id)->value('body'));
 
         // notes is stored as relationship (in rich_texts table)
-        $this->assertInstanceOf(\Tonysm\RichTextLaravel\Models\RichText::class, $page->notes);
+        $this->assertInstanceOf(RichText::class, $page->notes);
         $this->assertEquals(1, DB::table('rich_texts')->where('record_id', $page->id)->count());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function eager_loading_with_mixed_fields_only_loads_relationship_fields(): void
     {
         PageWithMixedFields::create([
@@ -187,7 +189,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertEquals(2, $queryCounts);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function encrypted_attribute_stores_encrypted_content(): void
     {
         $page = PageWithEncryptedAttribute::create([
@@ -206,7 +208,7 @@ class AttributeRichTextTest extends TestCase
         $this->assertStringContainsString('Secret Content', $page->body->toHtml());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function canonicalizes_content_on_storage(): void
     {
         $trixHtml = <<<'HTML'

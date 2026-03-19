@@ -2,11 +2,12 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\TrixAttachment;
 
 class TrixAttachmentTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function from_attributes(): void
     {
         $attributes = [
@@ -36,7 +37,7 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttributesJsonEqualsTo($attachment, $attributes);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function filter_out_empty_attributes(): void
     {
         $attachment = $this->attachment([
@@ -51,7 +52,7 @@ class TrixAttachmentTest extends TestCase
         $this->assertArrayNotHasKey('previewable', $attachment->attributes());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function previewable_is_typecast(): void
     {
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => '']), ['previewable' => false]);
@@ -62,7 +63,7 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['previewable' => 'true']), ['previewable' => true]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function filesize_is_typecast_when_integerish(): void
     {
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['filesize' => 123]), ['filesize' => 123]);
@@ -72,7 +73,7 @@ class TrixAttachmentTest extends TestCase
         $this->assertAttachmentAttributesEqualsTo($this->attachment(['filesize' => '']), ['filesize' => '']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function attributes_strips_unmappable_attributes(): void
     {
         $attachment = $this->attachment([

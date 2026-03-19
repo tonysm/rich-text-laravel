@@ -7,6 +7,7 @@ use DOMNode;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 use Tonysm\RichTextLaravel\Actions\FragmentByCanonicalizingAttachmentGalleries;
+use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 
 class Content implements \Stringable
 {
@@ -40,12 +41,12 @@ class Content implements \Stringable
             ->send($content)
             ->through([
                 Actions\FragmentByCanonicalizingAttachments::class,
-                Actions\FragmentByCanonicalizingAttachmentGalleries::class,
+                FragmentByCanonicalizingAttachmentGalleries::class,
             ])
             ->thenReturn();
     }
 
-    public function __construct(string|\Tonysm\RichTextLaravel\Fragment|\DOMDocument $content, array $options = [])
+    public function __construct(string|Fragment|\DOMDocument $content, array $options = [])
     {
         if ($options['canonicalize'] ?? true) {
             $this->fragment = static::fragmentByCanonicalizingContent($content);
@@ -63,7 +64,7 @@ class Content implements \Stringable
 
     public function attachments(): Collection
     {
-        return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node): \Tonysm\RichTextLaravel\Attachment => (
+        return $this->cachedAttachments ??= $this->attachmentNodes()->map(fn (DOMElement $node): Attachment => (
             $this->attachmentForNode($node)
         ));
     }
@@ -77,14 +78,14 @@ class Content implements \Stringable
 
     public function attachables(): Collection
     {
-        return $this->cachedAttachables ??= $this->attachmentNodes()->map(fn (DOMElement $node): \Tonysm\RichTextLaravel\Attachables\AttachableContract => (
+        return $this->cachedAttachables ??= $this->attachmentNodes()->map(fn (DOMElement $node): AttachableContract => (
             AttachableFactory::fromNode($node)
         ));
     }
 
     public function galleryAttachments(): Collection
     {
-        return $this->cachedGalleryAttachments ??= $this->attachmentGalleries()->flatMap(fn (AttachmentGallery $attachmentGallery): \Illuminate\Support\Collection => $attachmentGallery->attachments());
+        return $this->cachedGalleryAttachments ??= $this->attachmentGalleries()->flatMap(fn (AttachmentGallery $attachmentGallery): Collection => $attachmentGallery->attachments());
     }
 
     public function renderAttachments(array $options, callable $callback): static
@@ -135,7 +136,7 @@ class Content implements \Stringable
 
     public function renderWithAttachments(): string
     {
-        return $this->renderAttachments([], function (Attachment $attachment): ?\Tonysm\RichTextLaravel\Fragment {
+        return $this->renderAttachments([], function (Attachment $attachment): ?Fragment {
             // If this is a gallery attachment, we'll render it separately.
 
             if ($this->galleryAttachments()->first(fn (Attachment $galleryAttachment): bool => $galleryAttachment->is($attachment))) {
@@ -194,7 +195,7 @@ class Content implements \Stringable
         return $this->cachedAttachmentGalleryNodes ??= (new FragmentByCanonicalizingAttachmentGalleries)->findAttachmentGalleryNodes($this->fragment);
     }
 
-    private function attachmentGalleryForNode(DOMElement $node): \Tonysm\RichTextLaravel\AttachmentGallery
+    private function attachmentGalleryForNode(DOMElement $node): AttachmentGallery
     {
         return AttachmentGallery::fromNode($node);
     }

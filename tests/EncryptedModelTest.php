@@ -3,13 +3,14 @@
 namespace Tonysm\RichTextLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\RichTextLaravel;
 use Workbench\App\Models\EncryptedMessage;
 use Workbench\App\Models\Message;
 
 class EncryptedModelTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function encrypt_content_based_on_encrypted_option_at_declaration_time(): void
     {
         $encryptedMessage = EncryptedMessage::create(['content' => 'Hello World']);

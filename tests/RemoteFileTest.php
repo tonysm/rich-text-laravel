@@ -2,6 +2,8 @@
 
 namespace Tonysm\RichTextLaravel\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tonysm\RichTextLaravel\Attachables\RemoteFile;
 
 class RemoteFileTest extends TestCase
@@ -28,8 +30,8 @@ class RemoteFileTest extends TestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
-    #[\PHPUnit\Framework\Attributes\DataProvider('filesizesProvider')]
+    #[Test]
+    #[DataProvider('filesizesProvider')]
     public function converts_file_size_to_human_readable(int $bytes, string $human): void
     {
         $file = new RemoteFile([

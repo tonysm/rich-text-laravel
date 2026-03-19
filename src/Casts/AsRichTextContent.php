@@ -3,6 +3,7 @@
 namespace Tonysm\RichTextLaravel\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 use Tonysm\RichTextLaravel\Content;
 
 class AsRichTextContent implements CastsAttributes
@@ -10,7 +11,7 @@ class AsRichTextContent implements CastsAttributes
     /**
      * Prepare the given value for storage.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes
@@ -24,7 +25,7 @@ class AsRichTextContent implements CastsAttributes
     /**
      * Cast the given value.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes

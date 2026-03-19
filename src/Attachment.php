@@ -38,7 +38,7 @@ class Attachment implements Htmlable, Stringable
 
     public static function fromAttachable(AttachableContract $attachable, array $attributes = []): ?static
     {
-        if (($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) instanceof \DOMElement) {
+        if (($node = static::nodeFromAttributes($attachable->toRichTextAttributes($attributes))) instanceof DOMElement) {
             return new static($node, $attachable);
         }
 
@@ -55,7 +55,7 @@ class Attachment implements Htmlable, Stringable
      */
     public static function fromAttributes(array $attributes = [], ?AttachableContract $attachable = null): ?self
     {
-        if (($node = static::nodeFromAttributes($attributes)) instanceof \DOMElement) {
+        if (($node = static::nodeFromAttributes($attributes)) instanceof DOMElement) {
             return static::fromNode($node, $attachable);
         }
 
