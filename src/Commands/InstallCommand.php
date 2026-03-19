@@ -128,7 +128,7 @@ class InstallCommand extends Command
     {
         return match ($editor) {
             'trix' => ['trix' => '^2.1.16'],
-            'lexxy' => ['@37signals/lexxy' => '^0.8.0-beta'],
+            'lexxy' => ['@37signals/lexxy' => '^0.8.5-beta'],
         };
     }
 
@@ -165,19 +165,13 @@ class InstallCommand extends Command
     private function installJsDependenciesWithImportmaps(string $editor): void
     {
         if ($editor === 'lexxy') {
-            // For now, let's pin the dependencies directly from a CDN since it's not working well to download...
-
             File::append(base_path('routes/importmap.php'), <<<'PHP'
-
-            Importmap::pin('@37signals/lexxy', to: 'https://esm.sh/@37signals/lexxy@latest');
-
+            Importmap::pin('@37signals/lexxy', to: '/vendor/rich-text-laravel/lexxy.esm.js');
             PHP);
         } else {
-            FacadesProcess::forever()->run(array_merge([
-                $this->phpBinary(),
-                'artisan',
-                'importmap:pin',
-            ], array_keys($this->jsDependencies($editor))), fn ($_type, $output) => $this->output->write($output));
+            File::append(base_path('routes/importmap.php'), <<<'PHP'
+            Importmap::pin('trix', to: '/vendor/rich-text-laravel/trix.esm.js');
+            PHP);
         }
     }
 
