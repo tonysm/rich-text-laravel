@@ -348,7 +348,7 @@ class InstallCommand extends Command
         $configPath = config_path('rich-text-laravel.php');
 
         if (! File::exists($configPath)) {
-            return;
+            $this->publishConfigFile();
         }
 
         File::replaceInFile(
@@ -356,6 +356,19 @@ class InstallCommand extends Command
             "'editor' => env('RICH_TEXT_EDITOR', '{$editor}')",
             $configPath,
         );
+    }
+
+    protected function publishConfigFile(): void
+    {
+        FacadesProcess::forever()->run([
+            $this->phpBinary(),
+            'artisan',
+            'vendor:publish',
+            '--tag',
+            'rich-text-laravel-config',
+            '--provider',
+            RichTextLaravelServiceProvider::class,
+        ], fn ($_type, $output) => $this->output->write($output));
     }
 
     /**
