@@ -104,7 +104,7 @@
     <script type="importmap">
     {
         "imports": {
-            "@37signals/lexxy": "https://esm.sh/@37signals/lexxy@0.8.0-beta",
+            "@37signals/lexxy": "https://esm.sh/@37signals/lexxy@0.8.5-beta",
             "@hotwired/stimulus": "https://cdn.skypack.dev/@hotwired/stimulus",
             "tributejs": "https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js",
             "trix": "https://unpkg.com/trix@2.1.0/dist/trix.esm.min.js"
