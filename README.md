@@ -12,18 +12,18 @@ Integrates rich text editors like [Trix](https://trix-editor.org/) and [Lexxy](h
 
 - [Installation](#installation)
 - [Overview](#overview)
-    - [The RichText Model](#rich-text-model)
-    - [Encrypted Rich Text Attributes](#encrypted-rich-text-attributes)
-    - [Storing Rich Text as a Model Attribute](#attribute-rich-text)
-    - [Image Upload](#image-upload)
-    - [Content Attachments](#attachments)
-    - [The Content Object](#content-object)
-    - [Plain Text Rendering](#plain-text)
-    - [Markdown Rendering](#markdown)
-    - [Sanitization](#sanitization)
-    - [SGID](#sgid)
-    - [Livewire](#livewire)
-    - [Custom Editors](#custom-editors)
+  - [The RichText Model](#rich-text-model)
+  - [Encrypted Rich Text Attributes](#encrypted-rich-text-attributes)
+  - [Storing Rich Text as a Model Attribute](#attribute-rich-text)
+  - [Image Upload](#image-upload)
+  - [Content Attachments](#attachments)
+  - [The Content Object](#content-object)
+  - [Plain Text Rendering](#plain-text)
+  - [Markdown Rendering](#markdown)
+  - [Sanitization](#sanitization)
+  - [SGID](#sgid)
+  - [Livewire](#livewire)
+  - [Custom Editors](#custom-editors)
 - [Testing](#testing)
 - [Changelog](#changelog)
 - [Contributing](#contributing)
@@ -189,7 +189,7 @@ We store a back-reference to the field name in the `rich_texts` table because a 
 Rendering the rich text content back to the editor (Trix, Lexxy, etc.) is a bit different than rendering for the end users, so you may do that using the `toEditorHtml` method on the field, like so:
 
 ```blade
-<x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
+<x-trix-input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
 ```
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
@@ -285,7 +285,7 @@ _Note_: since the HTML output is NOT escaped, make sure you sanitize it before r
 When feeding the editor (Trix, Lexxy, etc.) again, you need to do it differently:
 
 ```blade
-<x-trix-input id="post_body" name="body" value="{!! $post->body->toEditorHtml() !!}" />
+<x-trix-input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.
