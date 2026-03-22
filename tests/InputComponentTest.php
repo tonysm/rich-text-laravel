@@ -47,7 +47,7 @@ class InputComponentTest extends TestCase
     {
         config()->set('rich-text-laravel.editor', 'lexxy');
 
-        $this->blade(<<<BLADE
+        $this->blade(<<<'BLADE'
             <x-rich-text::input id="content" name="content">
                 <lexxy-prompt trigger="@" src="/mentions" name="mention"></lexxy-prompt>
             </x-rich-text::input>
