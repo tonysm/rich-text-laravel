@@ -1,20 +1,41 @@
-@props(['id', 'name', 'value' => ''])
+@props(['id', 'name' => null, 'value' => ''])
 
-<input
-    type="hidden"
-    name="{{ $name }}"
-    id="{{ $id }}_input"
-    value="{{ $value }}"
-/>
+<div
+    {{ $attributes->whereDoesntStartWith('wire:') }}
+    @if ($attributes->has('wire:model'))
+    x-data="{ content: $wire.entangle('{{ $attributes->wire('model')->value() }}') }"
+    x-on:trix-initialize="$refs.input.value = content"
+    x-on:trix-change="content = $refs.input.value"
+    @endif
+>
+    <input
+        type="hidden"
+        @if ($name ?? false)
+        name="{{ $name }}"
+        @endif
+        id="{{ $id }}_input"
+        value="{{ $value }}"
+        @if ($attributes->has('wire:model'))
+        x-on:change="$refs.input.value = $event.target.value"
+        {{ $attributes->whereStartsWith('wire:') }}
+        @endif
+    />
 
-<trix-toolbar
-    class="[&_.trix-button]:bg-white [&_.trix-button.trix-active]:bg-gray-300"
-    id="{{ $id }}_toolbar"
-></trix-toolbar>
+    <trix-toolbar
+        id="{{ $id }}_toolbar"
+        @if ($attributes->has('wire:model'))
+        wire:ignore
+        @endif
+    ></trix-toolbar>
 
-<trix-editor
-    id="{{ $id }}"
-    toolbar="{{ $id }}_toolbar"
-    input="{{ $id }}_input"
-    {{ $attributes->merge(['class' => 'trix-content border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:ring-1 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm dark:[&_pre]:!bg-gray-700 dark:[&_pre]:rounded dark:[&_pre]:!text-white']) }}
-></trix-editor>
+    <trix-editor
+        id="{{ $id }}"
+        toolbar="{{ $id }}_toolbar"
+        input="{{ $id }}_input"
+        class="trix-content"
+        @if ($attributes->has('wire:model'))
+        x-ref="input"
+        wire:ignore
+        @endif
+    ></trix-editor>
+</div>
