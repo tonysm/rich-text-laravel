@@ -175,8 +175,19 @@ trix-toolbar .trix-input--dialog:focus {
     text-decoration: underline;
 }
 
+.trix-content ul {
+    list-style-type: disc;
+}
+
+.trix-content ol {
+    list-style-type: decimal;
+}
+
 .trix-content blockquote {
     border-color: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+    margin-left: 0;
+    padding-block: 0.4em;
+    font-style: italic;
 }
 
 .trix-content pre {
