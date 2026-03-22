@@ -186,7 +186,6 @@ class InstallCommand extends Command
     private function installTrixFrontend(string $editor): void
     {
         $this->ensureTrixLibIsImported();
-        $this->ensureTrixFieldComponentIsCopied();
         $this->updateAppLayoutFiles();
         $this->updateJsDependencies($editor);
     }
@@ -194,7 +193,6 @@ class InstallCommand extends Command
     private function installLexxyFrontend(string $editor): void
     {
         $this->ensureLexxyLibIsImported();
-        $this->ensureLexxyFieldComponentIsCopied();
         $this->updateAppLayoutFiles($editor);
         $this->updateJsDependencies($editor);
     }
@@ -261,26 +259,6 @@ class InstallCommand extends Command
         import "%path%libs/lexxy";
 
         JS));
-    }
-
-    private function ensureTrixFieldComponentIsCopied(): void
-    {
-        File::ensureDirectoryExists(resource_path('views/components'));
-
-        File::copy(
-            __DIR__.'/../../stubs/resources/views/components/trix-input.blade.php',
-            resource_path('views/components/trix-input.blade.php'),
-        );
-    }
-
-    private function ensureLexxyFieldComponentIsCopied(): void
-    {
-        File::ensureDirectoryExists(resource_path('views/components'));
-
-        File::copy(
-            __DIR__.'/../../stubs/resources/views/components/lexxy-input.blade.php',
-            resource_path('views/components/lexxy-input.blade.php'),
-        );
     }
 
     private function updateAppLayoutFiles(): void
