@@ -328,7 +328,19 @@ class InstallCommand extends Command
 
         $stylesTag = $this->stylesTag();
 
-        File::append($headFile, "\n{$stylesTag}\n");
+        $updated = preg_replace(
+            '/(\s*)(@vite\b|<link[^>]*tailwindcss)/',
+            "\n{$stylesTag}\n$1$2",
+            $contents,
+            1,
+        );
+
+        File::put($headFile, $updated);
+
+        // If the pattern update wasn't enough, we simply append it...
+        if (! str_contains($contents, '<x-rich-text::styles')) {
+            File::append($headFile, "\n{$stylesTag}\n");
+        }
     }
 
     private function stylesTag(): string
