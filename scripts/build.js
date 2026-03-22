@@ -14,6 +14,7 @@ let hashedFiles = {
     'resources/css/trix-rich-text-laravel.css': 'trix-rich-text-laravel.css',
     'resources/css/trix-rich-text-laravel-attachments.css': 'trix-rich-text-laravel-attachments.css',
     'resources/css/trix-rich-text-laravel-daisyui.css': 'trix-rich-text-laravel-daisyui.css',
+    'resources/css/trix-rich-text-laravel-flux.css': 'trix-rich-text-laravel-flux.css',
 }
 
 // We'll ship these files in ESM for Importmaps Laravel...

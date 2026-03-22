@@ -7,6 +7,7 @@
   "/trix-rich-text-laravel.css": "/vendor/rich-text-laravel/trix-rich-text-laravel-d74ec4d1.css",
   "/trix-rich-text-laravel-attachments.css": "/vendor/rich-text-laravel/trix-rich-text-laravel-attachments-5258f25c.css",
   "/trix-rich-text-laravel-daisyui.css": "/vendor/rich-text-laravel/trix-rich-text-laravel-daisyui-33127e56.css",
+  "/trix-rich-text-laravel-flux.css": "/vendor/rich-text-laravel/trix-rich-text-laravel-flux-cad7da99.css",
   "/lexxy.esm.js": "/vendor/rich-text-laravel/lexxy.esm.js",
   "/trix.esm.js": "/vendor/rich-text-laravel/trix.esm.js"
 }

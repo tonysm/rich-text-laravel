@@ -18,5 +18,7 @@
     <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/trix-rich-text-laravel-attachments.css') }}" />
     @if ($theme === 'daisyui')
     <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/trix-rich-text-laravel-daisyui.css') }}" />
+    @elseif ($theme === 'flux')
+    <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/trix-rich-text-laravel-flux.css') }}" />
     @endif
 @endif

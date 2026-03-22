@@ -1,0 +1,358 @@
+/* ==========================================
+   Trix Editor — Flux-matched styles
+   ========================================== */
+
+/* --- Editor (matches flux:textarea) --- */
+trix-editor {
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-zinc-200);
+    border-bottom-color: color-mix(in srgb, var(--color-zinc-300) 80%, transparent);
+    background-color: var(--color-white);
+    padding: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: var(--color-zinc-700);
+    box-shadow: 0 1px 2px 0 color-mix(in srgb, var(--color-black) 5%, transparent);
+    min-height: 8em;
+    outline: none;
+}
+
+@media (min-width: 640px) {
+    trix-editor {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+}
+
+trix-editor:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-accent-foreground), 0 0 0 4px var(--color-accent);
+}
+
+.dark trix-editor {
+    border-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    color: var(--color-zinc-300);
+    box-shadow: none;
+}
+
+.dark trix-editor:focus {
+    box-shadow: 0 0 0 2px var(--color-accent-foreground), 0 0 0 4px var(--color-accent);
+}
+
+/* --- Toolbar --- */
+trix-toolbar {
+    margin-bottom: 2px;
+}
+
+trix-toolbar .trix-button-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    overflow-x: auto;
+}
+
+trix-toolbar .trix-button-group.trix-button-group {
+    display: flex;
+    flex-shrink: 0;
+    border-radius: var(--radius-lg);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--color-zinc-200);
+    border-bottom-color: color-mix(in srgb, var(--color-zinc-300) 80%, transparent);
+    box-shadow: 0 1px 2px 0 color-mix(in srgb, var(--color-black) 5%, transparent);
+    overflow: hidden;
+}
+
+.dark trix-toolbar .trix-button-group.trix-button-group {
+    border-color: color-mix(in srgb, var(--color-white) 20%, transparent);
+    box-shadow: none;
+}
+
+trix-toolbar .trix-button-group:not(:first-child) {
+    margin-left: 0;
+}
+
+trix-toolbar .trix-button-group-spacer {
+    flex-grow: 1;
+}
+
+trix-toolbar .trix-button {
+    position: relative;
+    float: left;
+    background-color: var(--color-white);
+    color: var(--color-zinc-600);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0 0.5em;
+    margin: 0;
+    border: none;
+    outline: none;
+}
+
+.dark trix-toolbar .trix-button {
+    background-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    color: var(--color-zinc-300);
+}
+
+trix-toolbar .trix-button:not(:first-child) {
+    border-left: 1px solid var(--color-zinc-200);
+}
+
+.dark trix-toolbar .trix-button:not(:first-child) {
+    border-left-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+}
+
+trix-toolbar .trix-button.trix-active {
+    background-color: var(--color-zinc-100);
+    color: var(--color-zinc-900);
+}
+
+.dark trix-toolbar .trix-button.trix-active {
+    background-color: color-mix(in srgb, var(--color-white) 20%, transparent);
+    color: var(--color-white);
+}
+
+trix-toolbar .trix-button:not(:disabled) {
+    cursor: pointer;
+}
+
+trix-toolbar .trix-button:disabled {
+    color: var(--color-zinc-300);
+}
+
+.dark trix-toolbar .trix-button:disabled {
+    color: var(--color-zinc-600);
+}
+
+trix-toolbar .trix-button:hover:not(:disabled):not(.trix-active) {
+    background-color: var(--color-zinc-50);
+}
+
+.dark trix-toolbar .trix-button:hover:not(:disabled):not(.trix-active) {
+    background-color: color-mix(in srgb, var(--color-white) 15%, transparent);
+}
+
+/* Icon buttons */
+trix-toolbar .trix-button--icon {
+    font-size: inherit;
+    width: 2.6em;
+    height: 1.6em;
+    max-width: calc(0.8em + 4vw);
+    text-indent: -9999px;
+}
+
+trix-toolbar .trix-button--icon::before {
+    display: inline-block;
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+    content: "";
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.dark trix-toolbar .trix-button--icon::before {
+    filter: invert(1);
+}
+
+trix-toolbar .trix-button--icon.trix-active::before {
+    opacity: 1;
+}
+
+trix-toolbar .trix-button--icon:disabled::before {
+    opacity: 0.125;
+}
+
+/* --- Dialog (link input, etc.) --- */
+trix-toolbar .trix-dialogs {
+    position: relative;
+}
+
+trix-toolbar .trix-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 0.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-zinc-200);
+    background-color: var(--color-white);
+    padding: 0.75rem;
+    box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--color-black) 10%, transparent),
+                0 2px 4px -2px color-mix(in srgb, var(--color-black) 10%, transparent);
+    z-index: 50;
+}
+
+.dark trix-toolbar .trix-dialog {
+    border-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    background-color: var(--color-zinc-800);
+    color: var(--color-zinc-300);
+}
+
+trix-toolbar .trix-input--dialog {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-zinc-200);
+    background-color: var(--color-white);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    box-shadow: 0 1px 2px 0 color-mix(in srgb, var(--color-black) 5%, transparent);
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.dark trix-toolbar .trix-input--dialog {
+    border-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    color: var(--color-zinc-300);
+}
+
+trix-toolbar .trix-input--dialog:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-accent-foreground), 0 0 0 4px var(--color-accent);
+}
+
+trix-toolbar .trix-button--dialog {
+    border-radius: var(--radius-lg);
+    background-color: var(--color-zinc-100);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-zinc-700);
+    border: none;
+}
+
+.dark trix-toolbar .trix-button--dialog {
+    background-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    color: var(--color-zinc-300);
+}
+
+trix-toolbar .trix-dialog--link {
+    max-width: 600px;
+}
+
+trix-toolbar .trix-dialog__link-fields {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+trix-toolbar .trix-dialog__link-fields .trix-input {
+    flex: 1;
+}
+
+trix-toolbar .trix-dialog__link-fields .trix-button-group {
+    flex: none;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+}
+
+/* --- Trix content — restore Tailwind-reset defaults --- */
+.trix-content {
+    line-height: 1.625;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.trix-content > * + * {
+    margin-top: 0.75em;
+}
+
+.trix-content h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.trix-content a {
+    color: var(--color-blue-600);
+    text-decoration: underline;
+}
+
+.dark .trix-content a {
+    color: var(--color-blue-400);
+}
+
+.trix-content blockquote {
+    border-left: 4px solid var(--color-zinc-300);
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+    font-style: italic;
+    color: var(--color-zinc-600);
+}
+
+.dark .trix-content blockquote {
+    border-left-color: var(--color-zinc-600);
+    color: var(--color-zinc-400);
+}
+
+.trix-content ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.trix-content ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+}
+
+.trix-content li {
+    margin-bottom: 0.25rem;
+}
+
+.trix-content pre {
+    display: inline-block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-zinc-100);
+    padding: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.dark .trix-content pre {
+    background-color: var(--color-zinc-800);
+    color: var(--color-zinc-200);
+}
+
+.trix-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.trix-content .attachment {
+    display: inline-block;
+    position: relative;
+    max-width: 100%;
+}
+
+.trix-content .attachment--file {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-zinc-200);
+    padding: 0.5rem 1rem;
+    color: var(--color-zinc-700);
+    margin: 0.25rem 0;
+}
+
+.dark .trix-content .attachment--file {
+    border-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+    color: var(--color-zinc-300);
+}
+
+.trix-content .attachment__caption {
+    text-align: center;
+}
+
+.trix-content .attachment--preview .attachment__caption {
+    color: var(--color-zinc-500);
+    font-size: 0.875rem;
+}
