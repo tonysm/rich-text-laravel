@@ -15,6 +15,7 @@ Use this skill when turning an Eloquent model into a content attachment for rich
 
 The model must implement `AttachableContract` and use the `Attachable` trait:
 
+@verbatim
 ```php
 use Tonysm\RichTextLaravel\Attachables\AttachableContract;
 use Tonysm\RichTextLaravel\Attachables\Attachable;
@@ -26,11 +27,13 @@ class User extends Model implements AttachableContract
     // ...
 }
 ```
+@endverbatim
 
 ### 2. Implement the `richTextRender()` Method
 
 This is the only required method. It returns the HTML used when displaying the attachment outside the editor:
 
+@verbatim
 ```php
 public function richTextRender(array $options = []): string
 {
@@ -39,6 +42,7 @@ public function richTextRender(array $options = []): string
     ])->render();
 }
 ```
+@endverbatim
 
 The `$options` array may contain an `in_gallery` boolean when the attachment is rendered inside a gallery.
 
@@ -46,32 +50,38 @@ The `$options` array may contain an `in_gallery` boolean when the attachment is 
 
 Create a Blade view that renders the attachment's HTML. This is the content end users will see:
 
+@verbatim
 ```blade
 {{-- resources/views/mentions/partials/user.blade.php --}}
 <span class="mention">
     {{ $user->name }}
 </span>
 ```
+@endverbatim
 
 ### 4. Optional: Plain Text and Markdown Representations
 
 For plain text export (`toPlainText()`), implement:
 
+@verbatim
 ```php
 public function richTextAsPlainText(?string $caption = null): string
 {
     return $this->name;
 }
 ```
+@endverbatim
 
 For Markdown export (`toMarkdown()`), implement:
 
+@verbatim
 ```php
 public function richTextAsMarkdown(?string $caption = null): string
 {
     return $caption ?: $this->name;
 }
 ```
+@endverbatim
 
 If these methods are not implemented and no caption is stored, the attachment won't appear in the respective output.
 
@@ -89,6 +99,7 @@ The `Attachable` trait provides sensible defaults for these methods, but you can
 
 For better organization, extract the attachable behavior into its own trait:
 
+@verbatim
 ```php
 // app/Models/User/Mentionee.php
 namespace App\Models\User;
@@ -115,20 +126,24 @@ trait Mentionee
     }
 }
 ```
+@endverbatim
 
 Then use it on the model:
 
+@verbatim
 ```php
 class User extends Model implements AttachableContract
 {
     use User\Mentionee;
 }
 ```
+@endverbatim
 
 ## Custom Attachables Without SGIDs
 
 For attachments that don't need a database record (e.g., OpenGraph embeds), implement `AttachableContract` directly on a plain class and register a custom resolver:
 
+@verbatim
 ```php
 use Tonysm\RichTextLaravel\RichTextLaravel;
 
@@ -139,9 +154,11 @@ RichTextLaravel::withCustomAttachables(function (DOMElement $node) {
     }
 });
 ```
+@endverbatim
 
 The class must implement `toRichTextAttributes()`, `equalsToAttachable()`, and `richTextRender()`. Use a `content-type` attribute on the node to identify your custom attachment type:
 
+@verbatim
 ```php
 class OpengraphEmbed implements AttachableContract
 {
@@ -176,6 +193,7 @@ class OpengraphEmbed implements AttachableContract
     }
 }
 ```
+@endverbatim
 
 ## How SGIDs Work
 
@@ -194,6 +212,7 @@ For Trix, create a `new Trix.Attachment({ sgid, content, contentType: '...' })` 
 
 After saving, extract all attachables of a specific type:
 
+@verbatim
 ```php
 use Tonysm\RichTextLaravel\Attachment;
 
@@ -202,3 +221,4 @@ $post->body->attachments()
     ->map(fn (Attachment $attachment) => $attachment->attachable)
     ->unique();
 ```
+@endverbatim
