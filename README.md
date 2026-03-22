@@ -116,6 +116,24 @@ class Post extends Model
 }
 ```
 
+Alternatively, you may use a PHP class attribute instead of the `$richTextAttributes` property:
+
+```php
+use Tonysm\RichTextLaravel\Attributes\RichTextAttributes;
+use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
+
+#[RichTextAttributes(['body', 'notes'])]
+class Post extends Model
+{
+    use HasRichText;
+
+    protected $guarded = [];
+}
+```
+
+| 💡 You can use either `#[RichTextAttributes]` or the `$richTextAttributes` property, but not both on the same model. |
+|------------------------|
+
 This trait will create [dynamic relationships](https://laravel.com/docs/8.x/eloquent-relationships#dynamic-relationships) on the Post model, one for each field. These relationships will be called: `richText{FieldName}` and you may define the fields using underscore, so if you had a `internal_notes` field, that would have a `richTextInternalNotes` relationship added on the model.
 
 For a better DX, the trait will also add a custom cast for the `body` and `notes` fields on the Post model to forward setting/getting operations to the relationship, since these fields will NOT be stored in the posts table. This means that you can use the Post model like this:
@@ -214,6 +232,16 @@ class Post extends Model
 }
 ```
 
+Or using the class attribute:
+
+```php
+#[RichTextAttributes(['body' => ['encrypted' => true], 'notes'])]
+class Post extends Model
+{
+    use HasRichText;
+}
+```
+
 This uses [Laravel's Encryption](https://laravel.com/docs/encryption#introduction) feature. By default, we'll encrypt using Laravel's `Crypt::encryptString()` and decrypt with `Crypt::decryptString()`. If you're coming from version 2 of the Rich Text Laravel package, which would default to `Crypt::encrypt()` and `Crypt::decrypt()`, you must migrate your data manually (see instructions in the [2.2.0](https://github.com/tonysm/rich-text-laravel/releases/tag/2.2.0) release). This is the recommended way to upgrade to 3.x.
 
 With that being said, you may configure how the package handles encryption however you want to by calling the `RichTextLaravel::encryptUsing()` method on your `AppServiceProvider::boot` method. This method takes an encryption and decryption handler. The handler will receive the value, the model and key (field) that is being encrypted, like so:
@@ -264,6 +292,16 @@ class Post extends Model
     protected $richTextAttributes = [
         'body' => ['attribute' => true],
     ];
+}
+```
+
+Or using the class attribute:
+
+```php
+#[RichTextAttributes(['body' => ['attribute' => true]])]
+class Post extends Model
+{
+    use HasRichText;
 }
 ```
 
