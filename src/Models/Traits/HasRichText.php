@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use ReflectionClass;
+use Tonysm\RichTextLaravel\Attributes\RichTextAttributes;
 use Tonysm\RichTextLaravel\Casts\AsEncryptedRichTextContent;
 use Tonysm\RichTextLaravel\Casts\AsRichTextContent;
 use Tonysm\RichTextLaravel\Casts\ForwardsAttributeToRelationship;
@@ -103,13 +105,28 @@ trait HasRichText
 
     protected function getRichTextFields(): array
     {
-        if (! property_exists($this, 'richTextAttributes')) {
-            throw RichTextException::missingRichTextFieldsProperty(static::class);
+        $hasProperty = property_exists($this, 'richTextAttributes');
+        $phpAttributes = (new ReflectionClass($this))->getAttributes(RichTextAttributes::class);
+
+        if ($hasProperty && count($phpAttributes) > 0) {
+            throw RichTextException::ambiguousRichTextConfiguration(static::class);
         }
 
-        $fields = Collection::wrap($this->richTextAttributes);
+        if (count($phpAttributes) > 0) {
+            $columns = $phpAttributes[0]->newInstance()->columns;
 
-        return $fields->mapWithKeys(fn ($value, $key) => is_string($key) ? [$key => $value] : [$value => []])->all();
+            return Collection::wrap($columns)
+                ->mapWithKeys(fn ($value, $key) => is_string($key) ? [$key => $value] : [$value => []])
+                ->all();
+        }
+
+        if ($hasProperty) {
+            return Collection::wrap($this->richTextAttributes)
+                ->mapWithKeys(fn ($value, $key) => is_string($key) ? [$key => $value] : [$value => []])
+                ->all();
+        }
+
+        throw RichTextException::missingRichTextFieldsProperty(static::class);
     }
 
     public function unsetRichTextRelationshipsForLivewireDehydration(): void
