@@ -7,6 +7,8 @@
     <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/lexxy-rich-text-laravel-attachments.css') }}" />
     @if ($theme === 'daisyui')
     <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/lexxy-rich-text-laravel-daisyui.css') }}" />
+    @elseif ($theme === 'flux')
+    <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/lexxy-rich-text-laravel-flux.css') }}" />
     @endif
 @elseif ($theme === 'richtextlaravel')
     <link {{ $attributes }} rel="stylesheet" href="{{ $assets->url('/trix-rich-text-laravel.css') }}" />
