@@ -59,10 +59,10 @@ Ensure the styles Blade component were added to your layouts:
 <x-rich-text::styles />
 ```
 
-Alternatively, if you're using Breeze (or TailwindCSS), you may prefer the tweaked theme:
+Alternatively, if you're using DaisyUI, you may prefer the tweaked theme:
 
 ```blade
-<x-rich-text::styles theme="richtextlaravel" />
+<x-rich-text::styles theme="daisyui" />
 ```
 
 Finally, you may now use the published input Blade component on your forms like so:
