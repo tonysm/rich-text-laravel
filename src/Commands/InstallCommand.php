@@ -68,7 +68,7 @@ class InstallCommand extends Command
             'rich-text-laravel-migrations',
             '--provider',
             RichTextLaravelServiceProvider::class,
-        ], fn($_type, $output) => $this->output->write($output));
+        ], fn ($_type, $output) => $this->output->write($output));
     }
 
     private function publishAssets(): void
@@ -81,7 +81,7 @@ class InstallCommand extends Command
             'rich-text-laravel-assets',
             '--provider',
             RichTextLaravelServiceProvider::class,
-        ], fn($_type, $output) => $this->output->write($output));
+        ], fn ($_type, $output) => $this->output->write($output));
     }
 
     private function updateJsDependencies(string $editor): void
@@ -104,13 +104,13 @@ class InstallCommand extends Command
                 './vendor/bin/sail',
                 'artisan',
                 'migrate',
-            ], fn($_type, $output) => $this->output->write($output));
+            ], fn ($_type, $output) => $this->output->write($output));
         } else {
             FacadesProcess::forever()->run([
                 $this->phpBinary(),
                 'artisan',
                 'migrate',
-            ], fn($_type, $output) => $this->output->write($output));
+            ], fn ($_type, $output) => $this->output->write($output));
         }
     }
 
@@ -134,7 +134,7 @@ class InstallCommand extends Command
 
     private function updateJsDependenciesWithNpm(string $editor): void
     {
-        static::updateNodePackages(fn($packages): array => $this->jsDependencies($editor) + $packages);
+        static::updateNodePackages(fn ($packages): array => $this->jsDependencies($editor) + $packages);
 
         if (file_exists(base_path('pnpm-lock.yaml'))) {
             $this->runCommands(['pnpm install', 'pnpm run build']);
@@ -153,12 +153,12 @@ class InstallCommand extends Command
             try {
                 $process->setTty(true);
             } catch (RuntimeException $e) {
-                $this->output->writeln('  <bg=yellow;fg=black> WARN </> ' . $e->getMessage() . PHP_EOL);
+                $this->output->writeln('  <bg=yellow;fg=black> WARN </> '.$e->getMessage().PHP_EOL);
             }
         }
 
         $process->run(function ($type, string $line): void {
-            $this->output->write('    ' . $line);
+            $this->output->write('    '.$line);
         });
     }
 
@@ -209,13 +209,13 @@ class InstallCommand extends Command
             $this->components->warn("File {$trixRelativeDestinationPath} already exists.");
         } else {
             File::ensureDirectoryExists(dirname($trixAbsoluteDestinationPath), recursive: true);
-            File::copy(__DIR__ . '/../../stubs/resources/js/trix.js', $trixAbsoluteDestinationPath);
+            File::copy(__DIR__.'/../../stubs/resources/js/trix.js', $trixAbsoluteDestinationPath);
         }
 
         $entrypoint = Arr::first([
             resource_path('js/libs/index.js'),
             resource_path('js/app.js'),
-        ], fn($file): bool => file_exists($file));
+        ], fn ($file): bool => file_exists($file));
 
         if (! $entrypoint) {
             return;
@@ -241,13 +241,13 @@ class InstallCommand extends Command
             $this->components->warn("File {$lexxyRelativeDestinationPath} already exists.");
         } else {
             File::ensureDirectoryExists(dirname($lexxyAbsoluteDestinationPath), recursive: true);
-            File::copy(__DIR__ . '/../../stubs/resources/js/lexxy.js', $lexxyAbsoluteDestinationPath);
+            File::copy(__DIR__.'/../../stubs/resources/js/lexxy.js', $lexxyAbsoluteDestinationPath);
         }
 
         $entrypoint = Arr::first([
             resource_path('js/libs/index.js'),
             resource_path('js/app.js'),
-        ], fn($file): bool => file_exists($file));
+        ], fn ($file): bool => file_exists($file));
 
         if (! $entrypoint) {
             return;
@@ -268,7 +268,7 @@ class InstallCommand extends Command
         File::ensureDirectoryExists(resource_path('views/components'));
 
         File::copy(
-            __DIR__ . '/../../stubs/resources/views/components/trix-input.blade.php',
+            __DIR__.'/../../stubs/resources/views/components/trix-input.blade.php',
             resource_path('views/components/trix-input.blade.php'),
         );
     }
@@ -278,7 +278,7 @@ class InstallCommand extends Command
         File::ensureDirectoryExists(resource_path('views/components'));
 
         File::copy(
-            __DIR__ . '/../../stubs/resources/views/components/lexxy-input.blade.php',
+            __DIR__.'/../../stubs/resources/views/components/lexxy-input.blade.php',
             resource_path('views/components/lexxy-input.blade.php'),
         );
     }
@@ -292,8 +292,8 @@ class InstallCommand extends Command
     private function updateLayoutFiles(): void
     {
         $layouts = collect(['app', 'guest'])
-            ->map(fn($name) => resource_path("views/layouts/{$name}.blade.php"))
-            ->filter(fn($file) => File::exists($file));
+            ->map(fn ($name) => resource_path("views/layouts/{$name}.blade.php"))
+            ->filter(fn ($file) => File::exists($file));
 
         if ($layouts->isEmpty()) {
             return;
@@ -375,7 +375,7 @@ class InstallCommand extends Command
 
     private function usingFlux(): bool
     {
-        return file_exists(base_path('composer.json')) && str_contains(File::get(base_path('composer.json')), "livewire/flux");
+        return file_exists(base_path('composer.json')) && str_contains(File::get(base_path('composer.json')), 'livewire/flux');
     }
 
     private function usingDaisyUiViaHotwireStarterKit(): bool
@@ -412,7 +412,7 @@ class InstallCommand extends Command
             'rich-text-laravel-config',
             '--provider',
             RichTextLaravelServiceProvider::class,
-        ], fn($_type, $output) => $this->output->write($output));
+        ], fn ($_type, $output) => $this->output->write($output));
     }
 
     /**
@@ -440,7 +440,7 @@ class InstallCommand extends Command
 
         file_put_contents(
             base_path('package.json'),
-            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
+            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
         );
     }
 
