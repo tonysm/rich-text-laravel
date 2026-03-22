@@ -352,7 +352,7 @@ class InstallCommand extends Command
         };
 
         return sprintf(
-            '<x-rich-text::styles%s data-turbo-track="false" />',
+            '<x-rich-text::styles%s data-turbo-track="reload" />',
             $theme ? " theme=\"{$theme}\"" : '',
         );
     }
