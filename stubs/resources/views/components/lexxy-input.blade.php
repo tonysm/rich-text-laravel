@@ -1,5 +1,23 @@
-@props(['id', 'name', 'value' => ''])
+@props(['id', 'name' => null, 'value' => ''])
 
-<lexxy-editor
-    {{ $attributes->merge(['id' => $id, 'name' => $name, 'value' => $value, 'class' => 'lexxy-content']) }}
->{{ $slot }}</lexxy-editor>
+<div
+    {{ $attributes->whereDoesntStartWith('wire:') }}
+    @if ($attributes->has('wire:model'))
+    x-data="{ content: $wire.entangle('{{ $attributes->wire('model')->value() }}') }"
+    x-on:lexxy:initialize="$nextTick(() => $refs.input.value = content)"
+    x-on:lexxy:change="content = $refs.input.value"
+    @endif
+>
+    <lexxy-editor
+        id="{{ $id }}"
+        class="lexxy-content"
+        value="{{ $value }}"
+        @if ($name ?? false)
+        name="{{ $name }}"
+        @endif
+        @if ($attributes->has('wire:model'))
+        wire:ignore
+        x-ref="input"
+        @endif
+    >{{ $slot }}</lexxy-editor>
+</div>
