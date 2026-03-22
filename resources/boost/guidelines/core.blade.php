@@ -18,3 +18,4 @@
 - IMPORTANT: The plain text output (`toPlainText()`) is not HTML-safe and must be escaped.
 - IMPORTANT: When rendering rich text in Blade, use `{!! $post->body !!}` (unescaped) but always sanitize first.
 - IMPORTANT: When feeding content back to the editor, always use `toEditorHtml()` instead of the default render output.
+- IMPORTANT: Activate the `developing-new-attachables` skill when turning a model into a content attachment (e.g., user mentions, embedded resources).
