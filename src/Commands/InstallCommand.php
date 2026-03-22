@@ -330,7 +330,7 @@ class InstallCommand extends Command
 
         $updated = preg_replace(
             '/(\s*)(@vite\b|<link[^>]*tailwindcss)/',
-            "\n{$stylesTag}$1$2",
+            "\n\n{$stylesTag}$1$2",
             $contents,
             1,
         );
