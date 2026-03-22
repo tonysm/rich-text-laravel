@@ -9,6 +9,7 @@ let hashedFiles = {
     'node_modules/@37signals/lexxy/dist/stylesheets/lexxy.css': 'lexxy.css',
     'node_modules/trix/dist/trix.css': 'trix.css',
     'resources/css/lexxy-rich-text-laravel-attachments.css': 'lexxy-rich-text-laravel-attachments.css',
+    'resources/css/lexxy-rich-text-laravel-daisyui.css': 'lexxy-rich-text-laravel-daisyui.css',
     'resources/css/trix-rich-text-laravel.css': 'trix-rich-text-laravel.css',
     'resources/css/trix-rich-text-laravel-attachments.css': 'trix-rich-text-laravel-attachments.css',
 }

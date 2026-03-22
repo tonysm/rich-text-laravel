@@ -54,7 +54,7 @@ class InstallCommand extends Command
         }
 
         return strtolower(
-            $this->choice('Which editor do you want to install?', ['Trix', 'Lexxy'], 'Trix')
+            $this->components->choice('Which editor do you want to install?', ['Trix', 'Lexxy'], 'Trix')
         );
     }
 
@@ -95,7 +95,7 @@ class InstallCommand extends Command
 
     private function runDatabaseMigrations(): void
     {
-        if (! $this->confirm('A new migration was published to your app. Do you want to run it now?', true)) {
+        if (! $this->components->confirm('A new migration was published to your app. Do you want to run it now?', true)) {
             return;
         }
 
@@ -116,7 +116,7 @@ class InstallCommand extends Command
 
     private function runningSail(): bool
     {
-        return file_exists(base_path('docker-compose.yml')) && str_contains(file_get_contents(base_path('composer.json')), 'laravel/sail');
+        return (file_exists(base_path('docker-compose.yml')) || file_exists(base_path('compose.yaml'))) && str_contains(file_get_contents(base_path('composer.json')), 'laravel/sail');
     }
 
     private function usingImportmaps(): bool
@@ -187,7 +187,7 @@ class InstallCommand extends Command
     {
         $this->ensureTrixLibIsImported();
         $this->ensureTrixFieldComponentIsCopied();
-        $this->updateAppLayoutFiles($editor);
+        $this->updateAppLayoutFiles();
         $this->updateJsDependencies($editor);
     }
 
@@ -283,13 +283,13 @@ class InstallCommand extends Command
         );
     }
 
-    private function updateAppLayoutFiles(string $editor): void
+    private function updateAppLayoutFiles(): void
     {
-        $this->updateLayoutFiles($editor);
-        $this->updateStarterKitHeadFiles($editor);
+        $this->updateLayoutFiles();
+        $this->updateStarterKitHeadFiles();
     }
 
-    private function updateLayoutFiles(string $editor): void
+    private function updateLayoutFiles(): void
     {
         $layouts = collect(['app', 'guest'])
             ->map(fn ($name) => resource_path("views/layouts/{$name}.blade.php"))
@@ -299,7 +299,7 @@ class InstallCommand extends Command
             return;
         }
 
-        $stylesTag = $this->stylesTag($editor);
+        $stylesTag = $this->stylesTag();
 
         $layouts->each(function ($file) use ($stylesTag): void {
             $contents = File::get($file);
@@ -312,7 +312,7 @@ class InstallCommand extends Command
         });
     }
 
-    private function updateStarterKitHeadFiles(string $editor): void
+    private function updateStarterKitHeadFiles(): void
     {
         $headFile = resource_path('views/partials/head.blade.php');
 
@@ -326,17 +326,45 @@ class InstallCommand extends Command
             return;
         }
 
-        $stylesTag = $this->stylesTag($editor);
+        $stylesTag = $this->stylesTag();
 
         File::append($headFile, "\n{$stylesTag}\n");
     }
 
-    private function stylesTag(string $editor): string
+    private function stylesTag(): string
     {
-        return match ($editor) {
-            'trix' => '<x-rich-text::styles theme="richtextlaravel" data-turbo-track="false" />',
-            'lexxy' => '<x-rich-text::styles />',
+        $theme = match (true) {
+            $this->usingDaisyUi() => 'daisyui',
+            default => $this->components->choice('Would you like to use a specific theme?', ['daisyui'], null),
         };
+
+        $theme = $theme ? " theme=\"{$theme}\"" : '';
+
+        return sprintf(
+            '<x-rich-text::styles%s data-turbo-track="false" />',
+            $theme ? " theme=\"{$theme}\"" : '',
+        );
+    }
+
+    private function usingDaisyUi(): bool
+    {
+        return $this->usingDaisyUiViaNpm() || $this->usingDaisyUiViaHotwireStarterKit();
+    }
+
+    private function usingDaisyUiViaNpm(): bool
+    {
+        if (! file_exists(base_path('package.json'))) {
+            return false;
+        }
+
+        $packages = json_decode(file_get_contents(base_path('package.json')), true);
+
+        return Arr::has($packages, 'dependencies.daisyui') || Arr::has($packages, 'devDependencies.daisyui');
+    }
+
+    private function usingDaisyUiViaHotwireStarterKit(): bool
+    {
+        return file_exists(resource_path('css/app.css')) && str_contains(File::get(resource_path('css/app.css')), 'daisyui');
     }
 
     private function updateConfigFile(string $editor): void

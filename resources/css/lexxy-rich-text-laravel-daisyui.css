@@ -1,0 +1,86 @@
+/* Lexxy rich text editor — DaisyUI theme integration */
+:root {
+    /* Core colors */
+    --lexxy-color-canvas: var(--color-base-100);
+    --lexxy-color-ink: var(--color-base-content);
+    --lexxy-color-ink-medium: color-mix(in oklch, var(--color-base-content) 60%, transparent);
+    --lexxy-color-ink-light: color-mix(in oklch, var(--color-base-content) 40%, transparent);
+    --lexxy-color-ink-lighter: color-mix(in oklch, var(--color-base-content) 20%, transparent);
+    --lexxy-color-ink-lightest: var(--color-base-200);
+    --lexxy-color-ink-inverted: var(--color-base-100);
+
+    /* Accent / selection */
+    --lexxy-color-accent-dark: var(--color-primary);
+    --lexxy-color-accent-medium: color-mix(in oklch, var(--color-primary) 75%, var(--color-base-100));
+    --lexxy-color-accent-light: color-mix(in oklch, var(--color-primary) 15%, var(--color-base-100));
+    --lexxy-color-accent-lightest: color-mix(in oklch, var(--color-primary) 8%, var(--color-base-100));
+
+    /* Semantic colors */
+    --lexxy-color-red: var(--color-error);
+    --lexxy-color-green: var(--color-success);
+    --lexxy-color-blue: var(--color-info);
+    --lexxy-color-purple: var(--color-secondary);
+
+    /* Text & links */
+    --lexxy-color-text: var(--color-base-content);
+    --lexxy-color-text-subtle: color-mix(in oklch, var(--color-base-content) 60%, transparent);
+    --lexxy-color-link: var(--color-primary);
+
+    /* Selection */
+    --lexxy-color-selected: color-mix(in oklch, var(--color-primary) 10%, var(--color-base-100));
+    --lexxy-color-selected-hover: color-mix(in oklch, var(--color-primary) 18%, var(--color-base-100));
+    --lexxy-color-selected-dark: var(--color-primary);
+
+    /* Code */
+    --lexxy-color-code-bg: var(--color-base-200);
+
+    /* Tables */
+    --lexxy-color-table-header-bg: var(--color-base-200);
+    --lexxy-color-table-cell-border: var(--color-base-300);
+
+    /* Focus ring */
+    --lexxy-focus-ring-color: var(--color-primary);
+
+    /* Border radius & shadow */
+    --lexxy-radius: var(--radius-field);
+    --lexxy-shadow: 0 2px 8px color-mix(in oklch, var(--color-base-content) 10%, transparent);
+}
+
+lexxy-editor {
+    border-width: var(--border);
+    font-size: 0.875rem;
+
+    &:focus-within {
+        outline: 2px solid var(--color-base-content);
+        outline-offset: 2px;
+    }
+
+    :is(code, pre):is(pre, [data-language]) {
+        padding: 2ch;
+    }
+
+    lexxy-code-language-picker select {
+        --input-color: color-mix(in oklab, var(--color-base-content) 20%, #0000);
+        appearance: none;
+        background-color: var(--color-base-100);
+        border: var(--border) solid var(--input-color);
+        border-radius: var(--radius-field);
+        color: var(--color-base-content);
+        font-family: inherit;
+        font-size: var(--lexxy-text-small);
+        height: calc(var(--size-field, 0.25rem) * 8);
+        padding-inline-start: calc(0.25rem * 3);
+        padding-inline-end: calc(0.25rem * 7);
+        background-image: linear-gradient(45deg, #0000 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, #0000 50%);
+        background-position: calc(100% - 14px) calc(1px + 50%), calc(100% - 10.1px) calc(1px + 50%);
+        background-size: 4px 4px, 4px 4px;
+        background-repeat: no-repeat;
+        margin: 0.5ch;
+
+        &:focus {
+            --input-color: var(--color-base-content);
+            outline: 2px solid var(--input-color);
+            outline-offset: 2px;
+        }
+    }
+}
