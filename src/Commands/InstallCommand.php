@@ -338,7 +338,7 @@ class InstallCommand extends Command
         File::put($headFile, $updated);
 
         // If the pattern update wasn't enough, we simply append it...
-        if (! str_contains($contents, '<x-rich-text::styles')) {
+        if (! str_contains(File::get($headFile), '<x-rich-text::styles')) {
             File::append($headFile, "\n{$stylesTag}\n");
         }
     }
@@ -349,8 +349,6 @@ class InstallCommand extends Command
             $this->usingDaisyUi() => 'daisyui',
             default => $this->components->choice('Would you like to use a specific theme?', ['daisyui'], null),
         };
-
-        $theme = $theme ? " theme=\"{$theme}\"" : '';
 
         return sprintf(
             '<x-rich-text::styles%s data-turbo-track="false" />',
