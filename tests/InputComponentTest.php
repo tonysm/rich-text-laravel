@@ -43,6 +43,20 @@ class InputComponentTest extends TestCase
     }
 
     #[Test]
+    public function renders_lexxy_slots_directly(): void
+    {
+        config()->set('rich-text-laravel.editor', 'lexxy');
+
+        $this->blade(<<<BLADE
+            <x-rich-text::input id="content" name="content">
+                <lexxy-prompt trigger="@" src="/mentions" name="mention"></lexxy-prompt>
+            </x-rich-text::input>
+            BLADE)
+            ->assertSee('<lexxy-editor', escape: false)
+            ->assertSee('<lexxy-prompt', escape: false);
+    }
+
+    #[Test]
     public function forwards_name_attribute(): void
     {
         $this->blade('<x-rich-text::input id="content" name="body" />')
