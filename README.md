@@ -65,16 +65,23 @@ Alternatively, if you're using DaisyUI, you may prefer the tweaked theme:
 <x-rich-text::styles theme="daisyui" />
 ```
 
-Finally, you may now use the published input Blade component on your forms like so:
+Finally, you may now use the input Blade component on your forms like so:
 
 ```blade
-<x-trix-input id="bio" name="bio" />
+<x-rich-text::input id="bio" name="bio" />
 ```
 
-Or, if you're using Lexxy as your editor:
+This will automatically render the correct editor based on your configured `RICH_TEXT_EDITOR` setting. You can also use the editor-specific components directly:
 
 ```blade
-<x-lexxy-input id="bio" name="bio" />
+<x-rich-text::trix id="bio" name="bio" />
+<x-rich-text::lexxy id="bio" name="bio" />
+```
+
+If you want to customize the editor components, you may publish the views:
+
+```bash
+php artisan vendor:publish --tag=rich-text-laravel-views
 ```
 
 That's it!
@@ -207,7 +214,7 @@ We store a back-reference to the field name in the `rich_texts` table because a 
 Rendering the rich text content back to the editor (Trix, Lexxy, etc.) is a bit different than rendering for the end users, so you may do that using the `toEditorHtml` method on the field, like so:
 
 ```blade
-<x-trix-input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
+<x-rich-text::input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
 ```
 
 Next, go to the [attachments](#attachments) section to read more about attachables.
@@ -323,7 +330,7 @@ _Note_: since the HTML output is NOT escaped, make sure you sanitize it before r
 When feeding the editor (Trix, Lexxy, etc.) again, you need to do it differently:
 
 ```blade
-<x-trix-input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
+<x-rich-text::input id="post_body" name="body" :value="$post->body->toEditorHtml()" />
 ```
 
 Rendering for the editor is a bit different, so it has to be like that.
