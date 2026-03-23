@@ -6,6 +6,7 @@ use Illuminate\View\Compilers\BladeCompiler;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Tonysm\RichTextLaravel\Commands\InstallCommand;
+use Tonysm\RichTextLaravel\Commands\SwapCommand;
 
 class RichTextLaravelServiceProvider extends PackageServiceProvider
 {
@@ -22,6 +23,7 @@ class RichTextLaravelServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_rich_texts_table')
             ->hasCommand(InstallCommand::class)
+            ->hasCommand(SwapCommand::class)
             ->hasAssets();
     }
 
