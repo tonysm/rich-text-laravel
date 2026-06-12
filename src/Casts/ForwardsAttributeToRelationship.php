@@ -19,7 +19,7 @@ class ForwardsAttributeToRelationship implements CastsAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        if (is_string($value)) {
+        if (is_string($value) || is_null($value)) {
             $richText = $this->firstOrNewRelationship($model, $key);
             $richText->fill(['body' => $value]);
         }
