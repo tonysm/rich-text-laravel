@@ -20,11 +20,29 @@ class EncryptedModelTest extends TestCase
         $this->assertNotEncryptedRichTextAttribute($clearMessage, 'content', 'Hello World');
     }
 
-    private function assertEncryptedRichTextAttribute($model, string $field, string $expectedValue): void
+    #[Test]
+    public function can_clear_encrypted_content_with_null(): void
     {
-        $this->assertStringNotContainsString($expectedValue, $encrypted = DB::table('rich_texts')->where('record_id', $model->id)->value('body'));
-        $this->assertEquals($expectedValue, RichTextLaravel::decrypt($encrypted, $model, $field));
-        $this->assertStringContainsString($expectedValue, $model->refresh()->{$field}->body->toHtml());
+        $encryptedMessage = EncryptedMessage::create(['content' => 'Hello World']);
+
+        $encryptedMessage->update(['content' => null]);
+
+        $this->assertEncryptedRichTextAttribute($encryptedMessage->refresh(), 'content', null);
+    }
+
+    private function assertEncryptedRichTextAttribute($model, string $field, ?string $expectedValue): void
+    {
+        $encrypted = DB::table('rich_texts')->where('record_id', $model->id)->value('body');
+
+        if (is_null($expectedValue)) {
+            $this->assertNotNull($encrypted);
+            $this->assertEquals("\n", RichTextLaravel::decrypt($encrypted, $model, $field));
+            $this->assertEquals('', $model->refresh()->{$field}->body->toHtml());
+        } else {
+            $this->assertStringNotContainsString($expectedValue, $encrypted);
+            $this->assertEquals($expectedValue, RichTextLaravel::decrypt($encrypted, $model, $field));
+            $this->assertStringContainsString($expectedValue, $model->refresh()->{$field}->body->toHtml());
+        }
     }
 
     public function assertNotEncryptedRichTextAttribute($model, $field, string $expectedValue): void

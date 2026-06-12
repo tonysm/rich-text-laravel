@@ -226,6 +226,23 @@ class AttributeRichTextTest extends TestCase
         // The content should be canonicalized (Trix figure converted to rich-text-attachment)
         $this->assertStringContainsString('rich-text-attachment', $rawBody);
     }
+
+    #[Test]
+    public function can_clear_local_attribute_with_null(): void
+    {
+        $page = Page::create([
+            'title' => 'Title example',
+            'body' => 'Body example',
+        ]);
+
+        $page->refresh()->update(['body' => null]);
+
+        $this->assertEquals(<<<'HTML'
+        <div class="trix-content">
+        </div>
+
+        HTML, "{$page->refresh()->body}");
+    }
 }
 
 class PageWithMixedFields extends Page

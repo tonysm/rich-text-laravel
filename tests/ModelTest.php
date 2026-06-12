@@ -156,4 +156,22 @@ class ModelTest extends TestCase
 
         $this->assertTrue($post->refresh()->created_at->eq($post->refresh()->updated_at), 'Record timestamps were touched, but it shouldnt.');
     }
+
+    #[Test]
+    public function can_clear_rich_text_attribute_with_null(): void
+    {
+        $post = PostFactory::new()->create([
+            'body' => '<h1>Old Value</h1>',
+        ])->fresh();
+
+        $post->update([
+            'body' => null,
+        ]);
+
+        $this->assertEquals(<<<'HTML'
+        <div class="trix-content">
+        </div>
+
+        HTML, "{$post->refresh()->body}");
+    }
 }
