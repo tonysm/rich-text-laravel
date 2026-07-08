@@ -6,7 +6,7 @@
     <a href="https://packagist.org/packages/tonysm/rich-text-laravel"><img src="https://img.shields.io/github/license/tonysm/rich-text-laravel" alt="License"></a>
 </p>
 
-Integrates rich text editors like [Trix](https://trix-editor.org/) and [Lexxy](https://github.com/nicholasgasior/lexxy) with Laravel. Inspired by the Action Text gem from Rails.
+Integrates rich text editors like [Trix](https://trix-editor.org/) and [Lexxy](https://lexxy.dev/) with Laravel. Inspired by the Action Text gem from Rails.
 
 ## Table of Contents
 
