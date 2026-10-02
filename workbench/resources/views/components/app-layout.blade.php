@@ -104,10 +104,10 @@
     <script type="importmap">
     {
         "imports": {
-            "@37signals/lexxy": "https://esm.sh/@37signals/lexxy@0.8.5-beta",
-            "@hotwired/stimulus": "https://cdn.skypack.dev/@hotwired/stimulus",
+            "@37signals/lexxy": "https://esm.sh/@37signals/lexxy@1.0.0",
+            "@hotwired/stimulus": "https://ga.jspm.io/npm:@hotwired/stimulus@3.2.2/dist/stimulus.js",
             "tributejs": "https://ga.jspm.io/npm:tributejs@5.1.3/dist/tribute.min.js",
-            "trix": "https://unpkg.com/trix@2.1.0/dist/trix.esm.min.js"
+            "trix": "https://unpkg.com/trix@2.1.19/dist/trix.esm.min.js"
         }
     }
     </script>
