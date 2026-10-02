@@ -8,10 +8,10 @@
         "build": "node ./scripts/build.js"
     },
     "devDependencies": {
-        "esbuild": "^0.14.49"
+        "esbuild": "^0.28.2"
     },
     "dependencies": {
-        "@37signals/lexxy": "^0.8.0-beta",
-        "trix": "^2.1.16"
+        "@37signals/lexxy": "^1.0.0",
+        "trix": "^2.1.19"
     }
 }
