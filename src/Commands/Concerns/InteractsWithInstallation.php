@@ -39,7 +39,7 @@ trait InteractsWithInstallation
     {
         return match ($editor) {
             'trix' => ['trix' => '^2.1.16'],
-            'lexxy' => ['@37signals/lexxy' => '^0.8.5-beta'],
+            'lexxy' => ['@37signals/lexxy' => '^1.0.0'],
         };
     }
 
