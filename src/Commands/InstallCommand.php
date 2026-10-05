@@ -15,7 +15,7 @@ class InstallCommand extends Command
 
     public $signature = 'richtext:install
         {--no-model : Skip publishing the RichText model files.}
-        {--editor= : The editor to install (trix or lexxy).}
+        {--editor=lexxy : The editor to install (trix or lexxy).}
     ';
 
     public $description = 'Installs the package.';

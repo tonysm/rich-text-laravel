@@ -22,7 +22,7 @@ trait InteractsWithInstallation
         }
 
         if (! $this->input->isInteractive()) {
-            return 'trix';
+            return 'lexxy';
         }
 
         return strtolower(
